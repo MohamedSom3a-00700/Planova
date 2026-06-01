@@ -30,7 +30,7 @@ Deliver the core project management domain on top of the Phase 0 WPF shell: Proj
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+*GATE: Must pass before Phase 1 research. Re-check after Phase 1 design.*
 
 | Gate | Status | Evidence |
 |------|--------|----------|
@@ -165,7 +165,7 @@ Planova.sln
             └── ReportView.xaml
 ```
 
-**Structure Decision**: Multi-project Clean Architecture layout with 6 core projects (Domain, Application, Persistence, Localization, UI) extending the Phase 0 solution. Each layer owns its concerns per Clean Architecture rules. Service implementations live in their respective layer (Application for orchestration, Persistence for data access). No additional projects added — Phase 0 project set is sufficient.
+**Structure Decision**: Multi-project Clean Architecture layout with 5 core projects (Domain, Application, Persistence, Localization, UI) extending the Phase 0 solution. Each layer owns its concerns per Clean Architecture rules. Service implementations live in their respective layer (Application for orchestration, Persistence for data access). No additional projects added — Phase 0 project set is sufficient.
 
 ## Complexity Tracking
 
