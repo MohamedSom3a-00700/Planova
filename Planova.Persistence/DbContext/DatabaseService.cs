@@ -8,11 +8,13 @@ namespace Planova.Persistence.Services;
 public class DatabaseService : IDatabaseService
 {
     private readonly PlanovaDbContext _context;
+    private readonly ILoggingService _logger;
     private bool _initialized;
 
-    public DatabaseService(PlanovaDbContext context)
+    public DatabaseService(PlanovaDbContext context, ILoggingService logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public object GetConnection() => _context;
@@ -28,9 +30,8 @@ public class DatabaseService : IDatabaseService
         }
         catch (SqliteException ex) when (IsSchemaConflict(ex))
         {
-            await _context.Database.EnsureDeletedAsync(ct);
-            await _context.Database.MigrateAsync(ct);
-            _initialized = true;
+            _logger.Error($"Schema conflict during migration. Database may be in an inconsistent state. _initialized={_initialized}", ex);
+            throw;
         }
     }
 

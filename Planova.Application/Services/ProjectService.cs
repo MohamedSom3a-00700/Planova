@@ -45,8 +45,8 @@ public class ProjectService : IProjectService
             Name = dto.Name,
             Description = dto.Description,
             Status = ProjectStatus.Draft.Value,
-            StartDate = ParseDate(dto.StartDate),
-            FinishDate = ParseDate(dto.FinishDate),
+            StartDate = dto.StartDate,
+            FinishDate = dto.FinishDate,
             Currency = dto.Currency,
             Location = dto.Location,
             ClientId = dto.ClientId,
@@ -72,8 +72,8 @@ public class ProjectService : IProjectService
         project.Code = dto.Code;
         project.Name = dto.Name;
         project.Description = dto.Description;
-        project.StartDate = ParseDate(dto.StartDate);
-        project.FinishDate = ParseDate(dto.FinishDate);
+        project.StartDate = dto.StartDate;
+        project.FinishDate = dto.FinishDate;
         project.Currency = dto.Currency;
         project.Location = dto.Location;
         project.ClientId = dto.ClientId;
@@ -153,12 +153,6 @@ public class ProjectService : IProjectService
             byStatus,
             recent
         );
-    }
-
-    private static DateTime? ParseDate(string? dateStr)
-    {
-        if (string.IsNullOrWhiteSpace(dateStr)) return null;
-        return DateTime.TryParse(dateStr, out var dt) ? dt : null;
     }
 
     private static void ValidateProjectDates(Domain.Entities.Project project)

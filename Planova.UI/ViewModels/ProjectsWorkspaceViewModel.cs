@@ -37,6 +37,15 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
     private ProjectDetailDto? _selectedProject;
 
     [ObservableProperty]
+    private ProjectSummaryDto? _selectedSummary;
+
+    partial void OnSelectedSummaryChanged(ProjectSummaryDto? value)
+    {
+        if (value is not null)
+            SelectProjectCommand.Execute(value);
+    }
+
+    [ObservableProperty]
     private bool _isEditing;
 
     [ObservableProperty]
@@ -210,18 +219,22 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         {
             if (IsCreating)
             {
+                var startDate = ParseDate(EditStartDate);
+                var finishDate = ParseDate(EditFinishDate);
                 var dto = new CreateProjectDto(
                     EditCode, EditName, EditDescription,
-                    EditStartDate, EditFinishDate, EditCurrency,
+                    startDate, finishDate, EditCurrency,
                     EditLocation, EditClientId, EditNotes);
 
                 SelectedProject = await _projectService.CreateAsync(dto);
             }
             else if (SelectedProject != null)
             {
+                var startDate = ParseDate(EditStartDate);
+                var finishDate = ParseDate(EditFinishDate);
                 var dto = new UpdateProjectDto(
                     EditCode, EditName, EditDescription,
-                    EditStartDate, EditFinishDate, EditCurrency,
+                    startDate, finishDate, EditCurrency,
                     EditLocation, EditClientId, EditNotes);
 
                 SelectedProject = await _projectService.UpdateAsync(SelectedProject.Id, dto);
@@ -263,6 +276,12 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         {
             IsLoading = false;
         }
+    }
+
+    private static DateTime? ParseDate(string? dateStr)
+    {
+        if (string.IsNullOrWhiteSpace(dateStr)) return null;
+        return DateTime.TryParse(dateStr, out var dt) ? dt : null;
     }
 
     [RelayCommand]

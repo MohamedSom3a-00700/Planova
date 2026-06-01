@@ -22,7 +22,7 @@ public static class MappingProfile
 
     public static ProjectDetailDto ToDetailDto(this Project project)
     {
-        var status = ProjectStatus.FromString(project.Status);
+        var status = ProjectStatus.TryFromString(project.Status);
         return new ProjectDetailDto(
             project.Id,
             project.Code,
@@ -39,7 +39,7 @@ public static class MappingProfile
             project.Contracts?.Select(c => c.ToSummaryDto()).ToList() ?? new(),
             project.CreatedAt,
             project.UpdatedAt,
-            status.AllowedNext().Select(s => s.Value).ToArray()
+            status?.AllowedNext().Select(s => s.Value).ToArray() ?? Array.Empty<string>()
         );
     }
 

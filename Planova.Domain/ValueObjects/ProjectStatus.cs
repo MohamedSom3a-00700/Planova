@@ -30,6 +30,12 @@ public sealed class ProjectStatus
 
     public static ProjectStatus FromString(string value)
     {
+        return TryFromString(value)
+            ?? throw new ArgumentException($"Invalid project status: {value}", nameof(value));
+    }
+
+    public static ProjectStatus? TryFromString(string value)
+    {
         return value switch
         {
             "Draft" => Draft,
@@ -39,7 +45,7 @@ public sealed class ProjectStatus
             "On Hold" => OnHold,
             "Completed" => Completed,
             "Cancelled" => Cancelled,
-            _ => throw new ArgumentException($"Invalid project status: {value}", nameof(value)),
+            _ => null,
         };
     }
 

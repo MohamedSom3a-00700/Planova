@@ -19,6 +19,7 @@ using Planova.UI.Views.Contracts;
 using Planova.UI.Views.Dashboard;
 using Planova.UI.Views.Profile;
 using Planova.UI.Views.Reports;
+using QuestPDF.Infrastructure;
 using Serilog;
 
 namespace Planova.UI;
@@ -47,6 +48,8 @@ public partial class App : System.Windows.Application
 
         try
         {
+            QuestPDF.Settings.License = LicenseType.Community;
+
             Log.Information("Planova starting up");
 
             _host = Host.CreateDefaultBuilder(e.Args)
@@ -155,8 +158,11 @@ public partial class App : System.Windows.Application
         const double minWidth = 900;
         const double minHeight = 600;
 
-        window.Width = Math.Clamp(settingsService.Get<int?>("WindowWidth") ?? defaultWidth, minWidth, SystemParameters.VirtualScreenWidth);
-        window.Height = Math.Clamp(settingsService.Get<int?>("WindowHeight") ?? defaultHeight, minHeight, SystemParameters.VirtualScreenHeight);
+        var effectiveMaxWidth = Math.Max(minWidth, SystemParameters.VirtualScreenWidth);
+        var effectiveMaxHeight = Math.Max(minHeight, SystemParameters.VirtualScreenHeight);
+
+        window.Width = Math.Clamp(settingsService.Get<int?>("WindowWidth") ?? defaultWidth, minWidth, effectiveMaxWidth);
+        window.Height = Math.Clamp(settingsService.Get<int?>("WindowHeight") ?? defaultHeight, minHeight, effectiveMaxHeight);
 
         var x = settingsService.Get<int?>("WindowX");
         var y = settingsService.Get<int?>("WindowY");

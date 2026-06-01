@@ -69,6 +69,9 @@ namespace Planova.Persistence.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_Clients_Name");
 
+                    b.HasIndex("UpdatedAt")
+                        .HasDatabaseName("IX_Clients_UpdatedAt");
+
                     b.ToTable("Clients", (string)null);
                 });
 
@@ -141,6 +144,9 @@ namespace Planova.Persistence.Migrations
                     b.HasIndex("ProjectId")
                         .HasDatabaseName("IX_Contracts_ProjectId");
 
+                    b.HasIndex("UpdatedAt")
+                        .HasDatabaseName("IX_Contracts_UpdatedAt");
+
                     b.ToTable("Contracts", (string)null);
                 });
 
@@ -211,6 +217,9 @@ namespace Planova.Persistence.Migrations
 
                     b.HasIndex("Status")
                         .HasDatabaseName("IX_Projects_Status");
+
+                    b.HasIndex("UpdatedAt")
+                        .HasDatabaseName("IX_Projects_UpdatedAt");
 
                     b.ToTable("Projects", (string)null);
                 });

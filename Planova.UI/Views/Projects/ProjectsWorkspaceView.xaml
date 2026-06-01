@@ -41,7 +41,7 @@
             </Grid.ColumnDefinitions>
 
             <ListView Grid.Column="0" ItemsSource="{Binding Projects}"
-                      SelectedItem="{Binding SelectedProject, Mode=TwoWay}"
+                      SelectedItem="{Binding SelectedSummary, Mode=TwoWay}"
                       Background="{DynamicResource ThemeSurface}" BorderThickness="1">
                 <ListView.View>
                     <GridView>

@@ -2,6 +2,7 @@ using Planova.Application.Dto;
 using Planova.Application.Exceptions;
 using Planova.Application.Mappings;
 using Planova.Application.Repositories;
+using Planova.Domain.ValueObjects;
 
 namespace Planova.Application.Services;
 
@@ -48,12 +49,14 @@ public class ContractService : IContractService
 
         ValidateContractDates(dto.CommencementDate, dto.CompletionDate);
 
+        var currency = dto.Currency is not null ? Currency.FromCode(dto.Currency) : null;
+
         var contract = new Domain.Entities.Contract
         {
             Number = dto.Number,
             Title = dto.Title,
             Value = dto.Value,
-            Currency = dto.Currency,
+            Currency = currency?.Code,
             AwardDate = dto.AwardDate,
             CommencementDate = dto.CommencementDate,
             CompletionDate = dto.CompletionDate,
@@ -86,10 +89,12 @@ public class ContractService : IContractService
 
         ValidateContractDates(dto.CommencementDate, dto.CompletionDate);
 
+        var currency = dto.Currency is not null ? Currency.FromCode(dto.Currency) : null;
+
         contract.Number = dto.Number;
         contract.Title = dto.Title;
         contract.Value = dto.Value;
-        contract.Currency = dto.Currency;
+        contract.Currency = currency?.Code;
         contract.AwardDate = dto.AwardDate;
         contract.CommencementDate = dto.CommencementDate;
         contract.CompletionDate = dto.CompletionDate;

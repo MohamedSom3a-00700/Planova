@@ -167,11 +167,38 @@ namespace Planova.Persistence.Migrations
                 table: "Projects",
                 column: "Status");
 
+            migrationBuilder.CreateIndex(
+                name: "IX_Clients_UpdatedAt",
+                table: "Clients",
+                column: "UpdatedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Contracts_UpdatedAt",
+                table: "Contracts",
+                column: "UpdatedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Projects_UpdatedAt",
+                table: "Projects",
+                column: "UpdatedAt");
+
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropIndex(
+                name: "IX_Clients_UpdatedAt",
+                table: "Clients");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Contracts_UpdatedAt",
+                table: "Contracts");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Projects_UpdatedAt",
+                table: "Projects");
+
             migrationBuilder.DropTable(
                 name: "Contracts");
 

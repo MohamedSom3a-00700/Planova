@@ -41,13 +41,13 @@
                 <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding OrganizationName}" Margin="4,2"/>
 
                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Theme:" VerticalAlignment="Center"/>
-                <ComboBox Grid.Row="3" Grid.Column="1" SelectedItem="{Binding ThemePreference}" Margin="4,2">
+                <ComboBox Grid.Row="3" Grid.Column="1" SelectedValue="{Binding ThemePreference}" SelectedValuePath="Content" Margin="4,2">
                     <ComboBoxItem Content="Dark"/>
                     <ComboBoxItem Content="Light"/>
                 </ComboBox>
 
                 <TextBlock Grid.Row="4" Grid.Column="0" Text="Language:" VerticalAlignment="Center"/>
-                <ComboBox Grid.Row="4" Grid.Column="1" SelectedItem="{Binding LanguagePreference}" Margin="4,2">
+                <ComboBox Grid.Row="4" Grid.Column="1" SelectedValue="{Binding LanguagePreference}" SelectedValuePath="Content" Margin="4,2">
                     <ComboBoxItem Content="en"/>
                     <ComboBoxItem Content="ar"/>
                 </ComboBox>
