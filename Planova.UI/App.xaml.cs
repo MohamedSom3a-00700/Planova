@@ -3,14 +3,22 @@ using System.Windows;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Planova.Application.Repositories;
 using Planova.Application.Services;
 using Planova.Infrastructure.Logging;
 using Planova.Localization.Services;
 using Planova.Persistence.DbContext;
+using Planova.Persistence.Repositories;
 using Planova.Persistence.Services;
 using Planova.Shared.Abstractions;
 using Planova.UI.ViewModels;
 using Planova.UI.Views;
+using Planova.UI.Views.Projects;
+using Planova.UI.Views.Clients;
+using Planova.UI.Views.Contracts;
+using Planova.UI.Views.Dashboard;
+using Planova.UI.Views.Profile;
+using Planova.UI.Views.Reports;
 using Serilog;
 
 namespace Planova.UI;
@@ -68,16 +76,7 @@ public partial class App : System.Windows.Application
 
             var shellView = _host.Services.GetRequiredService<ShellView>();
 
-            if (settingsService.Get<int?>("WindowWidth") is int w)
-                shellView.Width = w;
-            if (settingsService.Get<int?>("WindowHeight") is int h)
-                shellView.Height = h;
-            if (settingsService.Get<int?>("WindowX") is int x)
-                shellView.Left = x;
-            if (settingsService.Get<int?>("WindowY") is int y)
-                shellView.Top = y;
-            if (settingsService.Get<bool>("WindowMaximized"))
-                shellView.WindowState = WindowState.Maximized;
+            ApplyWindowBounds(shellView, settingsService);
 
             shellView.Show();
         }
@@ -105,8 +104,32 @@ public partial class App : System.Windows.Application
         services.AddDbContext<PlanovaDbContext>(options =>
             options.UseSqlite($"Data Source={GetDatabasePath()}"));
 
+        services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<IClientRepository, ClientRepository>();
+        services.AddScoped<IContractRepository, ContractRepository>();
+        services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+
+        services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<IClientService, ClientService>();
+        services.AddScoped<IContractService, ContractService>();
+        services.AddScoped<IUserProfileService, UserProfileService>();
+        services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<IReportService, ReportService>();
+
         services.AddTransient<ShellViewModel>();
         services.AddTransient<ShellView>();
+        services.AddTransient<ProjectsWorkspaceViewModel>();
+        services.AddTransient<ProjectsWorkspaceView>();
+        services.AddTransient<ClientsWorkspaceViewModel>();
+        services.AddTransient<ClientsWorkspaceView>();
+        services.AddTransient<ContractsWorkspaceViewModel>();
+        services.AddTransient<ContractsWorkspaceView>();
+        services.AddTransient<UserProfileViewModel>();
+        services.AddTransient<UserProfileView>();
+        services.AddTransient<DashboardViewModel>();
+        services.AddTransient<DashboardView>();
+        services.AddTransient<ReportViewModel>();
+        services.AddTransient<ReportView>();
     }
 
     private static string GetDatabasePath()
@@ -123,6 +146,47 @@ public partial class App : System.Windows.Application
         var dir = Path.Combine(appData, "Planova", "logs");
         Directory.CreateDirectory(dir);
         return dir;
+    }
+
+    private static void ApplyWindowBounds(Window window, ISettingsService settingsService)
+    {
+        const double defaultWidth = 1280;
+        const double defaultHeight = 720;
+        const double minWidth = 900;
+        const double minHeight = 600;
+
+        window.Width = Math.Clamp(settingsService.Get<int?>("WindowWidth") ?? defaultWidth, minWidth, SystemParameters.VirtualScreenWidth);
+        window.Height = Math.Clamp(settingsService.Get<int?>("WindowHeight") ?? defaultHeight, minHeight, SystemParameters.VirtualScreenHeight);
+
+        var x = settingsService.Get<int?>("WindowX");
+        var y = settingsService.Get<int?>("WindowY");
+
+        if (x is int savedX && y is int savedY && IsWithinVirtualScreen(savedX, savedY, window.Width, window.Height))
+        {
+            window.WindowStartupLocation = WindowStartupLocation.Manual;
+            window.Left = savedX;
+            window.Top = savedY;
+        }
+        else
+        {
+            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        }
+
+        if (settingsService.Get<bool>("WindowMaximized"))
+            window.WindowState = WindowState.Maximized;
+    }
+
+    private static bool IsWithinVirtualScreen(double left, double top, double width, double height)
+    {
+        var screenLeft = SystemParameters.VirtualScreenLeft;
+        var screenTop = SystemParameters.VirtualScreenTop;
+        var screenRight = screenLeft + SystemParameters.VirtualScreenWidth;
+        var screenBottom = screenTop + SystemParameters.VirtualScreenHeight;
+
+        return left >= screenLeft - 100
+               && top >= screenTop - 100
+               && left + width <= screenRight + 100
+               && top + height <= screenBottom + 100;
     }
 
     private void OnDispatcherUnhandledException(object sender,

@@ -1,42 +1,60 @@
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Planova.Shared.Abstractions;
+using Planova.UI.Views.Projects;
+using Planova.UI.Views.Clients;
+using Planova.UI.Views.Contracts;
+using Planova.UI.Views.Dashboard;
+using Planova.UI.Views.Profile;
+using Planova.UI.Views.Reports;
 
 namespace Planova.UI.ViewModels;
 
 public partial class ShellViewModel : ObservableObject
 {
     private readonly INavigationService _navigationService;
-    private readonly ILoggingService _loggingService;
     private readonly IThemeService _themeService;
     private readonly ILocalizationService _localizationService;
     private readonly ISettingsService _settingsService;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly Dictionary<string, WorkspaceTabViewModel> _openTabs = new();
 
     public ShellViewModel(
         INavigationService navigationService,
         ILoggingService loggingService,
         IThemeService themeService,
         ILocalizationService localizationService,
-        ISettingsService settingsService)
+        ISettingsService settingsService,
+        IServiceProvider serviceProvider)
     {
         _navigationService = navigationService;
-        _loggingService = loggingService;
         _themeService = themeService;
         _localizationService = localizationService;
         _settingsService = settingsService;
+        _serviceProvider = serviceProvider;
 
         _themeService.ThemeChanged += OnThemeChanged;
         _localizationService.LanguageChanged += OnLanguageChanged;
+        _navigationService.ActiveTargetChanged += OnActiveTargetChanged;
 
         RegisterNavigationTargets();
+        BuildNavigationItems();
+        NavigateToTarget("dashboard");
     }
 
-    public ObservableCollection<object> Tabs { get; } = new();
+    public ObservableCollection<NavigationItemViewModel> NavigationItems { get; } = new();
+
+    public ObservableCollection<WorkspaceTabViewModel> Tabs { get; } = new();
 
     [ObservableProperty]
     private string _statusText = "Ready";
+
+    [ObservableProperty]
+    private WorkspaceTabViewModel? _selectedTab;
 
     [RelayCommand]
     private void ToggleTheme()
@@ -82,6 +100,12 @@ public partial class ShellViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    private void NavigateTo(string targetId)
+    {
+        _navigationService.NavigateTo(targetId);
+    }
+
     private void OnLanguageChanged(object? sender, string languageCode)
     {
         _settingsService.Set("LanguagePreference", languageCode);
@@ -94,10 +118,58 @@ public partial class ShellViewModel : ObservableObject
 
     private void RegisterNavigationTargets()
     {
+        _navigationService.RegisterTarget("dashboard", "Dashboard", () => _serviceProvider.GetRequiredService<DashboardView>());
+        _navigationService.RegisterTarget("projects", "Projects", () => _serviceProvider.GetRequiredService<ProjectsWorkspaceView>());
+        _navigationService.RegisterTarget("clients", "Clients", () => _serviceProvider.GetRequiredService<ClientsWorkspaceView>());
+        _navigationService.RegisterTarget("contracts", "Contracts", () => _serviceProvider.GetRequiredService<ContractsWorkspaceView>());
+        _navigationService.RegisterTarget("profile", "Profile", () => _serviceProvider.GetRequiredService<UserProfileView>());
+        _navigationService.RegisterTarget("reports", "Reports", () => _serviceProvider.GetRequiredService<ReportView>());
         _navigationService.RegisterTarget("boq", "BOQ", () => new System.Windows.Controls.ContentControl());
         _navigationService.RegisterTarget("wbs", "WBS", () => new System.Windows.Controls.ContentControl());
         _navigationService.RegisterTarget("scheduling", "Scheduling", () => new System.Windows.Controls.ContentControl());
         _navigationService.RegisterTarget("claims", "Claims", () => new System.Windows.Controls.ContentControl());
         _navigationService.RegisterTarget("settings", "Settings", () => new System.Windows.Controls.ContentControl());
+    }
+
+    private void BuildNavigationItems()
+    {
+        NavigationItems.Clear();
+        foreach (var target in _navigationService.GetTargets())
+        {
+            NavigationItems.Add(new NavigationItemViewModel(target.Id, target.DisplayName, NavigateToCommand));
+        }
+    }
+
+    private void OnActiveTargetChanged(object? sender, string targetId)
+    {
+        OpenTarget(targetId);
+    }
+
+    private void NavigateToTarget(string targetId)
+    {
+        _navigationService.NavigateTo(targetId);
+    }
+
+    private void OpenTarget(string targetId)
+    {
+        if (_openTabs.TryGetValue(targetId, out var existing))
+        {
+            SelectedTab = existing;
+            StatusText = existing.DisplayName;
+            return;
+        }
+
+        if (!_navigationService.TryCreateView(targetId, out var view) || view == null)
+            return;
+
+        var target = _navigationService.GetTargets().FirstOrDefault(t => t.Id == targetId);
+        if (target is null)
+            return;
+
+        var tab = new WorkspaceTabViewModel(target.Id, target.DisplayName, view);
+        _openTabs[target.Id] = tab;
+        Tabs.Add(tab);
+        SelectedTab = tab;
+        StatusText = target.DisplayName;
     }
 }

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
 using Planova.Persistence.DbContext;
 using Planova.Shared.Abstractions;
 
@@ -20,7 +21,23 @@ public class DatabaseService : IDatabaseService
 
     public async Task InitializeAsync(CancellationToken ct = default)
     {
-        await _context.Database.EnsureCreatedAsync(ct);
-        _initialized = true;
+        try
+        {
+            await _context.Database.MigrateAsync(ct);
+            _initialized = true;
+        }
+        catch (SqliteException ex) when (IsSchemaConflict(ex))
+        {
+            await _context.Database.EnsureDeletedAsync(ct);
+            await _context.Database.MigrateAsync(ct);
+            _initialized = true;
+        }
+    }
+
+    private static bool IsSchemaConflict(SqliteException ex)
+    {
+        return ex.Message.Contains("already exists", StringComparison.OrdinalIgnoreCase)
+               || ex.Message.Contains("duplicate column", StringComparison.OrdinalIgnoreCase)
+               || ex.Message.Contains("duplicate", StringComparison.OrdinalIgnoreCase);
     }
 }

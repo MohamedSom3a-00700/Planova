@@ -20,4 +20,88 @@
   <data name="StatusReady" xml:space="preserve"><value>جاهز</value></data>
   <data name="ThemeToggle" xml:space="preserve"><value>تبديل السمة</value></data>
   <data name="LangToggle" xml:space="preserve"><value>عربي</value></data>
+  <data name="NavDashboard" xml:space="preserve"><value>لوحة القيادة</value></data>
+  <data name="NavProjects" xml:space="preserve"><value>المشاريع</value></data>
+  <data name="NavClients" xml:space="preserve"><value>العملاء</value></data>
+  <data name="NavContracts" xml:space="preserve"><value>العقود</value></data>
+  <data name="NavProfile" xml:space="preserve"><value>الملف الشخصي</value></data>
+  <data name="NavReports" xml:space="preserve"><value>التقارير</value></data>
+  <data name="StatusDraft" xml:space="preserve"><value>مسودة</value></data>
+  <data name="StatusUnderReview" xml:space="preserve"><value>قيد المراجعة</value></data>
+  <data name="StatusApproved" xml:space="preserve"><value>معتمد</value></data>
+  <data name="StatusInProgress" xml:space="preserve"><value>قيد التنفيذ</value></data>
+  <data name="StatusOnHold" xml:space="preserve"><value>معلق</value></data>
+  <data name="StatusCompleted" xml:space="preserve"><value>مكتمل</value></data>
+  <data name="StatusCancelled" xml:space="preserve"><value>ملغي</value></data>
+  <data name="ProjectCode" xml:space="preserve"><value>الكود</value></data>
+  <data name="ProjectName" xml:space="preserve"><value>الاسم</value></data>
+  <data name="ProjectStatus" xml:space="preserve"><value>الحالة</value></data>
+  <data name="ProjectClient" xml:space="preserve"><value>العميل</value></data>
+  <data name="ProjectDescription" xml:space="preserve"><value>الوصف</value></data>
+  <data name="ProjectStartDate" xml:space="preserve"><value>تاريخ البداية</value></data>
+  <data name="ProjectFinishDate" xml:space="preserve"><value>تاريخ النهاية</value></data>
+  <data name="ProjectCurrency" xml:space="preserve"><value>العملة</value></data>
+  <data name="ProjectLocation" xml:space="preserve"><value>الموقع</value></data>
+  <data name="ProjectNotes" xml:space="preserve"><value>ملاحظات</value></data>
+  <data name="ProjectNew" xml:space="preserve"><value>مشروع جديد</value></data>
+  <data name="ProjectEdit" xml:space="preserve"><value>تعديل</value></data>
+  <data name="ProjectDelete" xml:space="preserve"><value>حذف</value></data>
+  <data name="ProjectSave" xml:space="preserve"><value>حفظ</value></data>
+  <data name="ProjectCancel" xml:space="preserve"><value>إلغاء</value></data>
+  <data name="ProjectSearch" xml:space="preserve"><value>بحث</value></data>
+  <data name="ProjectFilter" xml:space="preserve"><value>تصفية</value></data>
+  <data name="ProjectStatusTransitions" xml:space="preserve"><value>تحولات الحالة</value></data>
+  <data name="ProjectCodeUnique" xml:space="preserve"><value>يجب أن يكون كود المشروع فريدًا</value></data>
+  <data name="ProjectRequiredFields" xml:space="preserve"><value>الكود والاسم مطلوبان</value></data>
+  <data name="ProjectDateValidation" xml:space="preserve"><value>يجب أن يكون تاريخ النهاية بعد تاريخ البداية أو مساويًا له</value></data>
+  <data name="ClientCode" xml:space="preserve"><value>الكود</value></data>
+  <data name="ClientName" xml:space="preserve"><value>الاسم</value></data>
+  <data name="ClientEmail" xml:space="preserve"><value>البريد الإلكتروني</value></data>
+  <data name="ClientPhone" xml:space="preserve"><value>الهاتف</value></data>
+  <data name="ClientOrganization" xml:space="preserve"><value>المؤسسة</value></data>
+  <data name="ClientNotes" xml:space="preserve"><value>ملاحظات</value></data>
+  <data name="ClientNew" xml:space="preserve"><value>عميل جديد</value></data>
+  <data name="ClientEdit" xml:space="preserve"><value>تعديل</value></data>
+  <data name="ClientDelete" xml:space="preserve"><value>حذف</value></data>
+  <data name="ClientSave" xml:space="preserve"><value>حفظ</value></data>
+  <data name="ClientCancel" xml:space="preserve"><value>إلغاء</value></data>
+  <data name="ClientSearch" xml:space="preserve"><value>بحث</value></data>
+  <data name="ClientLinkedProjects" xml:space="preserve"><value>المشاريع المرتبطة</value></data>
+  <data name="ContractNumber" xml:space="preserve"><value>الرقم</value></data>
+  <data name="ContractTitle" xml:space="preserve"><value>العنوان</value></data>
+  <data name="ContractValue" xml:space="preserve"><value>القيمة</value></data>
+  <data name="ContractCurrency" xml:space="preserve"><value>العملة</value></data>
+  <data name="ContractAwardDate" xml:space="preserve"><value>تاريخ الإرساء</value></data>
+  <data name="ContractStartDate" xml:space="preserve"><value>تاريخ البداية</value></data>
+  <data name="ContractEndDate" xml:space="preserve"><value>تاريخ النهاية</value></data>
+  <data name="ContractProject" xml:space="preserve"><value>المشروع</value></data>
+  <data name="ContractClient" xml:space="preserve"><value>العميل</value></data>
+  <data name="ContractNotes" xml:space="preserve"><value>ملاحظات</value></data>
+  <data name="ContractNew" xml:space="preserve"><value>عقد جديد</value></data>
+  <data name="ContractEdit" xml:space="preserve"><value>تعديل</value></data>
+  <data name="ContractDelete" xml:space="preserve"><value>حذف</value></data>
+  <data name="ContractSave" xml:space="preserve"><value>حفظ</value></data>
+  <data name="ContractCancel" xml:space="preserve"><value>إلغاء</value></data>
+  <data name="ContractSearch" xml:space="preserve"><value>بحث</value></data>
+  <data name="ProfileDisplayName" xml:space="preserve"><value>الاسم المعروض</value></data>
+  <data name="ProfileRole" xml:space="preserve"><value>الدور</value></data>
+  <data name="ProfileOrganization" xml:space="preserve"><value>المؤسسة</value></data>
+  <data name="ProfileTheme" xml:space="preserve"><value>السمة</value></data>
+  <data name="ProfileLanguage" xml:space="preserve"><value>اللغة</value></data>
+  <data name="ProfileDefaultWorkspace" xml:space="preserve"><value>مساحة العمل الافتراضية</value></data>
+  <data name="ProfileSave" xml:space="preserve"><value>حفظ</value></data>
+  <data name="ProfileSaved" xml:space="preserve"><value>تم حفظ الملف الشخصي بنجاح!</value></data>
+  <data name="DashboardTitle" xml:space="preserve"><value>لوحة القيادة</value></data>
+  <data name="DashboardTotalProjects" xml:space="preserve"><value>المشاريع</value></data>
+  <data name="DashboardTotalClients" xml:space="preserve"><value>العملاء</value></data>
+  <data name="DashboardTotalContracts" xml:space="preserve"><value>العقود</value></data>
+  <data name="DashboardStatusDistribution" xml:space="preserve"><value>توزيع الحالات</value></data>
+  <data name="DashboardQuickActions" xml:space="preserve"><value>إجراءات سريعة</value></data>
+  <data name="DashboardRecentActivity" xml:space="preserve"><value>النشاط الأخير</value></data>
+  <data name="DashboardNewProject" xml:space="preserve"><value>+ مشروع جديد</value></data>
+  <data name="DashboardNewClient" xml:space="preserve"><value>+ عميل جديد</value></data>
+  <data name="ReportTitle" xml:space="preserve"><value>التقارير</value></data>
+  <data name="ReportTabProjects" xml:space="preserve"><value>المشاريع</value></data>
+  <data name="ReportTabClients" xml:space="preserve"><value>العملاء</value></data>
+  <data name="ReportTabContracts" xml:space="preserve"><value>العقود</value></data>
 </root>
