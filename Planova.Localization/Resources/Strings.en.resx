@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter</value>
+  </resheader>
+  <data name="NavBOQ" xml:space="preserve"><value>BOQ</value></data>
+  <data name="NavWBS" xml:space="preserve"><value>WBS</value></data>
+  <data name="NavScheduling" xml:space="preserve"><value>Scheduling</value></data>
+  <data name="NavClaims" xml:space="preserve"><value>Claims</value></data>
+  <data name="NavSettings" xml:space="preserve"><value>Settings</value></data>
+  <data name="StatusReady" xml:space="preserve"><value>Ready</value></data>
+  <data name="ThemeToggle" xml:space="preserve"><value>Toggle Theme</value></data>
+  <data name="LangToggle" xml:space="preserve"><value>EN</value></data>
+</root>

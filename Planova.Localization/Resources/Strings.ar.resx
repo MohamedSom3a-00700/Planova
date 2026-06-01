@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter</value>
+  </resheader>
+  <data name="NavBOQ" xml:space="preserve"><value>بوابة الكميات</value></data>
+  <data name="NavWBS" xml:space="preserve"><value>هيكل التنظيم</value></data>
+  <data name="NavScheduling" xml:space="preserve"><value>جدولة</value></data>
+  <data name="NavClaims" xml:space="preserve"><value>مطالبات</value></data>
+  <data name="NavSettings" xml:space="preserve"><value>إعدادات</value></data>
+  <data name="StatusReady" xml:space="preserve"><value>جاهز</value></data>
+  <data name="ThemeToggle" xml:space="preserve"><value>تبديل السمة</value></data>
+  <data name="LangToggle" xml:space="preserve"><value>عربي</value></data>
+</root>

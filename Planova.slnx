@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="Planova.Application/Planova.Application.csproj" />
+  <Project Path="Planova.Domain/Planova.Domain.csproj" />
+  <Project Path="Planova.Infrastructure/Planova.Infrastructure.csproj" />
+  <Project Path="Planova.Localization/Planova.Localization.csproj" />
+  <Project Path="Planova.Persistence/Planova.Persistence.csproj" />
+  <Project Path="Planova.Shared/Planova.Shared.csproj" />
+  <Project Path="Planova.UI/Planova.UI.csproj" />
+</Solution>

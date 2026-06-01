@@ -1,14 +1,4 @@
-<!--
-Sync Impact Report
-Version change: template placeholders -> 1.0.0
-Modified principles: Architecture First; MVVM & Fluent UI Enforcement; Modular Domain Design; Build vs Buy Strategy; Automation Platform Agnostic; AI Provider Agnostic; Multilingual First; Performance & Scalability
-Added sections: none
-Removed sections: none
-Templates requiring updates: pending .specify/templates/plan-template.md, .specify/templates/spec-template.md, .specify/templates/tasks-template.md (reviewed; no content changes required for this constitution update)
-Deferred items: none
--->
-
-# Planova Constitution
+# PLANOVA Constitution
 
 ## Core Principles
 
@@ -33,8 +23,9 @@ Rules:
 
 Rationale:
 
-Planova is a long-term enterprise platform and must remain maintainable,
-testable, and scalable.
+Planova is a long-term enterprise platform and must remain maintainable, testable, and scalable.
+
+---
 
 ### II. MVVM & Fluent UI Enforcement (NON-NEGOTIABLE)
 
@@ -61,6 +52,8 @@ Navigation Rail + Multi-Tab Workspace.
 Rationale:
 
 Planova prioritizes workspace efficiency and engineering productivity.
+
+---
 
 ### III. Modular Domain Design
 
@@ -95,6 +88,8 @@ Requirements:
 Rationale:
 
 Independent evolution of modules is critical to long-term success.
+
+---
 
 ### IV. Build vs Buy Strategy
 
@@ -132,8 +127,9 @@ Engineering effort shall focus on:
 
 Rationale:
 
-Competitive advantage comes from project controls expertise, not commodity
-infrastructure.
+Competitive advantage comes from project controls expertise, not commodity infrastructure.
+
+---
 
 ### V. Automation Platform Agnostic
 
@@ -168,6 +164,8 @@ Rationale:
 
 Automation ecosystems evolve faster than business applications.
 
+---
+
 ### VI. AI Provider Agnostic
 
 AI shall augment engineers, not replace engineering judgment.
@@ -201,6 +199,8 @@ Rationale:
 
 Provider independence protects long-term flexibility.
 
+---
+
 ### VII. Multilingual First
 
 Planova is multilingual from day one.
@@ -223,6 +223,8 @@ Rationale:
 
 Multilingual support is a core product requirement.
 
+---
+
 ### VIII. Performance & Scalability
 
 Requirements:
@@ -238,10 +240,11 @@ Rationale:
 
 Planning and scheduling datasets can become extremely large.
 
+---
+
 ## Technology Standards
 
-Planova shall use the following approved stack unless an architectural review
-explicitly authorizes a substitution.
+Mandatory stack:
 
 ### Platform
 
@@ -287,7 +290,11 @@ explicitly authorizes a substitution.
 
 - LiveCharts2
 
-### Database Standards
+Technology substitutions require architectural approval.
+
+---
+
+## Database Standards
 
 Primary database:
 
@@ -303,14 +310,16 @@ Requirements:
 - Strong Entity Modeling
 - Versioned schema
 - Audit support where appropriate
-- Repository pattern is prohibited unless justified by a documented
-  architectural decision
+
+Repository pattern is prohibited unless justified by a documented architectural decision.
 
 Source of truth:
 
-- Planova Database
+Planova Database
 
 Excel is an integration channel only.
+
+---
 
 ## Development Workflow
 
@@ -336,35 +345,39 @@ After implementation:
 - Tests added.
 - Localization verified.
 
-### Quality Gates
+---
+
+## Quality Gates
 
 Every implementation must satisfy:
 
-#### Architecture
+### Architecture
 
 - Clean Architecture compliant
 - MVVM compliant
 - Dependency Injection compliant
 
-#### Quality
+### Quality
 
 - Readable code
 - Meaningful naming
 - Single responsibility
 - Minimal duplication
 
-#### Localization
+### Localization
 
 - English support
 - Arabic support
 
-#### Performance
+### Performance
 
 - Async operations
 - Efficient queries
 - No unnecessary allocations
 
-### Documentation Requirements
+---
+
+## Documentation Requirements
 
 Every module must contain:
 
@@ -376,7 +389,9 @@ Every module must contain:
 
 Major architectural decisions require documentation.
 
-### Security Requirements
+---
+
+## Security Requirements
 
 Mandatory:
 
@@ -387,12 +402,27 @@ Mandatory:
 
 Sensitive configuration must remain externalized.
 
+---
+
+## Long-Term Vision
+
+Planova shall evolve toward:
+
+- Enterprise Deployment
+- Multi-User Collaboration
+- API Platform
+- Knowledge Platform
+- AI Project Intelligence Platform
+
+All architectural decisions should preserve this direction.
+
+---
+
 ## Governance
 
 This constitution is the highest authority for development decisions.
 
-Specifications, plans, tasks, source code, and architectural decisions must
-comply with this constitution.
+Specifications, plans, tasks, source code, and architectural decisions must comply with this constitution.
 
 When conflicts occur:
 
@@ -408,16 +438,8 @@ Constitution amendments require:
 - Architectural review
 - Impact assessment
 
-### Long-Term Vision
+Version: 1.0.0
 
-Planova shall evolve toward:
+Ratified: 2026-06-01
 
-- Enterprise Deployment
-- Multi-User Collaboration
-- API Platform
-- Knowledge Platform
-- AI Project Intelligence Platform
-
-All architectural decisions shall preserve this direction.
-
-**Version**: 1.0.0 | **Ratified**: 2026-06-01 | **Last Amended**: 2026-06-01
+Last Amended: 2026-06-01
