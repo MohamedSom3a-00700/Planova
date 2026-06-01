@@ -6,8 +6,10 @@ namespace Planova.Persistence.DbContext;
 
 public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
 {
-    public DbSet<SchemaVersion> SchemaVersions => Set<SchemaVersion>();
     public DbSet<UserPreferences> UserPreferences => Set<UserPreferences>();
+    public DbSet<Project> Projects => Set<Project>();
+    public DbSet<Client> Clients => Set<Client>();
+    public DbSet<Contract> Contracts => Set<Contract>();
 
     public PlanovaDbContext(DbContextOptions<PlanovaDbContext> options) : base(options)
     {
@@ -16,13 +18,8 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new UserPreferencesConfiguration());
-
-        modelBuilder.Entity<SchemaVersion>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Version).IsRequired();
-            entity.HasIndex(e => e.Version).IsUnique();
-            entity.Property(e => e.AppliedAt).HasDefaultValueSql("datetime('now')");
-        });
+        modelBuilder.ApplyConfiguration(new ProjectConfiguration());
+        modelBuilder.ApplyConfiguration(new ClientConfiguration());
+        modelBuilder.ApplyConfiguration(new ContractConfiguration());
     }
 }

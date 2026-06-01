@@ -6,6 +6,8 @@
              mc:Ignorable="d">
     <Grid>
         <TabControl x:Name="WorkspaceTabs"
+                    ItemsSource="{Binding Tabs}"
+                    SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
                     Background="{DynamicResource ThemeBackground}"
                     BorderThickness="0">
             <TabControl.ItemTemplate>

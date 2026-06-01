@@ -1,0 +1,71 @@
+<UserControl x:Class="Planova.UI.Views.Reports.ReportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels"
+             xmlns:conv="clr-namespace:Planova.UI.Converters"
+             d:DataContext="{d:DesignInstance vm:ReportViewModel}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Reports" FontSize="24" FontWeight="Bold"
+                   Foreground="{DynamicResource ThemeForeground}"/>
+
+        <TextBlock Grid.Row="0" Text="{Binding ErrorMessage}" Foreground="Red"
+                   Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"
+                   Margin="0,8,0,0"/>
+
+        <TabControl Grid.Row="1" Margin="0,16,0,0" SelectedIndex="{Binding SelectedTabIndex}"
+                    Background="{DynamicResource ThemeSurface}">
+            <TabItem Header="Projects">
+                <ListView ItemsSource="{Binding ProjectReports}" Background="Transparent" BorderThickness="0">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Code" DisplayMemberBinding="{Binding Code}" Width="80"/>
+                            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="200"/>
+                            <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status}" Width="100"/>
+                            <GridViewColumn Header="Client" DisplayMemberBinding="{Binding ClientName}" Width="150"/>
+                            <GridViewColumn Header="Start" DisplayMemberBinding="{Binding StartDate, StringFormat={}{0:d}}" Width="100"/>
+                            <GridViewColumn Header="Updated" DisplayMemberBinding="{Binding UpdatedAt, StringFormat={}{0:g}}" Width="120"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+            <TabItem Header="Clients">
+                <ListView ItemsSource="{Binding ClientReports}" Background="Transparent" BorderThickness="0">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Code" DisplayMemberBinding="{Binding Code}" Width="80"/>
+                            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="200"/>
+                            <GridViewColumn Header="Email" DisplayMemberBinding="{Binding ContactEmail}" Width="180"/>
+                            <GridViewColumn Header="Projects" DisplayMemberBinding="{Binding ProjectCount}" Width="80"/>
+                            <GridViewColumn Header="Updated" DisplayMemberBinding="{Binding UpdatedAt, StringFormat={}{0:g}}" Width="120"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+            <TabItem Header="Contracts">
+                <ListView ItemsSource="{Binding ContractReports}" Background="Transparent" BorderThickness="0">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Number" DisplayMemberBinding="{Binding Number}" Width="100"/>
+                            <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}" Width="200"/>
+                            <GridViewColumn Header="Value" DisplayMemberBinding="{Binding Value}" Width="100"/>
+                            <GridViewColumn Header="Project" DisplayMemberBinding="{Binding ProjectName}" Width="150"/>
+                            <GridViewColumn Header="Client" DisplayMemberBinding="{Binding ClientName}" Width="150"/>
+                            <GridViewColumn Header="Updated" DisplayMemberBinding="{Binding UpdatedAt, StringFormat={}{0:g}}" Width="120"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

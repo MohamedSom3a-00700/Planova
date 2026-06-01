@@ -1,0 +1,121 @@
+<UserControl x:Class="Planova.UI.Views.Contracts.ContractsWorkspaceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels"
+             xmlns:conv="clr-namespace:Planova.UI.Converters"
+             d:DataContext="{d:DesignInstance vm:ContractsWorkspaceViewModel}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:BoolToVisibilityConverter x:Key="InvertedBoolToVis" Invert="True"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="12">
+            <TextBlock Text="Contracts" FontSize="24" FontWeight="Bold"
+                       Foreground="{DynamicResource ThemeForeground}"/>
+            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                         Width="250" Height="28"/>
+                <Button Content="Search" Command="{Binding SearchCommand}" Margin="8,0,0,0" Height="28"/>
+                <Button Content="+ New Contract" Command="{Binding NewContractCommand}" Margin="12,0,0,0" Height="28"/>
+            </StackPanel>
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="Red"
+                       Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"
+                       Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" Margin="12,0,12,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+            <ListView Grid.Column="0" ItemsSource="{Binding Contracts}"
+                      SelectedItem="{Binding SelectedContract, Mode=TwoWay}"
+                      Background="{DynamicResource ThemeSurface}" BorderThickness="1">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Number" DisplayMemberBinding="{Binding Number}" Width="100"/>
+                        <GridViewColumn Header="Title" DisplayMemberBinding="{Binding Title}" Width="150"/>
+                        <GridViewColumn Header="Value" DisplayMemberBinding="{Binding Value}" Width="80"/>
+                        <GridViewColumn Header="Project" DisplayMemberBinding="{Binding ProjectName}" Width="120"/>
+                        <GridViewColumn Header="Client" DisplayMemberBinding="{Binding ClientName}" Width="120"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+            <ScrollViewer Grid.Column="1" Margin="12,0,0,0"
+                          Visibility="{Binding IsEditing, Converter={StaticResource BoolToVis}}">
+                <StackPanel>
+                    <TextBlock Text="{Binding SelectedContract.Title, TargetNullValue='New Contract'}"
+                               FontSize="18" FontWeight="SemiBold"/>
+                    <Grid Margin="0,12,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/><ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Number:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding EditNumber}" Margin="4,2"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Title:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding EditTitle}" Margin="4,2"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Value:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding EditValue}" Margin="4,2"/>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Currency:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding EditCurrency}" Margin="4,2"/>
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Project:" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Row="4" Grid.Column="1" ItemsSource="{Binding Projects}"
+                                  DisplayMemberPath="Name" SelectedValuePath="Id"
+                                  SelectedValue="{Binding EditProjectId}" Margin="4,2"/>
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Client:" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Row="5" Grid.Column="1" ItemsSource="{Binding Clients}"
+                                  DisplayMemberPath="Name" SelectedValuePath="Id"
+                                  SelectedValue="{Binding EditClientId}" Margin="4,2"/>
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Award Date:" VerticalAlignment="Center"/>
+                        <DatePicker Grid.Row="6" Grid.Column="1" SelectedDate="{Binding EditAwardDate}" Margin="4,2"/>
+                        <TextBlock Grid.Row="7" Grid.Column="0" Text="Start Date:" VerticalAlignment="Center"/>
+                        <DatePicker Grid.Row="7" Grid.Column="1" SelectedDate="{Binding EditCommencementDate}" Margin="4,2"/>
+                        <TextBlock Grid.Row="8" Grid.Column="0" Text="End Date:" VerticalAlignment="Center"/>
+                        <DatePicker Grid.Row="8" Grid.Column="1" SelectedDate="{Binding EditCompletionDate}" Margin="4,2"/>
+                        <TextBlock Grid.Row="9" Grid.Column="0" Text="Notes:"/>
+                        <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding EditNotes}" AcceptsReturn="True" Height="50" Margin="4,2"/>
+                        <StackPanel Grid.Row="10" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,8,0,0">
+                            <Button Content="Save" Command="{Binding SaveCommand}" Height="28" Width="80"/>
+                            <Button Content="Cancel" Command="{Binding CancelEditCommand}" Margin="8,0,0,0" Height="28" Width="80"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+
+            <StackPanel Grid.Column="1" Margin="12,0,0,0"
+                        Visibility="{Binding IsEditing, Converter={StaticResource InvertedBoolToVis}}">
+                <StackPanel Visibility="{Binding SelectedContract, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="{Binding SelectedContract.Title, StringFormat='Contract: {0}'}"
+                               FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding SelectedContract.Number, StringFormat='Number: {0}'}" Margin="0,4"/>
+                    <TextBlock Text="{Binding SelectedContract.Value, StringFormat='Value: {0:C}'}" Margin="0,4"/>
+                    <TextBlock Text="{Binding SelectedContract.ProjectName, StringFormat='Project: {0}'}" Margin="0,4"/>
+                    <TextBlock Text="{Binding SelectedContract.ClientName, StringFormat='Client: {0}'}" Margin="0,4"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                        <Button Content="Edit" Command="{Binding EditContractCommand}" Height="28" Width="80"/>
+                        <Button Content="Delete" Command="{Binding DeleteCommand}" Margin="8,0,0,0" Height="28" Width="80"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

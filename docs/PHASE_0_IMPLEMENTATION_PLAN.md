@@ -7,15 +7,16 @@
 **Source of Truth**: [docs/01-PRODUCT_VISION.md](./01-PRODUCT_VISION.md),
 [docs/04-SYSTEM_ARCHITECTURE.md](./04-SYSTEM_ARCHITECTURE.md),
 [docs/11-UI_UX_DESIGN_SYSTEM.md](./11-UI_UX_DESIGN_SYSTEM.md),
-[`docs/PLANOVA_CONSTITUTION_DRAFT.md`](./PLANOVA_CONSTITUTION_DRAFT.md)
+[`docs/PLANOVA_CONSTITUTION_DRAFT.md`](./PLANOVA_CONSTITUTION_DRAFT.md),
+[Planova Branding Master](./Planova%20Branding%20Master)
 
 ## Summary
 
 Phase 0 establishes the non-negotiable foundation for Planova: the WPF shell,
 navigation rail workspace, theme system, multilingual infrastructure, logging,
-settings, and SQLite persistence baseline. The goal is to make the application
-start cleanly, stay aligned with Clean Architecture and MVVM, and provide the
-platform that every later module can plug into without rework.
+settings, branding system, and SQLite persistence baseline. The goal is to make
+the application start cleanly, stay aligned with Clean Architecture and MVVM,
+and provide the platform that every later module can plug into without rework.
 
 This phase does not deliver business features such as BOQ, WBS, scheduling, or
 claims workflows. It delivers the architectural, UX, and runtime foundation
@@ -27,11 +28,12 @@ those modules will depend on.
 2. Deliver the main WPF shell with Navigation Rail + Multi-Tab Workspace.
 3. Implement the application bootstrap, dependency injection, and host setup.
 4. Establish the dark/light theme system and Fluent UI styling baseline.
-5. Add English and Arabic localization with runtime language switching and RTL.
-6. Configure Serilog logging and application diagnostics.
-7. Add user settings and externalized configuration.
-8. Create the SQLite and EF Core persistence foundation.
-9. Prove the app can launch, switch language/theme, and persist settings.
+5. Apply the Planova brand system to the shell, navigation, and workspace.
+6. Add English and Arabic localization with runtime language switching and RTL.
+7. Configure Serilog logging and application diagnostics.
+8. Add user settings and externalized configuration.
+9. Create the SQLite and EF Core persistence foundation.
+10. Prove the app can launch, switch language/theme, and persist settings.
 
 ## Phase 0 Scope
 
@@ -46,6 +48,7 @@ those modules will depend on.
 - Shared composition and contract boundaries
 - App shell, navigation rail, workspace tabs
 - Theme manager
+- Brand asset application and visual identity pass
 - Language manager
 - Settings storage
 - Database bootstrap and first migration foundation
@@ -83,6 +86,8 @@ those modules will depend on.
 - No workflow engine, automation designer, or rule builder is introduced.
 - The Phase 0 foundation must not create architecture that blocks later modular
   studio work.
+- Brand identity must be established before Phase 1 feature expansion so every
+  later screen inherits the same visual language.
 
 ## Target Solution Structure
 
@@ -164,7 +169,29 @@ Requirements:
 - Theme selection must persist across restarts.
 - Styling must support Fluent UI WPF conventions.
 
-### 4. Localization and RTL
+### 4. Branding and Visual Identity
+
+Apply the Planova identity system to the shell before expanding business
+features.
+
+Deliverables:
+
+- logo placement in the header and app chrome
+- navigation rail icons and selected-state styling
+- branded header, spacing, and panel treatment
+- dashboard cards and quick-action styling aligned to the brand
+- AI assistant panel framing and hierarchy
+- iconography pass for shell actions and module placeholders
+- light and dark theme fidelity matching the reference brand artwork
+
+Requirements:
+
+- The shell must visibly look like Planova, not a generic WPF starter app.
+- Logo, icon, spacing, and surface treatment must be consistent across the
+  shell.
+- Brand styling must be applied before any later studio reuses the shell.
+
+### 5. Localization and RTL
 
 Implement localization as a platform capability, not a later polish item.
 
@@ -183,7 +210,7 @@ Requirements:
 - Arabic layout must render correctly in right-to-left mode.
 - Resource lookup must be centralized so later modules can reuse it.
 
-### 5. Logging and Diagnostics
+### 6. Logging and Diagnostics
 
 Add logging early so bootstrap and foundation issues are easy to trace.
 
@@ -199,7 +226,7 @@ Requirements:
 - Logging must start before the UI host fully initializes.
 - Application failures must be captured with useful context.
 
-### 6. Settings and Externalized Configuration
+### 7. Settings and Externalized Configuration
 
 Implement a settings model that is durable, testable, and easy to extend.
 
@@ -217,7 +244,7 @@ Requirements:
 - Settings must be persisted outside UI code.
 - The storage format must support future expansion without breaking users.
 
-### 7. Persistence Foundation
+### 8. Persistence Foundation
 
 Prepare the data layer so later modules can start using it without redesign.
 
@@ -242,7 +269,7 @@ Notes:
 - It does need the foundation to be stable enough for later module tables and
   relationships.
 
-### 8. Validation and Smoke Tests
+### 9. Validation and Smoke Tests
 
 Before the phase is considered complete, verify the app behaves like a real
 desktop product.
@@ -381,6 +408,8 @@ Phase 0 is complete when all of the following are true:
 
 - The application launches to a working shell window.
 - The shell uses Navigation Rail + Multi-Tab Workspace.
+- The shell reflects the Planova brand identity, including logo, icons, and
+  branded shell treatment.
 - Dark theme is the default and light theme can be selected.
 - English and Arabic resources load correctly.
 - Runtime language switching works.

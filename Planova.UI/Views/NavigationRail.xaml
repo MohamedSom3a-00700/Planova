@@ -4,22 +4,26 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
-             Width="48"
+             Width="220"
              Background="{DynamicResource ThemeSurface}">
     <StackPanel>
-        <Button x:Name="ToggleButton" Content="☰" Width="48" Height="48"
+        <Button x:Name="ToggleButton" Content="☰" Width="220" Height="48"
                 Background="Transparent"
                 Foreground="{DynamicResource ThemeForeground}"
                 BorderThickness="0"
                 Click="OnToggleClick" />
-        <ItemsControl x:Name="NavItems">
+        <ItemsControl x:Name="NavItems"
+                      ItemsSource="{Binding NavigationItems}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button Content="{Binding DisplayName}" Width="48" Height="48"
+                    <Button Content="{Binding DisplayName}" Height="40" Margin="6,2"
                             Background="Transparent"
                             Foreground="{DynamicResource ThemeForeground}"
                             BorderThickness="0"
-                            Command="{Binding Command}" />
+                            HorizontalContentAlignment="Left"
+                            Padding="12,0"
+                            Command="{Binding Command}"
+                            CommandParameter="{Binding CommandParameter}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
