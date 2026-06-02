@@ -3,6 +3,7 @@
     <Project Path="tests/Application.Tests/Application.Tests.csproj" />
     <Project Path="tests/Domain.Tests/Domain.Tests.csproj" />
     <Project Path="tests/Persistence.Tests/Persistence.Tests.csproj" />
+    <Project Path="tests/Planova.UI.Tests/Planova.UI.Tests.csproj" />
   </Folder>
   <Project Path="Planova.Application/Planova.Application.csproj" />
   <Project Path="Planova.Domain/Planova.Domain.csproj" />

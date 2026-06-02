@@ -6,6 +6,8 @@
              xmlns:vm="clr-namespace:Planova.UI.ViewModels"
              xmlns:conv="clr-namespace:Planova.UI.Converters"
              d:DataContext="{d:DesignInstance vm:ReportViewModel}"
+             Background="{DynamicResource WorkspaceBackgroundGradient}"
+             FontFamily="{DynamicResource BrandFontFamily}"
              mc:Ignorable="d">
     <UserControl.Resources>
         <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>

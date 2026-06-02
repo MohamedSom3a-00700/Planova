@@ -11,8 +11,10 @@ using Planova.Persistence.DbContext;
 using Planova.Persistence.Repositories;
 using Planova.Persistence.Services;
 using Planova.Shared.Abstractions;
+using Planova.UI.Services;
 using Planova.UI.ViewModels;
 using Planova.UI.Views;
+using Planova.UI.Views.AI;
 using Planova.UI.Views.Projects;
 using Planova.UI.Views.Clients;
 using Planova.UI.Views.Contracts;
@@ -21,6 +23,8 @@ using Planova.UI.Views.Profile;
 using Planova.UI.Views.Reports;
 using QuestPDF.Infrastructure;
 using Serilog;
+using Wpf.Ui.Appearance;
+using WpfUiControls = Wpf.Ui.Controls;
 
 namespace Planova.UI;
 
@@ -64,11 +68,15 @@ public partial class App : System.Windows.Application
             settingsService.Load().GetAwaiter().GetResult();
 
             var theme = settingsService.Get<string>("ThemePreference");
+            var resolvedTheme = AppTheme.Dark;
             if (!string.IsNullOrEmpty(theme))
             {
                 var themeService = _host.Services.GetRequiredService<IThemeService>();
                 themeService.SetTheme(theme);
+                resolvedTheme = themeService.CurrentTheme;
             }
+
+            ApplyWpfUiTheme(resolvedTheme);
 
             var language = settingsService.Get<string>("LanguagePreference");
             if (!string.IsNullOrEmpty(language))
@@ -99,7 +107,8 @@ public partial class App : System.Windows.Application
     {
         services.AddSingleton<ILoggingService, SerilogLoggingService>();
         services.AddSingleton<INavigationService, NavigationService>();
-        services.AddSingleton<IThemeService, ThemeService>();
+        services.AddSingleton<IHighContrastDetector, HighContrastDetector>();
+        services.AddSingleton<IThemeService, Services.ThemeService>();
         services.AddSingleton<ILocalizationService, LocalizationService>();
         services.AddSingleton<IDatabaseService, DatabaseService>();
         services.AddSingleton<ISettingsService, SettingsService>();
@@ -131,8 +140,8 @@ public partial class App : System.Windows.Application
         services.AddTransient<UserProfileView>();
         services.AddTransient<DashboardViewModel>();
         services.AddTransient<DashboardView>();
-        services.AddTransient<ReportViewModel>();
-        services.AddTransient<ReportView>();
+        services.AddTransient<AssistantPanelViewModel>();
+        services.AddTransient<AssistantPanelView>();
     }
 
     private static string GetDatabasePath()
@@ -148,7 +157,23 @@ public partial class App : System.Windows.Application
         var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         var dir = Path.Combine(appData, "Planova", "logs");
         Directory.CreateDirectory(dir);
-        return dir;
+        return Path.Combine(dir, "planova-.log");
+    }
+
+    private static void ApplyWpfUiTheme(AppTheme theme)
+    {
+        ApplicationTheme wpfUiTheme = theme switch
+        {
+            AppTheme.Light => ApplicationTheme.Light,
+            AppTheme.HighContrast => ApplicationTheme.HighContrast,
+            _ => ApplicationTheme.Dark
+        };
+
+        var backdrop = WpfUiControls.WindowBackdrop.IsSupported(WpfUiControls.WindowBackdropType.Mica)
+            ? WpfUiControls.WindowBackdropType.Mica
+            : WpfUiControls.WindowBackdropType.None;
+
+        ApplicationThemeManager.Apply(wpfUiTheme, backdrop);
     }
 
     private static void ApplyWindowBounds(Window window, ISettingsService settingsService)

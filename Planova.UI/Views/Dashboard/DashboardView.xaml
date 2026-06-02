@@ -6,73 +6,86 @@
              xmlns:vm="clr-namespace:Planova.UI.ViewModels"
              xmlns:conv="clr-namespace:Planova.UI.Converters"
              d:DataContext="{d:DesignInstance vm:DashboardViewModel}"
-             mc:Ignorable="d">
+             mc:Ignorable="d"
+             Background="{DynamicResource DashboardBackgroundGradient}">
     <UserControl.Resources>
         <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
     </UserControl.Resources>
     <ScrollViewer>
-        <StackPanel Margin="24">
-            <TextBlock Text="Dashboard" FontSize="24" FontWeight="Bold"
-                       Foreground="{DynamicResource ThemeForeground}"/>
+        <StackPanel Margin="{DynamicResource BrandSpacingLarge}">
+            <TextBlock Text="Dashboard"
+                       Style="{StaticResource DashboardTitleStyle}"/>
 
-            <TextBlock Text="{Binding ErrorMessage}" Foreground="Red"
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource BrandDanger}"
                        Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"
                        Margin="0,8,0,0"/>
 
             <WrapPanel Margin="0,24,0,0">
-                <Border Background="{DynamicResource ThemeSurface}" CornerRadius="8"
-                        Width="200" Height="120" Margin="0,0,16,16">
+                <Border Style="{StaticResource KpiCardStyle}">
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <TextBlock Text="{Binding TotalProjects}" FontSize="36" FontWeight="Bold"
-                                   HorizontalAlignment="Center"/>
-                        <TextBlock Text="Projects" FontSize="14" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding TotalProjects}"
+                                   Style="{StaticResource KpiValueStyle}"/>
+                        <TextBlock Text="Projects"
+                                   Style="{StaticResource KpiLabelStyle}"/>
                     </StackPanel>
                 </Border>
-                <Border Background="{DynamicResource ThemeSurface}" CornerRadius="8"
-                        Width="200" Height="120" Margin="0,0,16,16">
+                <Border Style="{StaticResource KpiCardStyle}">
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <TextBlock Text="{Binding TotalClients}" FontSize="36" FontWeight="Bold"
-                                   HorizontalAlignment="Center"/>
-                        <TextBlock Text="Clients" FontSize="14" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding TotalClients}"
+                                   Style="{StaticResource KpiValueStyle}"/>
+                        <TextBlock Text="Clients"
+                                   Style="{StaticResource KpiLabelStyle}"/>
                     </StackPanel>
                 </Border>
-                <Border Background="{DynamicResource ThemeSurface}" CornerRadius="8"
-                        Width="200" Height="120" Margin="0,0,16,16">
+                <Border Style="{StaticResource KpiCardStyle}">
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <TextBlock Text="{Binding TotalContracts}" FontSize="36" FontWeight="Bold"
-                                   HorizontalAlignment="Center"/>
-                        <TextBlock Text="Contracts" FontSize="14" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding TotalContracts}"
+                                   Style="{StaticResource KpiValueStyle}"/>
+                        <TextBlock Text="Contracts"
+                                   Style="{StaticResource KpiLabelStyle}"/>
                     </StackPanel>
                 </Border>
             </WrapPanel>
 
-            <TextBlock Text="Status Distribution" FontSize="16" FontWeight="SemiBold" Margin="0,16,0,8"/>
-            <TextBlock Text="{Binding StatusDistributionSummary}" TextWrapping="Wrap" Margin="0,0,0,16"/>
+            <TextBlock Text="Status Distribution" Style="{StaticResource SectionHeaderStyle}"/>
+            <TextBlock Text="{Binding StatusDistributionSummary}"
+                       Style="{StaticResource BodyTextStyle}"
+                       TextWrapping="Wrap" Margin="0,0,0,16"/>
 
-            <TextBlock Text="Quick Actions" FontSize="16" FontWeight="SemiBold" Margin="0,8,0,8"/>
+            <TextBlock Text="Quick Actions" Style="{StaticResource SectionHeaderStyle}"/>
             <StackPanel Orientation="Horizontal">
                 <Button Content="+ New Project" Command="{Binding NavigateToProjectsCommand}"
-                        Height="32" Width="120" Margin="0,0,8,0"/>
+                        Style="{StaticResource ActionTileStyle}"/>
                 <Button Content="+ New Client" Command="{Binding NavigateToClientsCommand}"
-                        Height="32" Width="120" Margin="0,0,8,0"/>
+                        Style="{StaticResource ActionTileStyle}"/>
                 <Button Content="+ New Contract" Command="{Binding NavigateToContractsCommand}"
-                        Height="32" Width="120"/>
+                        Style="{StaticResource ActionTileStyle}"/>
             </StackPanel>
 
-            <TextBlock Text="Recent Activity" FontSize="16" FontWeight="SemiBold" Margin="0,24,0,8"/>
-            <ListView ItemsSource="{Binding RecentActivity}" Background="{DynamicResource ThemeSurface}"
-                      BorderThickness="0" MaxHeight="300">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal" Margin="0,2">
-                            <TextBlock Text="{Binding EntityType}" FontWeight="SemiBold" Width="80"/>
-                            <TextBlock Text="{Binding EntityName}" Width="200"/>
-                            <TextBlock Text="{Binding Action}" Width="80"/>
-                            <TextBlock Text="{Binding Timestamp, StringFormat={}{0:g}}"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+            <TextBlock Text="Recent Activity" Style="{StaticResource SectionHeaderStyle}" Margin="0,24,0,8"/>
+            <Border Style="{StaticResource CardSurfaceStyle}" MaxHeight="300">
+                <ListView ItemsSource="{Binding RecentActivity}"
+                          BorderThickness="0">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="0,2">
+                                <TextBlock Text="{Binding EntityType}" FontWeight="SemiBold" Width="80"
+                                           Foreground="{DynamicResource BrandHeaderForeground}"
+                                           FontFamily="{DynamicResource BrandFontFamily}"/>
+                                <TextBlock Text="{Binding EntityName}" Width="200"
+                                           Foreground="{DynamicResource BrandHeaderForeground}"
+                                           FontFamily="{DynamicResource BrandFontFamily}"/>
+                                <TextBlock Text="{Binding Action}" Width="80"
+                                           Foreground="{DynamicResource BrandTextSecondary}"
+                                           FontFamily="{DynamicResource BrandFontFamily}"/>
+                                <TextBlock Text="{Binding Timestamp, StringFormat={}{0:g}}"
+                                           Foreground="{DynamicResource BrandTextSecondary}"
+                                           FontFamily="{DynamicResource BrandFontFamily}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </UserControl>
