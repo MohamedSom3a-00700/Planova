@@ -12,13 +12,17 @@ using Planova.Persistence.Repositories;
 using Planova.Persistence.Services;
 using Planova.Shared.Abstractions;
 using Planova.UI.Services;
+using Planova.Excel.Extensions;
+using Planova.Excel.Services;
 using Planova.UI.ViewModels;
+using Planova.UI.ViewModels.Excel;
 using Planova.UI.Views;
 using Planova.UI.Views.AI;
-using Planova.UI.Views.Projects;
 using Planova.UI.Views.Clients;
+using Planova.UI.Views.Projects;
 using Planova.UI.Views.Contracts;
 using Planova.UI.Views.Dashboard;
+using Planova.UI.Views.Excel;
 using Planova.UI.Views.Profile;
 using Planova.UI.Views.Reports;
 using QuestPDF.Infrastructure;
@@ -142,6 +146,19 @@ public partial class App : System.Windows.Application
         services.AddTransient<DashboardView>();
         services.AddTransient<AssistantPanelViewModel>();
         services.AddTransient<AssistantPanelView>();
+
+        services.AddPlanovaExcel();
+        services.AddScoped<IMappingProfileService, MappingProfileService>();
+        services.AddTransient<WorkbookBrowserViewModel>();
+        services.AddTransient<WorkbookBrowserView>();
+        services.AddTransient<ImportViewModel>();
+        services.AddTransient<ImportWizardView>();
+        services.AddTransient<ExportViewModel>();
+        services.AddTransient<ExportWizardView>();
+        services.AddTransient<MappingProfilesViewModel>();
+        services.AddTransient<MappingProfilesView>();
+        services.AddTransient<ExcelStudioViewModel>();
+        services.AddTransient<ExcelStudioView>();
     }
 
     private static string GetDatabasePath()

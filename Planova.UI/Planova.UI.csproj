@@ -25,6 +25,7 @@
     <ProjectReference Include="..\Planova.Localization\Planova.Localization.csproj" />
     <ProjectReference Include="..\Planova.Infrastructure\Planova.Infrastructure.csproj" />
     <ProjectReference Include="..\Planova.Persistence\Planova.Persistence.csproj" />
+    <ProjectReference Include="..\Planova.Excel\Planova.Excel.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -91,8 +91,9 @@
                            Margin="0,0,10,0" />
                     <Image x:Name="HeaderWordmark"
                            Source="{Binding WordmarkSource}"
-                           Height="22"
-                           Stretch="Uniform" />
+                           Height="32"
+                           Stretch="Uniform"
+                           VerticalAlignment="Center" />
                 </StackPanel>
             </ui:TitleBar.Header>
 

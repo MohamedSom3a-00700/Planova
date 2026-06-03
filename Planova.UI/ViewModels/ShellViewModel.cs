@@ -12,6 +12,7 @@ using Planova.UI.Views.Projects;
 using Planova.UI.Views.Clients;
 using Planova.UI.Views.Contracts;
 using Planova.UI.Views.Dashboard;
+using Planova.UI.Views.Excel;
 using Planova.UI.Views.Profile;
 using Planova.UI.Views.Reports;
 using Wpf.Ui.Appearance;
@@ -250,6 +251,12 @@ public partial class ShellViewModel : ObservableObject
             () => CreateEmptyState("PlugConnected24", "Integration Hub", "Integration hub module is coming soon."));
         nav.RegisterTarget("clients", "Clients", "People24", false, false,
             () => _serviceProvider.GetRequiredService<ClientsWorkspaceView>());
+        nav.RegisterTarget("excel-studio", "Excel Studio", "Table24", true, false, () =>
+        {
+            var view = _serviceProvider.GetRequiredService<ExcelStudioView>();
+            view.InitializeTabs(_serviceProvider);
+            return view;
+        });
         nav.RegisterTarget("settings", "Settings", "Settings24", false, false,
             () => CreateEmptyState("Settings24", "Settings", "Settings module is coming soon."));
     }

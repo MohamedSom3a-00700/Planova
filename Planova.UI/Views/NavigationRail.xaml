@@ -4,10 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ui="clr-namespace:Wpf.Ui.Controls;assembly=Wpf.Ui"
+             xmlns:conv="clr-namespace:Planova.UI.Converters"
              mc:Ignorable="d"
              Width="232"
              Background="{DynamicResource BrandChromeSurface}">
     <UserControl.Resources>
+        <conv:CollapseIconConverter x:Key="CollapseIconConverter"/>
+        <conv:BoolToVisibilityConverter x:Key="InverseBoolToVis" Invert="True"/>
         <Style x:Key="RailButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="Transparent" />
@@ -67,10 +70,10 @@
 
         <ui:Button Grid.Row="0"
                    Style="{StaticResource RailHeaderButtonStyle}"
-                   ToolTip="Collapse navigation"
+                   ToolTip="Toggle navigation"
                    Click="OnToggleClick">
             <ui:Button.Icon>
-                <ui:SymbolIcon Symbol="PanelLeft24" />
+                <ui:SymbolIcon Symbol="{Binding IsCollapsed, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CollapseIconConverter}}" />
             </ui:Button.Icon>
         </ui:Button>
 
@@ -85,11 +88,32 @@
                         <Button Style="{StaticResource RailButtonStyle}"
                                 Command="{Binding Command}"
                                 CommandParameter="{Binding CommandParameter}">
-                            <StackPanel Orientation="Horizontal">
+                            <StackPanel>
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Orientation" Value="Horizontal"/>
+                                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCollapsed, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
                                 <ui:SymbolIcon Symbol="{Binding IconGlyph}"
                                                FontSize="18"
-                                               Margin="0,0,12,0"
-                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}">
+                                    <ui:SymbolIcon.Style>
+                                        <Style TargetType="ui:SymbolIcon">
+                                            <Setter Property="Margin" Value="0,0,12,0"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCollapsed, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
+                                                    <Setter Property="Margin" Value="0"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ui:SymbolIcon.Style>
+                                </ui:SymbolIcon>
                                 <TextBlock Text="{Binding DisplayName}"
                                            VerticalAlignment="Center"
                                            FontSize="{DynamicResource BrandBodySize}"
