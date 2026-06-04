@@ -1,0 +1,74 @@
+<UserControl x:Class="Planova.UI.Views.Boq.BoqValidationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Validate BOQ" FontSize="20" FontWeight="Bold" Margin="0,0,0,16"/>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+            <Button Content="Run Validation" Command="{Binding RunValidationCommand}"
+                    IsEnabled="{Binding HasBoq}" Margin="0,0,12,0" MinWidth="120"/>
+            <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,8"
+                    Visibility="{Binding HasBoq, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="{Binding ErrorCount, StringFormat='Errors: {0}'}" Foreground="Red" Margin="0,0,16,0" FontWeight="Bold"/>
+            <TextBlock Text="{Binding WarningCount, StringFormat='Warnings: {0}'}" Foreground="Orange" FontWeight="Bold"/>
+            <TextBlock Text="{Binding IsValid, StringFormat='Valid: {0}'}" Margin="16,0,0,0" Foreground="Green" FontWeight="Bold"/>
+        </StackPanel>
+
+        <GroupBox Grid.Row="3" Header="Item Validation Results" Margin="0,0,0,8"
+                  Visibility="{Binding HasBoq, Converter={StaticResource BoolToVis}}">
+            <ListView ItemsSource="{Binding ItemValidations}"
+                      VirtualizingPanel.ScrollUnit="Item"
+                      VirtualizingPanel.VirtualizationMode="Recycling">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="No." Width="40" DisplayMemberBinding="{Binding SortOrder}"/>
+                        <GridViewColumn Header="Code" Width="80" DisplayMemberBinding="{Binding Code}"/>
+                        <GridViewColumn Header="Description" Width="160" DisplayMemberBinding="{Binding Description}"/>
+                        <GridViewColumn Header="Unit" Width="50" DisplayMemberBinding="{Binding Unit}"/>
+                        <GridViewColumn Header="Qty" Width="70" DisplayMemberBinding="{Binding Quantity, StringFormat='N2'}"/>
+                        <GridViewColumn Header="Rate" Width="70" DisplayMemberBinding="{Binding Rate, StringFormat='N2'}"/>
+                        <GridViewColumn Header="Amount" Width="80" DisplayMemberBinding="{Binding Amount, StringFormat='N2'}"/>
+                        <GridViewColumn Header="CostCode" Width="80" DisplayMemberBinding="{Binding CostCode}"/>
+                        <GridViewColumn Header="Type" Width="60" DisplayMemberBinding="{Binding ItemType}"/>
+                        <GridViewColumn Header="Lvl" Width="35" DisplayMemberBinding="{Binding Level}"/>
+                        <GridViewColumn Header="Status" Width="60">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ValidationStatus}" FontWeight="Bold">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ValidationStatus}" Value="PASS">
+                                                        <Setter Property="Foreground" Value="Green"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ValidationStatus}" Value="FAIL">
+                                                        <Setter Property="Foreground" Value="Red"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Remarks" Width="200" DisplayMemberBinding="{Binding Remarks}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </GroupBox>
+    </Grid>
+</UserControl>

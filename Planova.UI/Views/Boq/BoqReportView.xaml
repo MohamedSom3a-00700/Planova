@@ -1,0 +1,69 @@
+<UserControl x:Class="Planova.UI.Views.Boq.BoqReportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Reports" FontSize="20" FontWeight="Bold" Margin="0,0,0,16"/>
+
+        <StackPanel Grid.Row="1" Visibility="{Binding HasBoq, Converter={StaticResource BoolToVis}}">
+            <GroupBox Header="Report Settings" Margin="0,0,0,12">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,8">
+                        <TextBlock Text="Report Type:" FontWeight="Bold" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding ReportTypeOptions}"
+                                  SelectedItem="{Binding SelectedReportType}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,0,8">
+                        <TextBlock Text="Format:" FontWeight="Bold" Margin="0,0,0,4"/>
+                        <ComboBox ItemsSource="{Binding ReportFormatOptions}"
+                                  SelectedItem="{Binding SelectedFormat}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,8">
+                        <TextBlock Text="{Binding StatusMessage}" Margin="0,0,0,4"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
+                        <Button Content="Generate" Command="{Binding GenerateReportCommand}"
+                                MinWidth="100" Margin="0,0,8,0" IsEnabled="{Binding HasBoq}"/>
+                        <Button Content="Save..." Command="{Binding SaveReportCommand}"
+                                MinWidth="100" IsEnabled="{Binding HasBoq}"/>
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Header="Report Preview">
+                <StackPanel>
+                    <TextBlock Text="{Binding LastGeneratedSize, StringFormat='Generated size: {0:N0} bytes'}"/>
+                    <TextBlock Text="Generate a report to see details here" Foreground="Gray"
+                               Visibility="{Binding LastGeneratedData, Converter={StaticResource InverseBoolToVis}}"/>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Visibility="{Binding HasBoq, Converter={StaticResource InverseBoolToVis}}">
+            <TextBlock Text="Load a BOQ first to generate reports" Foreground="Gray" FontSize="16"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -12,6 +12,7 @@ using Planova.UI.Views.Projects;
 using Planova.UI.Views.Clients;
 using Planova.UI.Views.Contracts;
 using Planova.UI.Views.Dashboard;
+using Planova.UI.Views.Boq;
 using Planova.UI.Views.Excel;
 using Planova.UI.Views.Profile;
 using Planova.UI.Views.Reports;
@@ -219,8 +220,12 @@ public partial class ShellViewModel : ObservableObject
             () => _serviceProvider.GetRequiredService<DashboardView>());
         nav.RegisterTarget("projects", "Projects", "Folder24", false, false,
             () => _serviceProvider.GetRequiredService<ProjectsWorkspaceView>());
-        nav.RegisterTarget("boq", "BOQ Studio", "DocumentBulletList24", true, false,
-            () => _serviceProvider.GetRequiredService<DashboardView>());
+        nav.RegisterTarget("boq", "BOQ Studio", "DocumentBulletList24", true, false, () =>
+        {
+            var view = _serviceProvider.GetRequiredService<BoqStudioView>();
+            view.InitializeTabs(_serviceProvider);
+            return view;
+        });
         nav.RegisterTarget("wbs", "WBS Studio", "TreeView24", true, true,
             () => CreateEmptyState("TreeView24", "WBS Studio", "Work Breakdown Structure module is coming soon."));
         nav.RegisterTarget("activity", "Activity Studio", "CalendarDay24", true, true,

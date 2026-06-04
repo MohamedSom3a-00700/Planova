@@ -11,13 +11,17 @@ using Planova.Persistence.DbContext;
 using Planova.Persistence.Repositories;
 using Planova.Persistence.Services;
 using Planova.Shared.Abstractions;
-using Planova.UI.Services;
+using Planova.Boq.Domain.Interfaces;
+using Planova.Boq.Extensions;
 using Planova.Excel.Extensions;
 using Planova.Excel.Services;
+using Planova.UI.Services;
 using Planova.UI.ViewModels;
+using Planova.UI.ViewModels.Boq;
 using Planova.UI.ViewModels.Excel;
 using Planova.UI.Views;
 using Planova.UI.Views.AI;
+using Planova.UI.Views.Boq;
 using Planova.UI.Views.Clients;
 using Planova.UI.Views.Projects;
 using Planova.UI.Views.Contracts;
@@ -148,6 +152,8 @@ public partial class App : System.Windows.Application
         services.AddTransient<AssistantPanelView>();
 
         services.AddPlanovaExcel();
+        services.AddPlanovaBoq();
+        services.AddScoped<IExcelRowReader, ExcelRowReader>();
         services.AddScoped<IMappingProfileService, MappingProfileService>();
         services.AddTransient<WorkbookBrowserViewModel>();
         services.AddTransient<WorkbookBrowserView>();
@@ -159,6 +165,25 @@ public partial class App : System.Windows.Application
         services.AddTransient<MappingProfilesView>();
         services.AddTransient<ExcelStudioViewModel>();
         services.AddTransient<ExcelStudioView>();
+
+        services.AddTransient<BoqTreeViewModel>();
+        services.AddTransient<BoqTreeView>();
+        services.AddTransient<BoqEditorViewModel>();
+        services.AddTransient<BoqEditorView>();
+        services.AddTransient<BoqImportViewModel>();
+        services.AddTransient<BoqImportWizardView>();
+        services.AddTransient<BoqValidationViewModel>();
+        services.AddTransient<BoqValidationView>();
+        services.AddTransient<BoqClassificationViewModel>();
+        services.AddTransient<BoqClassificationView>();
+        services.AddTransient<BoqLibraryViewModel>();
+        services.AddTransient<BoqLibraryView>();
+        services.AddTransient<BoqReportViewModel>();
+        services.AddTransient<BoqReportView>();
+        services.AddTransient<BoqSettingsViewModel>();
+        services.AddTransient<BoqSettingsView>();
+        services.AddTransient<BoqStudioViewModel>();
+        services.AddTransient<BoqStudioView>();
     }
 
     private static string GetDatabasePath()
