@@ -16,6 +16,8 @@ using Planova.UI.Views.Boq;
 using Planova.UI.Views.Excel;
 using Planova.UI.Views.Profile;
 using Planova.UI.Views.Reports;
+using Planova.UI.Views.Wbs;
+using Planova.UI.Views;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 
@@ -226,8 +228,12 @@ public partial class ShellViewModel : ObservableObject
             view.InitializeTabs(_serviceProvider);
             return view;
         });
-        nav.RegisterTarget("wbs", "WBS Studio", "TreeView24", true, true,
-            () => CreateEmptyState("TreeView24", "WBS Studio", "Work Breakdown Structure module is coming soon."));
+        nav.RegisterTarget("wbs", "WBS Studio", "Library24", true, false, () =>
+        {
+            var view = _serviceProvider.GetRequiredService<WbsStudioView>();
+            view.InitializeTabs(_serviceProvider);
+            return view;
+        });
         nav.RegisterTarget("activity", "Activity Studio", "CalendarDay24", true, true,
             () => CreateEmptyState("CalendarDay24", "Activity Studio", "Activity management module is coming soon."));
         nav.RegisterTarget("resource", "Resource Studio", "People24", true, true,
@@ -263,7 +269,7 @@ public partial class ShellViewModel : ObservableObject
             return view;
         });
         nav.RegisterTarget("settings", "Settings", "Settings24", false, false,
-            () => CreateEmptyState("Settings24", "Settings", "Settings module is coming soon."));
+            () => _serviceProvider.GetRequiredService<SettingsView>());
     }
 
     private void BuildNavigationItems()

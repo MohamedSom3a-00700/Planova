@@ -8,21 +8,25 @@ using Planova.Application.Services;
 using Planova.Infrastructure.Logging;
 using Planova.Localization.Services;
 using Planova.Persistence.DbContext;
+using Planova.Persistence.Extensions;
 using Planova.Persistence.Repositories;
 using Planova.Persistence.Services;
 using Planova.Shared.Abstractions;
 using Planova.Boq.Domain.Interfaces;
 using Planova.Boq.Extensions;
+using Planova.Wbs.Extensions;
 using Planova.Excel.Extensions;
 using Planova.Excel.Services;
 using Planova.UI.Services;
 using Planova.UI.ViewModels;
 using Planova.UI.ViewModels.Boq;
 using Planova.UI.ViewModels.Excel;
+using Planova.UI.ViewModels.Wbs;
 using Planova.UI.Views;
 using Planova.UI.Views.AI;
 using Planova.UI.Views.Boq;
 using Planova.UI.Views.Clients;
+using Planova.UI.Views.Wbs;
 using Planova.UI.Views.Projects;
 using Planova.UI.Views.Contracts;
 using Planova.UI.Views.Dashboard;
@@ -118,8 +122,8 @@ public partial class App : System.Windows.Application
         services.AddSingleton<IHighContrastDetector, HighContrastDetector>();
         services.AddSingleton<IThemeService, Services.ThemeService>();
         services.AddSingleton<ILocalizationService, LocalizationService>();
-        services.AddSingleton<IDatabaseService, DatabaseService>();
-        services.AddSingleton<ISettingsService, SettingsService>();
+        services.AddScoped<IDatabaseService, DatabaseService>();
+        services.AddScoped<ISettingsService, SettingsService>();
 
         services.AddDbContext<PlanovaDbContext>(options =>
             options.UseSqlite($"Data Source={GetDatabasePath()}"));
@@ -150,9 +154,13 @@ public partial class App : System.Windows.Application
         services.AddTransient<DashboardView>();
         services.AddTransient<AssistantPanelViewModel>();
         services.AddTransient<AssistantPanelView>();
+        services.AddTransient<SettingsViewModel>();
+        services.AddTransient<SettingsView>();
 
         services.AddPlanovaExcel();
+        services.AddPlanovaPersistence();
         services.AddPlanovaBoq();
+        services.AddPlanovaWbs();
         services.AddScoped<IExcelRowReader, ExcelRowReader>();
         services.AddScoped<IMappingProfileService, MappingProfileService>();
         services.AddTransient<WorkbookBrowserViewModel>();
@@ -184,6 +192,27 @@ public partial class App : System.Windows.Application
         services.AddTransient<BoqSettingsView>();
         services.AddTransient<BoqStudioViewModel>();
         services.AddTransient<BoqStudioView>();
+
+        services.AddTransient<WbsListViewModel>();
+        services.AddTransient<WbsListView>();
+        services.AddTransient<WbsTreeViewModel>();
+        services.AddTransient<WbsTreeView>();
+        services.AddTransient<WbsEditorViewModel>();
+        services.AddTransient<WbsEditorView>();
+        services.AddTransient<WbsMappingViewModel>();
+        services.AddTransient<WbsMappingWizardView>();
+        services.AddTransient<WbsTemplateManagerViewModel>();
+        services.AddTransient<WbsTemplateManagerView>();
+        services.AddTransient<WbsAiGenerationViewModel>();
+        services.AddTransient<WbsAiGenerationView>();
+        services.AddTransient<WbsReportViewModel>();
+        services.AddTransient<WbsReportView>();
+        services.AddTransient<ReportViewModel>();
+        services.AddTransient<ReportView>();
+        services.AddTransient<WbsStudioViewModel>();
+        services.AddTransient<WbsStudioView>();
+        services.AddTransient<WbsSettingsViewModel>();
+        services.AddTransient<WbsSettingsView>();
     }
 
     private static string GetDatabasePath()

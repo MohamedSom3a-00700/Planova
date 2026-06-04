@@ -633,6 +633,278 @@ namespace Planova.Persistence.Migrations
                     b.ToTable("UserPreferences");
                 });
 
+            modelBuilder.Entity("Planova.Wbs.Domain.Entities.Wbs", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ItemCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Revision")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("SourceBoqId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("TotalWeight")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId")
+                        .HasDatabaseName("IX_Wbs_ProjectId");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_Wbs_Status");
+
+                    b.ToTable("Wbs", (string)null);
+                });
+
+            modelBuilder.Entity("Planova.Wbs.Domain.Entities.WbsItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AssignedTo")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.Property<string>("Deliverable")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("DurationDays")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("PlannedFinish")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("PlannedStart")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ShortCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("SourceBoqItemId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.Property<Guid>("WbsId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("WbsLevel")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("Weight")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId")
+                        .HasDatabaseName("IX_WbsItems_ParentId");
+
+                    b.HasIndex("SourceBoqItemId")
+                        .HasDatabaseName("IX_WbsItems_SourceBoqItemId");
+
+                    b.HasIndex("WbsId")
+                        .HasDatabaseName("IX_WbsItems_WbsId");
+
+                    b.ToTable("WbsItems", (string)null);
+                });
+
+            modelBuilder.Entity("Planova.Wbs.Domain.Entities.WbsTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Industry")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsStandard")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Tags")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.Property<int>("Version")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(1);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WbsTemplates", (string)null);
+                });
+
+            modelBuilder.Entity("Planova.Wbs.Domain.Entities.WbsTemplateItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("DefaultDurationDays")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ShortCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("TemplateId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("TypicalWeight")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("WbsLevel")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("TemplateId");
+
+                    b.ToTable("WbsTemplateItems", (string)null);
+                });
+
             modelBuilder.Entity("Planova.Boq.Domain.Entities.BoqClassification", b =>
                 {
                     b.HasOne("Planova.Boq.Domain.Entities.BoqClassification", "Parent")
@@ -701,6 +973,42 @@ namespace Planova.Persistence.Migrations
                     b.Navigation("Client");
                 });
 
+            modelBuilder.Entity("Planova.Wbs.Domain.Entities.WbsItem", b =>
+                {
+                    b.HasOne("Planova.Wbs.Domain.Entities.WbsItem", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Planova.Wbs.Domain.Entities.Wbs", "Wbs")
+                        .WithMany("Items")
+                        .HasForeignKey("WbsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Parent");
+
+                    b.Navigation("Wbs");
+                });
+
+            modelBuilder.Entity("Planova.Wbs.Domain.Entities.WbsTemplateItem", b =>
+                {
+                    b.HasOne("Planova.Wbs.Domain.Entities.WbsTemplateItem", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Planova.Wbs.Domain.Entities.WbsTemplate", "Template")
+                        .WithMany("Items")
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Parent");
+
+                    b.Navigation("Template");
+                });
+
             modelBuilder.Entity("Planova.Boq.Domain.Entities.Boq", b =>
                 {
                     b.Navigation("Items");
@@ -731,6 +1039,26 @@ namespace Planova.Persistence.Migrations
             modelBuilder.Entity("Planova.Domain.Entities.Project", b =>
                 {
                     b.Navigation("Contracts");
+                });
+
+            modelBuilder.Entity("Planova.Wbs.Domain.Entities.Wbs", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Planova.Wbs.Domain.Entities.WbsItem", b =>
+                {
+                    b.Navigation("Children");
+                });
+
+            modelBuilder.Entity("Planova.Wbs.Domain.Entities.WbsTemplate", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Planova.Wbs.Domain.Entities.WbsTemplateItem", b =>
+                {
+                    b.Navigation("Children");
                 });
 #pragma warning restore 612, 618
         }

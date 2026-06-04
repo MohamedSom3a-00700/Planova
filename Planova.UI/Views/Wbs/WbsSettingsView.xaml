@@ -1,0 +1,71 @@
+<UserControl x:Class="Planova.UI.Views.Wbs.WbsSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="WBS Settings" FontSize="20" FontWeight="Bold" Margin="0,0,0,16"/>
+
+        <ScrollViewer Grid.Row="1">
+            <StackPanel Margin="0,0,16,0">
+                <Border BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Padding="12" Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="Default Values" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Default WBS Level" Margin="0,0,12,8" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" Text="{Binding DefaultWbsLevel}" Margin="0,0,0,8" MinWidth="150">
+                                <ComboBoxItem Content="Summary"/>
+                                <ComboBoxItem Content="ControlAccount"/>
+                                <ComboBoxItem Content="WorkPackage"/>
+                                <ComboBoxItem Content="PlanningPackage"/>
+                            </ComboBox>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Default Duration (days)" Margin="0,0,12,8" VerticalAlignment="Center"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DefaultDurationDays}" Margin="0,0,0,8" MinWidth="150"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Default Weight (%)" Margin="0,0,12,8" VerticalAlignment="Center"/>
+                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding DefaultWeight}" Margin="0,0,0,8" MinWidth="150"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Padding="12" Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="Behavior" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                        <CheckBox Content="Auto-generate codes for new items" IsChecked="{Binding AutoGenerateCodes}" Margin="0,0,0,8"/>
+                        <CheckBox Content="Redistribute weights on save" IsChecked="{Binding RedistributeWeightsOnSave}" Margin="0,0,0,8"/>
+                        <CheckBox Content="Enable bulk editing" IsChecked="{Binding EnableBulkEdit}" Margin="0,0,0,8"/>
+                        <CheckBox Content="Use Primavera colors by default" IsChecked="{Binding UsePrimaveraColorsByDefault}" Margin="0,0,0,8"/>
+                        <CheckBox Content="Enable AI-assisted editing" IsChecked="{Binding EnableAiAssistedEditing}" Margin="0,0,0,8"/>
+                    </StackPanel>
+                </Border>
+
+                <Border BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Padding="12">
+                    <StackPanel>
+                        <TextBlock Text="Display" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                        <CheckBox Content="Show weight column in editor" IsChecked="{Binding ShowWeightColumn}" Margin="0,0,0,8"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

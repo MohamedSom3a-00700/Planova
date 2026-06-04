@@ -1,0 +1,136 @@
+<UserControl x:Class="Planova.UI.Views.Wbs.WbsMappingWizardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="BOQ to WBS Mapping Wizard" FontSize="20" FontWeight="Bold" Margin="0,0,0,16"/>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+
+                <!-- Step 1: Select BOQ -->
+                <StackPanel Visibility="{Binding IsStep1Visible, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Step 1: Select a BOQ" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Button Content="Load BOQs" Command="{Binding LoadBoqsCommand}" MinWidth="100" Margin="0,0,8,0"/>
+                        <Button Content="Import from Excel" Command="{Binding ImportBoqFromExcelCommand}" MinWidth="120"/>
+                    </StackPanel>
+                    <ListView ItemsSource="{Binding AvailableBoqs}"
+                              SelectedItem="{Binding SelectedBoq}"
+                              MinHeight="200"
+                              IsSynchronizedWithCurrentItem="True">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Padding" Value="8,4"/>
+                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                <Setter Property="BorderBrush" Value="LightGray"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource AccentSelectedBackgroundBrush}"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource AccentSelectedForegroundBrush}"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource AccentHoverBackgroundBrush}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Vertical" Margin="2">
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                        <TextBlock Text="{Binding Currency}" FontSize="11" Foreground="Gray" Margin="0,0,12,0"/>
+                                        <TextBlock Text="{Binding Status, StringFormat='Status: {0}'}" FontSize="11" Foreground="Gray" Margin="0,0,12,0"/>
+                                        <TextBlock Text="{Binding ItemCount, StringFormat='Items: {0}'}" FontSize="11" Foreground="Gray"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </StackPanel>
+
+                <!-- Step 2: Choose Strategy -->
+                <StackPanel Visibility="{Binding IsStep2Visible, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Step 2: Choose Mapping Strategy" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                    <ListView ItemsSource="{Binding Strategies}" SelectedItem="{Binding SelectedStrategy}"
+                              MinHeight="80" Margin="0,0,0,8">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" Margin="4"/>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <Button Content="Generate Preview" Command="{Binding GeneratePreviewCommand}" Margin="0,8,0,0" MinWidth="120"/>
+                </StackPanel>
+
+                <!-- Step 3: Preview -->
+                <StackPanel Visibility="{Binding IsStep3Visible, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Step 3: Preview and Edit" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                    <TextBlock Text="Edit item names and WBS levels before committing" Margin="0,0,0,8"/>
+                    <TextBox Text="{Binding WbsName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"
+                             ToolTip="WBS name"/>
+                    <ListView ItemsSource="{Binding MappedItems}" MinHeight="250">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Level" Width="60" DisplayMemberBinding="{Binding Level}"/>
+                                <GridViewColumn Header="Name" Width="250">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                                     BorderThickness="0" Background="Transparent"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="WBS Level" Width="130">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox Text="{Binding WbsLevel, UpdateSourceTrigger=PropertyChanged}"
+                                                      SelectedItem="{Binding WbsLevel}">
+                                                <ComboBoxItem Content="Summary"/>
+                                                <ComboBoxItem Content="ControlAccount"/>
+                                                <ComboBoxItem Content="WorkPackage"/>
+                                                <ComboBoxItem Content="PlanningPackage"/>
+                                            </ComboBox>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <Button Content="Commit Mapping" Command="{Binding CommitMappingCommand}" Margin="0,8,0,0" MinWidth="120"/>
+                </StackPanel>
+
+                <!-- Step 4: Commit Result -->
+                <StackPanel Visibility="{Binding IsStep4Visible, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Mapping committed successfully!" FontSize="16" FontWeight="Bold"
+                               Foreground="Green" Margin="0,0,0,8"/>
+                    <TextBlock Text="{Binding WbsName, StringFormat='WBS created: {0}'}" FontSize="14"/>
+                </StackPanel>
+
+                <!-- Error message -->
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" Margin="0,8,0,0"
+                           Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"/>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="Back" Command="{Binding PreviousStepCommand}" Margin="0,0,8,0"
+                    IsEnabled="{Binding CanGoBack}"/>
+            <Button Content="Next" Command="{Binding NextStepCommand}" Margin="0,0,8,0"
+                    IsEnabled="{Binding CanGoNext}"
+                    Visibility="{Binding IsStep4Visible, Converter={StaticResource InverseBoolToVis}}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

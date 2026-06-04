@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter</value>
+  </resheader>
+  <data name="WbsList" xml:space="preserve"><value>قائمة WBS</value></data>
+  <data name="WbsCreate" xml:space="preserve"><value>إنشاء WBS</value></data>
+  <data name="WbsDelete" xml:space="preserve"><value>حذف WBS</value></data>
+  <data name="WbsSave" xml:space="preserve"><value>حفظ</value></data>
+  <data name="WbsCancel" xml:space="preserve"><value>إلغاء</value></data>
+  <data name="WbsSearch" xml:space="preserve"><value>بحث WBS...</value></data>
+  <data name="WbsFilterStatus" xml:space="preserve"><value>تصفية حسب الحالة</value></data>
+  <data name="WbsFilterSource" xml:space="preserve"><value>تصفية حسب المصدر</value></data>
+  <data name="WbsCreateManual" xml:space="preserve"><value>يدوي</value></data>
+  <data name="WbsCreateFromBOQ" xml:space="preserve"><value>من BOQ</value></data>
+  <data name="WbsCreateFromTemplate" xml:space="preserve"><value>من قالب</value></data>
+  <data name="WbsCreateAIGenerated" xml:space="preserve"><value>منشأ بالذكاء الاصطناعي</value></data>
+  <data name="WbsName" xml:space="preserve"><value>الاسم</value></data>
+  <data name="WbsDescription" xml:space="preserve"><value>الوصف</value></data>
+  <data name="WbsStatus" xml:space="preserve"><value>الحالة</value></data>
+  <data name="WbsSource" xml:space="preserve"><value>المصدر</value></data>
+  <data name="WbsTotalWeight" xml:space="preserve"><value>الوزن الإجمالي</value></data>
+  <data name="WbsRevision" xml:space="preserve"><value>المراجعة</value></data>
+  <data name="WbsCreatedAt" xml:space="preserve"><value>تاريخ الإنشاء</value></data>
+  <data name="WbsUpdatedAt" xml:space="preserve"><value>آخر تحديث</value></data>
+  <data name="WbsItemCode" xml:space="preserve"><value>الكود</value></data>
+  <data name="WbsItemShortCode" xml:space="preserve"><value>الكود المختصر</value></data>
+  <data name="WbsItemName" xml:space="preserve"><value>الاسم</value></data>
+  <data name="WbsItemLevel" xml:space="preserve"><value>المستوى</value></data>
+  <data name="WbsItemWeight" xml:space="preserve"><value>الوزن</value></data>
+  <data name="WbsItemAssignedTo" xml:space="preserve"><value>مسؤول</value></data>
+  <data name="WbsItemDeliverable" xml:space="preserve"><value>التسليم</value></data>
+  <data name="WbsItemPlannedStart" xml:space="preserve"><value>البداية المخطط لها</value></data>
+  <data name="WbsItemPlannedFinish" xml:space="preserve"><value>النهاية المخطط لها</value></data>
+  <data name="WbsItemDuration" xml:space="preserve"><value>المدة (أيام)</value></data>
+  <data name="WbsItemNotes" xml:space="preserve"><value>ملاحظات</value></data>
+  <data name="WbsAddChild" xml:space="preserve"><value>إضافة عنصر فرعي</value></data>
+  <data name="WbsDeleteItem" xml:space="preserve"><value>حذف</value></data>
+  <data name="WbsMoveUp" xml:space="preserve"><value>تحريك لأعلى</value></data>
+  <data name="WbsMoveDown" xml:space="preserve"><value>تحريك لأسفل</value></data>
+  <data name="WbsTreeExpandAll" xml:space="preserve"><value>توسيع الكل</value></data>
+  <data name="WbsTreeCollapseAll" xml:space="preserve"><value>طي الكل</value></data>
+  <data name="WbsLevelSummary" xml:space="preserve"><value>ملخص</value></data>
+  <data name="WbsLevelControlAccount" xml:space="preserve"><value>حساب تحكم</value></data>
+  <data name="WbsLevelWorkPackage" xml:space="preserve"><value>حزمة عمل</value></data>
+  <data name="WbsLevelPlanningPackage" xml:space="preserve"><value>حزمة تخطيط</value></data>
+  <data name="WbsStatusDraft" xml:space="preserve"><value>مسودة</value></data>
+  <data name="WbsStatusFinal" xml:space="preserve"><value>نهائي</value></data>
+  <data name="WbsStatusRevised" xml:space="preserve"><value>مراجع</value></data>
+  <data name="WbsStatusApproved" xml:space="preserve"><value>معتمد</value></data>
+  <data name="WbsMappingWizard" xml:space="preserve"><value>تحويل BOQ إلى WBS</value></data>
+  <data name="WbsMappingSelectBOQ" xml:space="preserve"><value>اختيار BOQ</value></data>
+  <data name="WbsMappingStrategy" xml:space="preserve"><value>استراتيجية التحويل</value></data>
+  <data name="WbsMappingOneToOne" xml:space="preserve"><value>واحد لواحد</value></data>
+  <data name="WbsMappingGrouped" xml:space="preserve"><value>مجمع حسب الفئة</value></data>
+  <data name="WbsMappingCustom" xml:space="preserve"><value>مخصص</value></data>
+  <data name="WbsMappingPreview" xml:space="preserve"><value>معاينة</value></data>
+  <data name="WbsMappingCommit" xml:space="preserve"><value>تأكيد</value></data>
+  <data name="WbsTemplateManager" xml:space="preserve"><value>إدارة القوالب</value></data>
+  <data name="WbsTemplateCategory" xml:space="preserve"><value>الفئة</value></data>
+  <data name="WbsTemplateApply" xml:space="preserve"><value>تطبيق القالب</value></data>
+  <data name="WbsTemplateSaveAs" xml:space="preserve"><value>حفظ كقالب</value></data>
+  <data name="WbsTemplateImport" xml:space="preserve"><value>استيراد JSON</value></data>
+  <data name="WbsTemplateExport" xml:space="preserve"><value>تصدير JSON</value></data>
+  <data name="WbsAIGeneration" xml:space="preserve"><value>التوليد بالذكاء الاصطناعي</value></data>
+  <data name="WbsAIScopeDescription" xml:space="preserve"><value>وصف نطاق المشروع</value></data>
+  <data name="WbsAIGenerate" xml:space="preserve"><value>توليد</value></data>
+  <data name="WbsAIAccept" xml:space="preserve"><value>قبول</value></data>
+  <data name="WbsAIRegenerate" xml:space="preserve"><value>إعادة التوليد</value></data>
+  <data name="WbsAIUnavailable" xml:space="preserve"><value>خدمة الذكاء الاصطناعي غير متوفرة. يرجى التحقق من الإعدادات والمحاولة مرة أخرى.</value></data>
+  <data name="WbsReportSummary" xml:space="preserve"><value>تقرير ملخص</value></data>
+  <data name="WbsReportDictionary" xml:space="preserve"><value>قاموس WBS</value></data>
+  <data name="WbsReportExportExcel" xml:space="preserve"><value>تصدير إلى Excel</value></data>
+  <data name="WbsReportExportPdf" xml:space="preserve"><value>تصدير إلى PDF</value></data>
+  <data name="WbsCascadeDeleteConfirm" xml:space="preserve"><value>هذا العنصر يحتوي على عناصر فرعية. هل تريد حذف الكل؟</value></data>
+  <data name="WbsCircularRefError" xml:space="preserve"><value>لا يمكن نقل العنصر: سينشئ مرجع دائري</value></data>
+  <data name="WbsWeightExceeded" xml:space="preserve"><value>إجمالي الوزن للأخوة لا يمكن أن يتجاوز 100%</value></data>
+  <data name="WbsWorkPackageNoChildren" xml:space="preserve"><value>عناصر حزمة العمل لا يمكن أن تحتوي على أطفال</value></data>
+  <data name="WbsDateValidation" xml:space="preserve"><value>تاريخ النهاية يجب أن يكون بعد أو يساوي تاريخ البداية</value></data>
+</root>

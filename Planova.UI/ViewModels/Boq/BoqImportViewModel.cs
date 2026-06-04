@@ -108,7 +108,7 @@ public partial class BoqImportViewModel : ObservableObject
         {
             var dialog = new Microsoft.Win32.OpenFileDialog
             {
-                Filter = "Excel Files (*.xlsx;*.xls)|*.xlsx;*.xls|CSV Files (*.csv)|*.csv|All Files (*.*)|*.*",
+                Filter = "Excel Files (*.xlsx;*.xls;*.xlsm)|*.xlsx;*.xls;*.xlsm|CSV Files (*.csv)|*.csv|All Files (*.*)|*.*",
                 Title = "Select BOQ File"
             };
 
@@ -116,7 +116,8 @@ public partial class BoqImportViewModel : ObservableObject
             {
                 SelectedFilePath = dialog.FileName;
                 IsExcel = Path.GetExtension(SelectedFilePath).Equals(".xlsx", StringComparison.OrdinalIgnoreCase)
-                       || Path.GetExtension(SelectedFilePath).Equals(".xls", StringComparison.OrdinalIgnoreCase);
+                       || Path.GetExtension(SelectedFilePath).Equals(".xls", StringComparison.OrdinalIgnoreCase)
+                       || Path.GetExtension(SelectedFilePath).Equals(".xlsm", StringComparison.OrdinalIgnoreCase);
 
                 StatusMessage = $"Selected: {Path.GetFileName(SelectedFilePath)}";
 
