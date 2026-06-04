@@ -24,6 +24,7 @@
     <ProjectReference Include="..\Planova.Application\Planova.Application.csproj" />
     <ProjectReference Include="..\Planova.Domain\Planova.Domain.csproj" />
     <ProjectReference Include="..\Planova.Boq\Planova.Boq.csproj" />
+    <ProjectReference Include="..\Planova.Wbs\Planova.Wbs.csproj" />
   </ItemGroup>
 
 </Project>

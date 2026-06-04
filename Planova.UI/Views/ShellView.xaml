@@ -9,6 +9,7 @@
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
         Title="Planova"
+        Icon="pack://application:,,,/Resources/Branding/LogoLight.png"
         Width="1280"
         Height="720"
         MinWidth="960"

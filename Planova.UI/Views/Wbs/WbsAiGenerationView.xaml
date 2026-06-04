@@ -1,0 +1,97 @@
+<UserControl x:Class="Planova.UI.Views.Wbs.WbsAiGenerationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="AI-Assisted WBS Generation" FontSize="20" FontWeight="Bold" Margin="0,0,0,16"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left: Project Scope Input -->
+            <Border Grid.Column="0" BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Padding="8" Margin="0,0,8,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="Project Scope" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                    <TextBox Grid.Row="1" Text="{Binding ProjectScope, UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="True" TextWrapping="Wrap" MinHeight="100" Margin="0,0,0,8"
+                             ToolTip="Describe the project scope in 2-5 sentences"/>
+                    <TextBlock Grid.Row="2" Text="Describe the project scope. Include project type, size, key deliverables, and any specific requirements."
+                               TextWrapping="Wrap" Foreground="Gray" FontSize="11" Margin="0,0,0,8"/>
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,0,0,4">
+                        <ComboBox ItemsSource="{Binding AvailableBoqs}"
+                                  SelectedItem="{Binding SelectedBoq}"
+                                  DisplayMemberPath="Name"
+                                  MinWidth="180"
+                                  ToolTip="Select a BOQ to load items from"/>
+                        <Button Content="Load BOQ" Command="{Binding LoadBoqItemsCommand}" MinWidth="80" Margin="8,0,0,0"/>
+                        <Button Content="Import Excel" Command="{Binding ImportBoqFromExcelCommand}" MinWidth="90" Margin="8,0,0,0"/>
+                        <TextBlock Text="BOQ loaded" Foreground="Green" FontSize="11" VerticalAlignment="Center" Margin="8,0,0,0"
+                                   Visibility="{Binding HasBoqContext, Converter={StaticResource BoolToVis}}"/>
+                    </StackPanel>
+                    <TextBox Grid.Row="4" Text="{Binding WbsName, UpdateSourceTrigger=PropertyChanged}"
+                             ToolTip="WBS name" Margin="0,0,0,8"/>
+                    <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="0,0,0,4">
+                        <Button Content="Generate" Command="{Binding GenerateCommand}" MinWidth="100" Margin="0,0,8,0"/>
+                        <Button Content="Regenerate" Command="{Binding RegenerateCommand}" MinWidth="100" Margin="0,0,8,0"/>
+                        <Button Content="Check AI" Command="{Binding CheckAvailabilityCommand}" MinWidth="80"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="6" Orientation="Horizontal">
+                        <TextBlock Text="AI ready" Foreground="Green" FontSize="12" VerticalAlignment="Center"
+                                   Visibility="{Binding IsAiAvailable, Converter={StaticResource BoolToVis}}"/>
+                        <TextBlock Text="AI unavailable" Foreground="Red" FontSize="12" VerticalAlignment="Center"
+                                   Visibility="{Binding IsAiAvailable, Converter={StaticResource InverseBoolToVis}}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Right: Suggested WBS Tree -->
+            <Border Grid.Column="1" BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Padding="8">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="Suggested WBS" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                    <TreeView Grid.Row="1" ItemsSource="{Binding SuggestedTree}" Margin="0,0,0,8">
+                        <TreeView.ItemTemplate>
+                            <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox IsChecked="{Binding IsSelected}" Margin="0,0,4,0"/>
+                                    <TextBlock Text="{Binding Name}" Margin="0,0,4,0"/>
+                                    <TextBlock Text="{Binding WbsLevel}" Foreground="Gray" FontSize="11"/>
+                                </StackPanel>
+                            </HierarchicalDataTemplate>
+                        </TreeView.ItemTemplate>
+                    </TreeView>
+                    <Button Grid.Row="2" Content="Accept and Create WBS" Command="{Binding AcceptCommand}"
+                            MinWidth="150" HorizontalAlignment="Center"/>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <TextBlock Grid.Row="2" Text="{Binding ErrorMessage}" Foreground="Red" Margin="0,8,0,0"
+                   Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"/>
+    </Grid>
+</UserControl>

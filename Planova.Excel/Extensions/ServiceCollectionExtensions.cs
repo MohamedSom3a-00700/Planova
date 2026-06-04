@@ -16,7 +16,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IValidationService, ValidationService>();
         services.AddSingleton<IImportService, ImportService>();
         services.AddSingleton<IExportService, ExportService>();
-        services.AddSingleton<IMappingProfileService, MappingProfileService>();
+        services.AddScoped<IMappingProfileService, MappingProfileService>();
 
         return services;
     }
