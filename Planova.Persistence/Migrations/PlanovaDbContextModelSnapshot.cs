@@ -17,6 +17,287 @@ namespace Planova.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
 
+            modelBuilder.Entity("Planova.Boq.Domain.Entities.Boq", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImportSource")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ImportedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RevisionNumber")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Version")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_Boqs_Name");
+
+                    b.HasIndex("ProjectId")
+                        .HasDatabaseName("IX_Boqs_ProjectId");
+
+                    b.ToTable("Boqs", (string)null);
+                });
+
+            modelBuilder.Entity("Planova.Boq.Domain.Entities.BoqClassification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ProjectId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Scope")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("Code", "Scope")
+                        .IsUnique()
+                        .HasDatabaseName("IX_BoqClassifications_Code_Scope");
+
+                    b.ToTable("BoqClassifications", (string)null);
+                });
+
+            modelBuilder.Entity("Planova.Boq.Domain.Entities.BoqItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("BoqId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ClassificationId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CostCode")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("ItemType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Rate")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BoqId")
+                        .HasDatabaseName("IX_BoqItems_BoqId");
+
+                    b.HasIndex("ParentId")
+                        .HasDatabaseName("IX_BoqItems_ParentId");
+
+                    b.HasIndex("BoqId", "Code")
+                        .IsUnique()
+                        .HasDatabaseName("IX_BoqItems_BoqId_Code");
+
+                    b.ToTable("BoqItems", (string)null);
+                });
+
+            modelBuilder.Entity("Planova.Boq.Domain.Entities.BoqLibrary", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LibraryType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BoqLibraries", (string)null);
+                });
+
+            modelBuilder.Entity("Planova.Boq.Domain.Entities.BoqLibraryItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("DefaultRate")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("LibraryId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Tags")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LibraryId")
+                        .HasDatabaseName("IX_BoqLibraryItems_LibraryId");
+
+                    b.ToTable("BoqLibraryItems", (string)null);
+                });
+
             modelBuilder.Entity("Planova.Domain.Entities.Client", b =>
                 {
                     b.Property<int>("Id")
@@ -150,6 +431,64 @@ namespace Planova.Persistence.Migrations
                     b.ToTable("Contracts", (string)null);
                 });
 
+            modelBuilder.Entity("Planova.Domain.Entities.ExcelMappingProfile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ColumnMappingsJson")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("ColumnMappings");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ValidationRulesJson")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("ValidationRules");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntityType")
+                        .HasDatabaseName("IX_ExcelMappingProfiles_EntityType");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_ExcelMappingProfiles_Name");
+
+                    b.ToTable("ExcelMappingProfiles", (string)null);
+                });
+
             modelBuilder.Entity("Planova.Domain.Entities.Project", b =>
                 {
                     b.Property<int>("Id")
@@ -230,6 +569,9 @@ namespace Planova.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("AdditionalSettings")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
@@ -291,6 +633,45 @@ namespace Planova.Persistence.Migrations
                     b.ToTable("UserPreferences");
                 });
 
+            modelBuilder.Entity("Planova.Boq.Domain.Entities.BoqClassification", b =>
+                {
+                    b.HasOne("Planova.Boq.Domain.Entities.BoqClassification", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("Planova.Boq.Domain.Entities.BoqItem", b =>
+                {
+                    b.HasOne("Planova.Boq.Domain.Entities.Boq", "Boq")
+                        .WithMany("Items")
+                        .HasForeignKey("BoqId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Planova.Boq.Domain.Entities.BoqItem", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Boq");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("Planova.Boq.Domain.Entities.BoqLibraryItem", b =>
+                {
+                    b.HasOne("Planova.Boq.Domain.Entities.BoqLibrary", "Library")
+                        .WithMany("Items")
+                        .HasForeignKey("LibraryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Library");
+                });
+
             modelBuilder.Entity("Planova.Domain.Entities.Contract", b =>
                 {
                     b.HasOne("Planova.Domain.Entities.Client", "Client")
@@ -318,6 +699,26 @@ namespace Planova.Persistence.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("Planova.Boq.Domain.Entities.Boq", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Planova.Boq.Domain.Entities.BoqClassification", b =>
+                {
+                    b.Navigation("Children");
+                });
+
+            modelBuilder.Entity("Planova.Boq.Domain.Entities.BoqItem", b =>
+                {
+                    b.Navigation("Children");
+                });
+
+            modelBuilder.Entity("Planova.Boq.Domain.Entities.BoqLibrary", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("Planova.Domain.Entities.Client", b =>

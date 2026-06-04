@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter</value>
+  </resheader>
+  <data name="WorkbookBrowserTitle" xml:space="preserve"><value>Workbook Browser</value></data>
+  <data name="WorkbookBrowserBrowse" xml:space="preserve"><value>Browse</value></data>
+  <data name="WorkbookBrowserSearch" xml:space="preserve"><value>Search</value></data>
+  <data name="WorkbookBrowserFile" xml:space="preserve"><value>File</value></data>
+  <data name="WorkbookBrowserSize" xml:space="preserve"><value>Size</value></data>
+  <data name="WorkbookBrowserFormat" xml:space="preserve"><value>Format</value></data>
+  <data name="WorkbookBrowserWorksheets" xml:space="preserve"><value>Worksheets</value></data>
+  <data name="WorkbookBrowserSearchResults" xml:space="preserve"><value>Search Results</value></data>
+  <data name="WorkbookBrowserPrevious" xml:space="preserve"><value>Previous</value></data>
+  <data name="WorkbookBrowserNext" xml:space="preserve"><value>Next</value></data>
+  <data name="WorkbookBrowserPage" xml:space="preserve"><value>Page</value></data>
+  <data name="ImportWizardTitle" xml:space="preserve"><value>Import Wizard</value></data>
+  <data name="ImportWizardSelectFile" xml:space="preserve"><value>Select File</value></data>
+  <data name="ImportWizardMapColumns" xml:space="preserve"><value>Map Columns</value></data>
+  <data name="ImportWizardValidate" xml:space="preserve"><value>Validate</value></data>
+  <data name="ImportWizardImport" xml:space="preserve"><value>Import</value></data>
+  <data name="ImportWizardSelectFilePrompt" xml:space="preserve"><value>Select Excel file to import</value></data>
+  <data name="ImportWizardOpen" xml:space="preserve"><value>Open</value></data>
+  <data name="ImportWizardSelectWorksheet" xml:space="preserve"><value>Select Worksheet</value></data>
+  <data name="ImportWizardSelectEntityType" xml:space="preserve"><value>Select Entity Type</value></data>
+  <data name="ImportWizardValidation" xml:space="preserve"><value>Validation</value></data>
+  <data name="ImportWizardValid" xml:space="preserve"><value>Valid</value></data>
+  <data name="ImportWizardErrors" xml:space="preserve"><value>Errors</value></data>
+  <data name="ImportWizardProgress" xml:space="preserve"><value>Import Progress</value></data>
+  <data name="ImportWizardImported" xml:space="preserve"><value>Imported</value></data>
+  <data name="ImportWizardUpdated" xml:space="preserve"><value>Updated</value></data>
+  <data name="ImportWizardSkipped" xml:space="preserve"><value>Skipped</value></data>
+  <data name="ImportWizardFailed" xml:space="preserve"><value>Failed</value></data>
+  <data name="ImportWizardBack" xml:space="preserve"><value>Back</value></data>
+  <data name="ImportWizardNext" xml:space="preserve"><value>Next</value></data>
+  <data name="ImportWizardReset" xml:space="preserve"><value>Reset</value></data>
+  <data name="ExportWizardTitle" xml:space="preserve"><value>Export Wizard</value></data>
+  <data name="ExportWizardSelectEntity" xml:space="preserve"><value>Select entity type to export</value></data>
+  <data name="ExportWizardSelectedColumns" xml:space="preserve"><value>Selected columns to export</value></data>
+  <data name="ExportWizardOutputPath" xml:space="preserve"><value>Output file path</value></data>
+  <data name="ExportWizardExport" xml:space="preserve"><value>Export</value></data>
+  <data name="ExportWizardExportedRecords" xml:space="preserve"><value>Exported records</value></data>
+  <data name="ExportWizardSavedTo" xml:space="preserve"><value>Saved to</value></data>
+  <data name="MappingProfilesTitle" xml:space="preserve"><value>Mapping Profiles</value></data>
+  <data name="MappingProfilesLoad" xml:space="preserve"><value>Load</value></data>
+  <data name="MappingProfilesName" xml:space="preserve"><value>Name</value></data>
+  <data name="MappingProfilesVersion" xml:space="preserve"><value>Version</value></data>
+  <data name="MappingProfilesEntity" xml:space="preserve"><value>Entity</value></data>
+  <data name="MappingProfilesEdit" xml:space="preserve"><value>Edit</value></data>
+  <data name="MappingProfilesDelete" xml:space="preserve"><value>Delete</value></data>
+  <data name="MappingProfilesClone" xml:space="preserve"><value>Clone</value></data>
+  <data name="MappingProfilesCreate" xml:space="preserve"><value>Create new profile</value></data>
+  <data name="MappingProfilesEditName" xml:space="preserve"><value>Edit name</value></data>
+  <data name="MappingProfilesSave" xml:space="preserve"><value>Save</value></data>
+  <data name="MappingProfilesCancel" xml:space="preserve"><value>Cancel</value></data>
+</root>

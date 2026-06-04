@@ -10,13 +10,13 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="FluentWPF" Version="0.10.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
     <PackageReference Include="Serilog" Version="4.3.0" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageReference Include="WPF-UI" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +25,17 @@
     <ProjectReference Include="..\Planova.Localization\Planova.Localization.csproj" />
     <ProjectReference Include="..\Planova.Infrastructure\Planova.Infrastructure.csproj" />
     <ProjectReference Include="..\Planova.Persistence\Planova.Persistence.csproj" />
+    <ProjectReference Include="..\Planova.Excel\Planova.Excel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Branding\Inter\Inter-Variable.ttf" />
+    <Resource Include="Resources\Branding\Inter\Inter-Italic-Variable.ttf" />
+    <Resource Include="Resources\Branding\LogoMonochrome.png" />
+    <Resource Include="Resources\Branding\LogoDark.png" />
+    <Resource Include="Resources\Branding\LogoLight.png" />
+    <Resource Include="Resources\Branding\WordmarkDark.png" />
+    <Resource Include="Resources\Branding\WordmarkLight.png" />
   </ItemGroup>
 
 </Project>

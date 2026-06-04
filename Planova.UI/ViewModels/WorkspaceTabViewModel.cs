@@ -1,6 +1,8 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace Planova.UI.ViewModels;
 
-public sealed class WorkspaceTabViewModel
+public sealed partial class WorkspaceTabViewModel : ObservableObject
 {
     public WorkspaceTabViewModel(string id, string displayName, object content)
     {
@@ -14,4 +16,7 @@ public sealed class WorkspaceTabViewModel
     public string DisplayName { get; }
 
     public object Content { get; }
+
+    [ObservableProperty]
+    private bool _isSelected;
 }

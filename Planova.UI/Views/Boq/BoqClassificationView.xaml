@@ -1,0 +1,90 @@
+<UserControl x:Class="Planova.UI.Views.Boq.BoqClassificationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Classifications" FontSize="20" FontWeight="Bold" Margin="0,0,0,16"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Margin="0,0,12,0"
+                        Visibility="{Binding HasBoq, Converter={StaticResource BoolToVis}}">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <Button Content="Refresh" Command="{Binding LoadClassificationsCommand}" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TreeView ItemsSource="{Binding Classifications}">
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                            <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Visibility="{Binding HasBoq, Converter={StaticResource BoolToVis}}">
+                <GroupBox Header="Add Classification" Margin="0,0,0,8">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Code:" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1" Text="{Binding NewCode}"/>
+                        </Grid>
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Name:" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1" Text="{Binding NewName}"/>
+                        </Grid>
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Description:" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1" Text="{Binding NewDescription}"/>
+                        </Grid>
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Scope:" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Column="1" ItemsSource="{Binding ScopeOptions}"
+                                      SelectedItem="{Binding NewScope}"/>
+                        </Grid>
+                        <Button Content="Add" Command="{Binding AddClassificationCommand}" MinWidth="80"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Header="Selected" Margin="0,0,0,8">
+                    <StackPanel>
+                        <TextBlock Text="{Binding SelectedClassification.Code, StringFormat='Code: {0}'}"/>
+                        <TextBlock Text="{Binding SelectedClassification.Name, StringFormat='Name: {0}'}"/>
+                        <TextBlock Text="{Binding SelectedClassification.Description, StringFormat='Description: {0}'}"/>
+                        <Button Content="Delete" Command="{Binding DeleteClassificationCommand}"
+                                Margin="0,8,0,0" MinWidth="80"/>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

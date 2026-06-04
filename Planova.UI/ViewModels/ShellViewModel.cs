@@ -1,16 +1,23 @@
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Planova.Application.Services;
 using Planova.Shared.Abstractions;
+using Planova.UI.Views.Empty;
 using Planova.UI.Views.Projects;
 using Planova.UI.Views.Clients;
 using Planova.UI.Views.Contracts;
 using Planova.UI.Views.Dashboard;
+using Planova.UI.Views.Boq;
+using Planova.UI.Views.Excel;
 using Planova.UI.Views.Profile;
 using Planova.UI.Views.Reports;
+using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
 
 namespace Planova.UI.ViewModels;
 
@@ -21,6 +28,7 @@ public partial class ShellViewModel : ObservableObject
     private readonly ILocalizationService _localizationService;
     private readonly ISettingsService _settingsService;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IHighContrastDetector? _highContrastDetector;
     private readonly Dictionary<string, WorkspaceTabViewModel> _openTabs = new();
 
     public ShellViewModel(
@@ -29,17 +37,26 @@ public partial class ShellViewModel : ObservableObject
         IThemeService themeService,
         ILocalizationService localizationService,
         ISettingsService settingsService,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        IHighContrastDetector? highContrastDetector = null)
     {
         _navigationService = navigationService;
         _themeService = themeService;
         _localizationService = localizationService;
         _settingsService = settingsService;
         _serviceProvider = serviceProvider;
+        _highContrastDetector = highContrastDetector;
 
         _themeService.ThemeChanged += OnThemeChanged;
         _localizationService.LanguageChanged += OnLanguageChanged;
         _navigationService.ActiveTargetChanged += OnActiveTargetChanged;
+
+        if (_highContrastDetector != null)
+        {
+            _highContrastDetector.HighContrastChanged += OnHighContrastChanged;
+        }
+
+        UpdateBrandingAssets(_themeService.CurrentTheme);
 
         RegisterNavigationTargets();
         BuildNavigationItems();
@@ -50,17 +67,30 @@ public partial class ShellViewModel : ObservableObject
 
     public ObservableCollection<WorkspaceTabViewModel> Tabs { get; } = new();
 
+    public AssistantPanelViewModel AssistantPanel { get; } = new();
+
     [ObservableProperty]
     private string _statusText = "Ready";
 
     [ObservableProperty]
     private WorkspaceTabViewModel? _selectedTab;
 
+    [ObservableProperty]
+    private BitmapImage? _logoSource;
+
+    [ObservableProperty]
+    private BitmapImage? _wordmarkSource;
+
     [RelayCommand]
     private void ToggleTheme()
     {
-        var current = _themeService.GetCurrentTheme();
-        _themeService.SetTheme(current == "Dark" ? "Light" : "Dark");
+        var next = _themeService.CurrentTheme switch
+        {
+            AppTheme.Dark => AppTheme.Light,
+            AppTheme.Light => AppTheme.Dark,
+            _ => AppTheme.Dark
+        };
+        _themeService.SetTheme(next);
     }
 
     [RelayCommand]
@@ -70,12 +100,19 @@ public partial class ShellViewModel : ObservableObject
         _localizationService.SetLanguage(current == "en" ? "ar" : "en");
     }
 
-    private void OnThemeChanged(object? sender, string themeName)
+    private void OnHighContrastChanged(object? sender, bool isHighContrast)
+    {
+        _themeService.SetTheme(isHighContrast ? AppTheme.HighContrast : AppTheme.Dark);
+    }
+
+    private void OnThemeChanged(object? sender, ThemeChangedEventArgs e)
     {
         if (System.Windows.Application.Current == null) return;
 
-        _settingsService.Set("ThemePreference", themeName);
+        _settingsService.Set("ThemePreference", e.NewTheme.ToString());
         _ = _settingsService.Save();
+
+        UpdateBrandingAssets(e.NewTheme);
 
         var merged = System.Windows.Application.Current.Resources.MergedDictionaries;
 
@@ -83,20 +120,69 @@ public partial class ShellViewModel : ObservableObject
             d.Source?.OriginalString?.Contains("LightTheme") == true);
         var darkTheme = merged.FirstOrDefault(d =>
             d.Source?.OriginalString?.Contains("DarkTheme") == true);
+        var highContrastFallback = merged.FirstOrDefault(d =>
+            d.Source?.OriginalString?.Contains("HighContrastFallback") == true);
 
-        if (lightTheme == null || darkTheme == null) return;
-
-        if (themeName == "Light")
+        switch (e.NewTheme)
         {
-            merged.Remove(darkTheme);
-            if (!merged.Contains(lightTheme))
-                merged.Insert(0, lightTheme);
+            case AppTheme.Light:
+                if (darkTheme != null) merged.Remove(darkTheme);
+                if (highContrastFallback != null) merged.Remove(highContrastFallback);
+                if (!merged.Any(d => d.Source?.OriginalString?.Contains("LightTheme") == true))
+                    merged.Insert(merged.Count, new System.Windows.ResourceDictionary
+                        { Source = new Uri("Styles/LightTheme.xaml", UriKind.Relative) });
+                break;
+            case AppTheme.Dark:
+                if (lightTheme != null) merged.Remove(lightTheme);
+                if (highContrastFallback != null) merged.Remove(highContrastFallback);
+                if (!merged.Any(d => d.Source?.OriginalString?.Contains("DarkTheme") == true))
+                    merged.Insert(merged.Count, new System.Windows.ResourceDictionary
+                        { Source = new Uri("Styles/DarkTheme.xaml", UriKind.Relative) });
+                break;
+            case AppTheme.HighContrast:
+                if (lightTheme != null) merged.Remove(lightTheme);
+                if (darkTheme != null) merged.Remove(darkTheme);
+                if (!merged.Any(d => d.Source?.OriginalString?.Contains("HighContrastFallback") == true))
+                    merged.Insert(merged.Count, new System.Windows.ResourceDictionary
+                        { Source = new Uri("Styles/HighContrastFallback.xaml", UriKind.Relative) });
+                break;
         }
-        else
+
+        ApplicationTheme wpfUiTheme = e.NewTheme switch
         {
-            merged.Remove(lightTheme);
-            if (!merged.Contains(darkTheme))
-                merged.Insert(0, darkTheme);
+            AppTheme.Light => ApplicationTheme.Light,
+            AppTheme.HighContrast => ApplicationTheme.HighContrast,
+            _ => ApplicationTheme.Dark
+        };
+
+        var backdrop = WindowBackdrop.IsSupported(WindowBackdropType.Mica)
+            ? WindowBackdropType.Mica
+            : WindowBackdropType.None;
+
+        ApplicationThemeManager.Apply(wpfUiTheme, backdrop);
+    }
+
+    private void UpdateBrandingAssets(AppTheme theme)
+    {
+        var isHighContrast = SystemParameters.HighContrast || theme == AppTheme.HighContrast;
+        var isDark = isHighContrast || theme == AppTheme.Dark;
+
+        var logoFile = isHighContrast ? "LogoMonochrome.png" : isDark ? "LogoDark.png" : "LogoLight.png";
+        var wordmarkFile = isHighContrast ? "LogoMonochrome.png" : isDark ? "WordmarkDark.png" : "WordmarkLight.png";
+        LogoSource = LoadImage(logoFile);
+        WordmarkSource = LoadImage(wordmarkFile);
+    }
+
+    private static BitmapImage? LoadImage(string fileName)
+    {
+        try
+        {
+            var uri = new Uri($"pack://application:,,,/Resources/Branding/{fileName}", UriKind.Absolute);
+            return new BitmapImage(uri);
+        }
+        catch
+        {
+            return null;
         }
     }
 
@@ -104,6 +190,16 @@ public partial class ShellViewModel : ObservableObject
     private void NavigateTo(string targetId)
     {
         _navigationService.NavigateTo(targetId);
+    }
+
+    [RelayCommand]
+    private void SelectTab(WorkspaceTabViewModel? tab)
+    {
+        if (tab is null)
+            return;
+
+        SetSelectedTab(tab);
+        StatusText = tab.DisplayName;
     }
 
     private void OnLanguageChanged(object? sender, string languageCode)
@@ -118,17 +214,56 @@ public partial class ShellViewModel : ObservableObject
 
     private void RegisterNavigationTargets()
     {
-        _navigationService.RegisterTarget("dashboard", "Dashboard", () => _serviceProvider.GetRequiredService<DashboardView>());
-        _navigationService.RegisterTarget("projects", "Projects", () => _serviceProvider.GetRequiredService<ProjectsWorkspaceView>());
-        _navigationService.RegisterTarget("clients", "Clients", () => _serviceProvider.GetRequiredService<ClientsWorkspaceView>());
-        _navigationService.RegisterTarget("contracts", "Contracts", () => _serviceProvider.GetRequiredService<ContractsWorkspaceView>());
-        _navigationService.RegisterTarget("profile", "Profile", () => _serviceProvider.GetRequiredService<UserProfileView>());
-        _navigationService.RegisterTarget("reports", "Reports", () => _serviceProvider.GetRequiredService<ReportView>());
-        _navigationService.RegisterTarget("boq", "BOQ", () => new System.Windows.Controls.ContentControl());
-        _navigationService.RegisterTarget("wbs", "WBS", () => new System.Windows.Controls.ContentControl());
-        _navigationService.RegisterTarget("scheduling", "Scheduling", () => new System.Windows.Controls.ContentControl());
-        _navigationService.RegisterTarget("claims", "Claims", () => new System.Windows.Controls.ContentControl());
-        _navigationService.RegisterTarget("settings", "Settings", () => new System.Windows.Controls.ContentControl());
+        var nav = (NavigationService)_navigationService;
+
+        nav.RegisterTarget("dashboard", "Dashboard", "Home24", false, false,
+            () => _serviceProvider.GetRequiredService<DashboardView>());
+        nav.RegisterTarget("projects", "Projects", "Folder24", false, false,
+            () => _serviceProvider.GetRequiredService<ProjectsWorkspaceView>());
+        nav.RegisterTarget("boq", "BOQ Studio", "DocumentBulletList24", true, false, () =>
+        {
+            var view = _serviceProvider.GetRequiredService<BoqStudioView>();
+            view.InitializeTabs(_serviceProvider);
+            return view;
+        });
+        nav.RegisterTarget("wbs", "WBS Studio", "TreeView24", true, true,
+            () => CreateEmptyState("TreeView24", "WBS Studio", "Work Breakdown Structure module is coming soon."));
+        nav.RegisterTarget("activity", "Activity Studio", "CalendarDay24", true, true,
+            () => CreateEmptyState("CalendarDay24", "Activity Studio", "Activity management module is coming soon."));
+        nav.RegisterTarget("resource", "Resource Studio", "People24", true, true,
+            () => CreateEmptyState("People24", "Resource Studio", "Resource management module is coming soon."));
+        nav.RegisterTarget("cost", "Cost Studio", "Money24", true, true,
+            () => CreateEmptyState("Money24", "Cost Studio", "Cost management module is coming soon."));
+        nav.RegisterTarget("reports", "Reports", "DocumentText24", false, false,
+            () => _serviceProvider.GetRequiredService<ReportView>());
+        nav.RegisterTarget("primavera", "Primavera Studio", "HardDrive24", true, true,
+            () => CreateEmptyState("HardDrive24", "Primavera Studio", "Primavera integration module is coming soon."));
+        nav.RegisterTarget("schedule-compare", "Schedule Compare", "ArrowSync24", true, true,
+            () => CreateEmptyState("ArrowSync24", "Schedule Compare", "Schedule comparison module is coming soon."));
+        nav.RegisterTarget("delay-analysis", "Delay Analysis", "ChartMultiple24", true, true,
+            () => CreateEmptyState("ChartMultiple24", "Delay Analysis", "Delay analysis module is coming soon."));
+        nav.RegisterTarget("claims", "Claims", "DocumentEdit24", false, false,
+            () => _serviceProvider.GetRequiredService<ContractsWorkspaceView>());
+        nav.RegisterTarget("chronology", "Chronology", "Timeline24", true, true,
+            () => CreateEmptyState("Timeline24", "Chronology", "Chronology module is coming soon."));
+        nav.RegisterTarget("correspondence", "Correspondence", "Mail24", false, true,
+            () => CreateEmptyState("Mail24", "Correspondence", "Correspondence module is coming soon."));
+        nav.RegisterTarget("knowledge-base", "Knowledge Base", "BookSearch24", true, true,
+            () => CreateEmptyState("BookSearch24", "Knowledge Base", "Knowledge base module is coming soon."));
+        nav.RegisterTarget("analytics", "Analytics", "DataHistogram24", false, true,
+            () => CreateEmptyState("DataHistogram24", "Analytics", "Analytics module is coming soon."));
+        nav.RegisterTarget("integration-hub", "Integration Hub", "PlugConnected24", true, true,
+            () => CreateEmptyState("PlugConnected24", "Integration Hub", "Integration hub module is coming soon."));
+        nav.RegisterTarget("clients", "Clients", "People24", false, false,
+            () => _serviceProvider.GetRequiredService<ClientsWorkspaceView>());
+        nav.RegisterTarget("excel-studio", "Excel Studio", "Table24", true, false, () =>
+        {
+            var view = _serviceProvider.GetRequiredService<ExcelStudioView>();
+            view.InitializeTabs(_serviceProvider);
+            return view;
+        });
+        nav.RegisterTarget("settings", "Settings", "Settings24", false, false,
+            () => CreateEmptyState("Settings24", "Settings", "Settings module is coming soon."));
     }
 
     private void BuildNavigationItems()
@@ -136,12 +271,28 @@ public partial class ShellViewModel : ObservableObject
         NavigationItems.Clear();
         foreach (var target in _navigationService.GetTargets())
         {
-            NavigationItems.Add(new NavigationItemViewModel(target.Id, target.DisplayName, NavigateToCommand));
+            NavigationItems.Add(new NavigationItemViewModel(
+                target.Id,
+                target.DisplayName,
+                NavigateToCommand,
+                target.IconGlyph ?? string.Empty,
+                target.IsPlaceholder));
         }
+
+        SetSelectedNavigation("dashboard");
+    }
+
+    private static EmptyStateView CreateEmptyState(string iconGlyph, string title, string description)
+    {
+        return new EmptyStateView
+        {
+            DataContext = new { IconGlyph = iconGlyph, Title = title, Description = description }
+        };
     }
 
     private void OnActiveTargetChanged(object? sender, string targetId)
     {
+        SetSelectedNavigation(targetId);
         OpenTarget(targetId);
     }
 
@@ -154,7 +305,7 @@ public partial class ShellViewModel : ObservableObject
     {
         if (_openTabs.TryGetValue(targetId, out var existing))
         {
-            SelectedTab = existing;
+            SetSelectedTab(existing);
             StatusText = existing.DisplayName;
             return;
         }
@@ -169,7 +320,21 @@ public partial class ShellViewModel : ObservableObject
         var tab = new WorkspaceTabViewModel(target.Id, target.DisplayName, view);
         _openTabs[target.Id] = tab;
         Tabs.Add(tab);
-        SelectedTab = tab;
+        SetSelectedTab(tab);
         StatusText = target.DisplayName;
+    }
+
+    private void SetSelectedTab(WorkspaceTabViewModel? tab)
+    {
+        foreach (var item in Tabs)
+            item.IsSelected = ReferenceEquals(item, tab);
+
+        SelectedTab = tab;
+    }
+
+    private void SetSelectedNavigation(string targetId)
+    {
+        foreach (var item in NavigationItems)
+            item.IsSelected = string.Equals(item.Id, targetId, StringComparison.OrdinalIgnoreCase);
     }
 }

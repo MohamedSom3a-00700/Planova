@@ -4,14 +4,19 @@ namespace Planova.Application.Services;
 
 public class NavigationService : INavigationService
 {
-    private readonly Dictionary<string, (string DisplayName, Func<object> ViewFactory)> _targets = new();
+    private readonly Dictionary<string, (string DisplayName, string IconGlyph, bool IsStudio, bool IsPlaceholder, Func<object> ViewFactory)> _targets = new();
     private string _activeTarget = string.Empty;
 
     public event EventHandler<string>? ActiveTargetChanged;
 
     public void RegisterTarget(string id, string displayName, Func<object> viewFactory)
     {
-        _targets[id] = (displayName, viewFactory);
+        _targets[id] = (displayName, string.Empty, false, false, viewFactory);
+    }
+
+    public void RegisterTarget(string id, string displayName, string iconGlyph, bool isStudio, bool isPlaceholder, Func<object> viewFactory)
+    {
+        _targets[id] = (displayName, iconGlyph, isStudio, isPlaceholder, viewFactory);
     }
 
     public void NavigateTo(string targetId)
@@ -30,7 +35,12 @@ public class NavigationService : INavigationService
 
     public IReadOnlyCollection<NavigationTargetInfo> GetTargets()
     {
-        return _targets.Select(target => new NavigationTargetInfo(target.Key, target.Value.DisplayName)).ToArray();
+        return _targets.Select(target => new NavigationTargetInfo(
+            target.Key,
+            target.Value.DisplayName,
+            target.Value.IconGlyph,
+            target.Value.IsStudio,
+            target.Value.IsPlaceholder)).ToArray();
     }
 
     public bool TryCreateView(string targetId, out object? view)

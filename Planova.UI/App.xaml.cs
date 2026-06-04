@@ -11,16 +11,28 @@ using Planova.Persistence.DbContext;
 using Planova.Persistence.Repositories;
 using Planova.Persistence.Services;
 using Planova.Shared.Abstractions;
+using Planova.Boq.Domain.Interfaces;
+using Planova.Boq.Extensions;
+using Planova.Excel.Extensions;
+using Planova.Excel.Services;
+using Planova.UI.Services;
 using Planova.UI.ViewModels;
+using Planova.UI.ViewModels.Boq;
+using Planova.UI.ViewModels.Excel;
 using Planova.UI.Views;
-using Planova.UI.Views.Projects;
+using Planova.UI.Views.AI;
+using Planova.UI.Views.Boq;
 using Planova.UI.Views.Clients;
+using Planova.UI.Views.Projects;
 using Planova.UI.Views.Contracts;
 using Planova.UI.Views.Dashboard;
+using Planova.UI.Views.Excel;
 using Planova.UI.Views.Profile;
 using Planova.UI.Views.Reports;
 using QuestPDF.Infrastructure;
 using Serilog;
+using Wpf.Ui.Appearance;
+using WpfUiControls = Wpf.Ui.Controls;
 
 namespace Planova.UI;
 
@@ -64,11 +76,15 @@ public partial class App : System.Windows.Application
             settingsService.Load().GetAwaiter().GetResult();
 
             var theme = settingsService.Get<string>("ThemePreference");
+            var resolvedTheme = AppTheme.Dark;
             if (!string.IsNullOrEmpty(theme))
             {
                 var themeService = _host.Services.GetRequiredService<IThemeService>();
                 themeService.SetTheme(theme);
+                resolvedTheme = themeService.CurrentTheme;
             }
+
+            ApplyWpfUiTheme(resolvedTheme);
 
             var language = settingsService.Get<string>("LanguagePreference");
             if (!string.IsNullOrEmpty(language))
@@ -99,7 +115,8 @@ public partial class App : System.Windows.Application
     {
         services.AddSingleton<ILoggingService, SerilogLoggingService>();
         services.AddSingleton<INavigationService, NavigationService>();
-        services.AddSingleton<IThemeService, ThemeService>();
+        services.AddSingleton<IHighContrastDetector, HighContrastDetector>();
+        services.AddSingleton<IThemeService, Services.ThemeService>();
         services.AddSingleton<ILocalizationService, LocalizationService>();
         services.AddSingleton<IDatabaseService, DatabaseService>();
         services.AddSingleton<ISettingsService, SettingsService>();
@@ -131,8 +148,42 @@ public partial class App : System.Windows.Application
         services.AddTransient<UserProfileView>();
         services.AddTransient<DashboardViewModel>();
         services.AddTransient<DashboardView>();
-        services.AddTransient<ReportViewModel>();
-        services.AddTransient<ReportView>();
+        services.AddTransient<AssistantPanelViewModel>();
+        services.AddTransient<AssistantPanelView>();
+
+        services.AddPlanovaExcel();
+        services.AddPlanovaBoq();
+        services.AddScoped<IExcelRowReader, ExcelRowReader>();
+        services.AddScoped<IMappingProfileService, MappingProfileService>();
+        services.AddTransient<WorkbookBrowserViewModel>();
+        services.AddTransient<WorkbookBrowserView>();
+        services.AddTransient<ImportViewModel>();
+        services.AddTransient<ImportWizardView>();
+        services.AddTransient<ExportViewModel>();
+        services.AddTransient<ExportWizardView>();
+        services.AddTransient<MappingProfilesViewModel>();
+        services.AddTransient<MappingProfilesView>();
+        services.AddTransient<ExcelStudioViewModel>();
+        services.AddTransient<ExcelStudioView>();
+
+        services.AddTransient<BoqTreeViewModel>();
+        services.AddTransient<BoqTreeView>();
+        services.AddTransient<BoqEditorViewModel>();
+        services.AddTransient<BoqEditorView>();
+        services.AddTransient<BoqImportViewModel>();
+        services.AddTransient<BoqImportWizardView>();
+        services.AddTransient<BoqValidationViewModel>();
+        services.AddTransient<BoqValidationView>();
+        services.AddTransient<BoqClassificationViewModel>();
+        services.AddTransient<BoqClassificationView>();
+        services.AddTransient<BoqLibraryViewModel>();
+        services.AddTransient<BoqLibraryView>();
+        services.AddTransient<BoqReportViewModel>();
+        services.AddTransient<BoqReportView>();
+        services.AddTransient<BoqSettingsViewModel>();
+        services.AddTransient<BoqSettingsView>();
+        services.AddTransient<BoqStudioViewModel>();
+        services.AddTransient<BoqStudioView>();
     }
 
     private static string GetDatabasePath()
@@ -148,7 +199,23 @@ public partial class App : System.Windows.Application
         var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         var dir = Path.Combine(appData, "Planova", "logs");
         Directory.CreateDirectory(dir);
-        return dir;
+        return Path.Combine(dir, "planova-.log");
+    }
+
+    private static void ApplyWpfUiTheme(AppTheme theme)
+    {
+        ApplicationTheme wpfUiTheme = theme switch
+        {
+            AppTheme.Light => ApplicationTheme.Light,
+            AppTheme.HighContrast => ApplicationTheme.HighContrast,
+            _ => ApplicationTheme.Dark
+        };
+
+        var backdrop = WpfUiControls.WindowBackdrop.IsSupported(WpfUiControls.WindowBackdropType.Mica)
+            ? WpfUiControls.WindowBackdropType.Mica
+            : WpfUiControls.WindowBackdropType.None;
+
+        ApplicationThemeManager.Apply(wpfUiTheme, backdrop);
     }
 
     private static void ApplyWindowBounds(Window window, ISettingsService settingsService)

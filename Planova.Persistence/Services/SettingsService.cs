@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Planova.Domain.Entities;
 using Planova.Persistence.DbContext;
@@ -40,17 +41,31 @@ public class SettingsService : ISettingsService
     {
         if (_preferences == null) return default;
 
-        return key switch
+        var result = key switch
         {
-            nameof(UserPreferences.ThemePreference) => (T)(object)_preferences.ThemePreference,
-            nameof(UserPreferences.LanguagePreference) => (T)(object)_preferences.LanguagePreference,
-            nameof(UserPreferences.WindowX) => _preferences.WindowX is int wx ? (T)(object)wx : default,
-            nameof(UserPreferences.WindowY) => _preferences.WindowY is int wy ? (T)(object)wy : default,
-            nameof(UserPreferences.WindowWidth) => _preferences.WindowWidth is int ww ? (T)(object)ww : default,
-            nameof(UserPreferences.WindowHeight) => _preferences.WindowHeight is int wh ? (T)(object)wh : default,
-            nameof(UserPreferences.WindowMaximized) => (T)(object)_preferences.WindowMaximized,
-            _ => default
+            nameof(UserPreferences.ThemePreference) => _preferences.ThemePreference,
+            nameof(UserPreferences.LanguagePreference) => _preferences.LanguagePreference,
+            nameof(UserPreferences.WindowX) => _preferences.WindowX?.ToString(),
+            nameof(UserPreferences.WindowY) => _preferences.WindowY?.ToString(),
+            nameof(UserPreferences.WindowWidth) => _preferences.WindowWidth?.ToString(),
+            nameof(UserPreferences.WindowHeight) => _preferences.WindowHeight?.ToString(),
+            nameof(UserPreferences.WindowMaximized) => _preferences.WindowMaximized.ToString(),
+            _ => GetAdditional(key)
         };
+
+        if (result == null) return default;
+
+        try
+        {
+            var targetType = typeof(T);
+            if (Nullable.GetUnderlyingType(targetType) is { } underlying)
+                targetType = underlying;
+            return (T)Convert.ChangeType(result, targetType);
+        }
+        catch
+        {
+            return default;
+        }
     }
 
     public void Set<T>(string key, T value)
@@ -80,6 +95,47 @@ public class SettingsService : ISettingsService
             case nameof(UserPreferences.WindowMaximized):
                 _preferences.WindowMaximized = value as bool? ?? false;
                 break;
+            default:
+                SetAdditional(key, value?.ToString());
+                break;
         }
+    }
+
+    private string? GetAdditional(string key)
+    {
+        if (_preferences?.AdditionalSettings == null) return null;
+        try
+        {
+            var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(_preferences.AdditionalSettings);
+            return dict?.GetValueOrDefault(key);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private void SetAdditional(string key, string? value)
+    {
+        if (_preferences == null) return;
+
+        Dictionary<string, string> dict;
+        try
+        {
+            dict = _preferences.AdditionalSettings != null
+                ? JsonSerializer.Deserialize<Dictionary<string, string>>(_preferences.AdditionalSettings) ?? []
+                : [];
+        }
+        catch
+        {
+            dict = [];
+        }
+
+        if (value != null)
+            dict[key] = value;
+        else
+            dict.Remove(key);
+
+        _preferences.AdditionalSettings = JsonSerializer.Serialize(dict);
     }
 }

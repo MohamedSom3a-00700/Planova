@@ -1,0 +1,59 @@
+<UserControl x:Class="Planova.UI.Views.Boq.BoqTreeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:enums="clr-namespace:Planova.Boq.Domain.Enums;assembly=Planova.Boq"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="{Binding BoqName}" FontSize="20" FontWeight="Bold" Margin="0,0,0,8"/>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+            <Button Content="Refresh" Command="{Binding RefreshCommand}" Margin="0,0,8,0"/>
+            <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center" Margin="0,0,16,0"/>
+            <TextBlock Text="{Binding SelectedItem.Code, StringFormat='Selected: {0}'}" VerticalAlignment="Center" Foreground="Gray"/>
+        </StackPanel>
+
+        <ListView Grid.Row="2" ItemsSource="{Binding FlatItems}"
+                  SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                  VirtualizingPanel.ScrollUnit="Item"
+                  VirtualizingPanel.VirtualizationMode="Recycling">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="No." Width="50" DisplayMemberBinding="{Binding SortOrder}"/>
+                    <GridViewColumn Header="Code" Width="100" DisplayMemberBinding="{Binding Code}"/>
+                    <GridViewColumn Header="Description" Width="200" DisplayMemberBinding="{Binding Description}"/>
+                    <GridViewColumn Header="Unit" Width="60" DisplayMemberBinding="{Binding Unit}"/>
+                    <GridViewColumn Header="Qty" Width="80" DisplayMemberBinding="{Binding Quantity, StringFormat='N2'}"/>
+                    <GridViewColumn Header="Rate" Width="80" DisplayMemberBinding="{Binding Rate, StringFormat='N2'}"/>
+                    <GridViewColumn Header="Amount" Width="100" DisplayMemberBinding="{Binding Amount, StringFormat='N2'}"/>
+                    <GridViewColumn Header="Type" Width="70" DisplayMemberBinding="{Binding ItemType}"/>
+                    <GridViewColumn Header="Level" Width="50" DisplayMemberBinding="{Binding Level}"/>
+                    <GridViewColumn Header="CostCode" Width="100" DisplayMemberBinding="{Binding CostCode}"/>
+                    <GridViewColumn Header="Active" Width="60">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsActive}" IsHitTestVisible="False"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <Border Grid.Row="3" Background="{DynamicResource ThemeCard}">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="8">
+                <TextBlock Text="Grand Total: " FontWeight="Bold"/>
+                <TextBlock Text="{Binding GrandTotal, StringFormat='N2'}" FontWeight="Bold"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

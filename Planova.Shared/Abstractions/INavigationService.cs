@@ -1,6 +1,12 @@
 namespace Planova.Shared.Abstractions;
 
-public sealed record NavigationTargetInfo(string Id, string DisplayName);
+public sealed record NavigationTargetInfo(
+    string Id,
+    string DisplayName,
+    string IconGlyph,
+    bool IsStudio = false,
+    bool IsPlaceholder = false
+);
 
 public interface INavigationService
 {
