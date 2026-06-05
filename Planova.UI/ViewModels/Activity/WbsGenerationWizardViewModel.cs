@@ -22,6 +22,30 @@ public partial class WbsGenerationWizardViewModel : ObservableObject
     private string _generationMode = "Simple";
 
     [ObservableProperty]
+    private bool _isSimpleGeneration = true;
+
+    [ObservableProperty]
+    private bool _isBankGeneration;
+
+    [ObservableProperty]
+    private bool _isBOQGeneration;
+
+    partial void OnIsSimpleGenerationChanged(bool value)
+    {
+        if (value) GenerationMode = "Simple";
+    }
+
+    partial void OnIsBankGenerationChanged(bool value)
+    {
+        if (value) GenerationMode = "Bank";
+    }
+
+    partial void OnIsBOQGenerationChanged(bool value)
+    {
+        if (value) GenerationMode = "BOQ";
+    }
+
+    [ObservableProperty]
     private List<Guid> _selectedWbsItems = [];
 
     [ObservableProperty]

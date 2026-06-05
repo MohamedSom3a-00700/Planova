@@ -138,6 +138,7 @@ public interface IWbsGenerationService
     Task<WbsGenerationPreviewDto> PreviewBankGenerationAsync(List<Guid> wbsItemIds, Guid bankId, CancellationToken ct = default);
     Task<List<ActivityDto>> CommitGenerationAsync(WbsGenerationRequest request, CancellationToken ct = default);
     // Warn + offer replace/merge when activities already exist under a WBS item (FR-018)
+}
 
 public interface IActivityReportService
 {

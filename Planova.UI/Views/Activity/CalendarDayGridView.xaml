@@ -4,7 +4,52 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d">
-    <Grid Margin="12">
-        <TextBlock Text="Calendar Day Grid (Coming Soon)" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Calendar Days" FontWeight="Bold" Margin="0,0,0,8"/>
+            <Button Grid.Column="1" Content="Bulk Non-Working" Command="{Binding BulkSetNonWorkingCommand}"
+                    Height="24"/>
+        </Grid>
+
+        <ItemsControl Grid.Row="2" ItemsSource="{Binding CalendarDays}" Margin="0,0,0,8">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="7"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="Gray" BorderThickness="0.5" Padding="4" Height="32">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding Date, StringFormat={}{0:dd}}" 
+                                       FontWeight="Bold" Margin="0,0,4,0"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Status}" FontSize="10"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal">
+            <TextBlock Text="Legend:" FontWeight="SemiBold" Margin="0,0,8,0"/>
+            <TextBlock Text="Working" Foreground="Green" Margin="0,0,8,0"/>
+            <TextBlock Text="Non-Working" Foreground="Red"/>
+        </StackPanel>
     </Grid>
 </UserControl>

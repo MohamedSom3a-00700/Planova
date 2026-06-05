@@ -13,13 +13,21 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Margin="0,0,0,12">
+            <TextBlock Text="Name" Margin="0,0,0,4"/>
             <TextBox Text="{Binding Name}" Margin="0,0,0,8"/>
+            <TextBlock Text="Description" Margin="0,0,0,4"/>
             <TextBox Text="{Binding Description}" AcceptsReturn="True" Height="60" Margin="0,0,0,8"/>
+            <TextBlock Text="Activity Type" Margin="0,0,0,4"/>
             <ComboBox Text="{Binding ActivityType}" Margin="0,0,0,8"/>
+            <TextBlock Text="Duration (days)" Margin="0,0,0,4"/>
             <TextBox Text="{Binding Duration}" Margin="0,0,0,8"/>
+            <TextBlock Text="Planned Start" Margin="0,0,0,4"/>
             <DatePicker SelectedDate="{Binding PlannedStart}" Margin="0,0,0,8"/>
+            <TextBlock Text="Planned Finish" Margin="0,0,0,4"/>
             <DatePicker SelectedDate="{Binding PlannedFinish}" Margin="0,0,0,8"/>
+            <TextBlock Text="Weight (%)" Margin="0,0,0,4"/>
             <TextBox Text="{Binding Weight}" Margin="0,0,0,8"/>
+            <TextBlock Text="Notes" Margin="0,0,0,4"/>
             <TextBox Text="{Binding Notes}" AcceptsReturn="True" Height="80" Margin="0,0,0,8"/>
             <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" Margin="0,0,0,8"/>
             <Button Content="Save" Command="{Binding SaveCommand}" HorizontalAlignment="Left"/>

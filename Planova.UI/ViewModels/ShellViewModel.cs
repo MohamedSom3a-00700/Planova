@@ -18,6 +18,7 @@ using Planova.UI.Views.Profile;
 using Planova.UI.Views.Reports;
 using Planova.UI.Views.Wbs;
 using Planova.UI.Views.Activity;
+using Planova.UI.Views.Resource;
 using Planova.UI.Views;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
@@ -241,8 +242,13 @@ public partial class ShellViewModel : ObservableObject
             view.InitializeTabs(_serviceProvider);
             return view;
         });
-        nav.RegisterTarget("resource", "Resource Studio", "People24", true, true,
-            () => CreateEmptyState("People24", "Resource Studio", "Resource management module is coming soon."));
+        nav.RegisterTarget("resource", "Resource Studio", "People24", true, false,
+            () =>
+            {
+                var view = _serviceProvider.GetRequiredService<ResourceStudioView>();
+                view.InitializeTabs(_serviceProvider);
+                return view;
+            });
         nav.RegisterTarget("cost", "Cost Studio", "Money24", true, true,
             () => CreateEmptyState("Money24", "Cost Studio", "Cost management module is coming soon."));
         nav.RegisterTarget("reports", "Reports", "DocumentText24", false, false,

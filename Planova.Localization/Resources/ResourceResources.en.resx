@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="ResourceStudio.Library.Title" xml:space="preserve"><value>Resource Library</value></data>
+  <data name="ResourceStudio.Library.Create" xml:space="preserve"><value>Create Resource</value></data>
+  <data name="ResourceStudio.Library.Edit" xml:space="preserve"><value>Edit Resource</value></data>
+  <data name="ResourceStudio.Library.Deactivate" xml:space="preserve"><value>Deactivate</value></data>
+  <data name="ResourceStudio.Library.Reactivate" xml:space="preserve"><value>Reactivate</value></data>
+  <data name="ResourceStudio.Library.Search" xml:space="preserve"><value>Search resources...</value></data>
+  <data name="ResourceStudio.Library.FilterType" xml:space="preserve"><value>All Types</value></data>
+  <data name="ResourceStudio.Library.FilterScope" xml:space="preserve"><value>All Scopes</value></data>
+  <data name="ResourceStudio.Library.Import" xml:space="preserve"><value>Import from Excel</value></data>
+  <data name="ResourceStudio.Library.Export" xml:space="preserve"><value>Export</value></data>
+  <data name="ResourceStudio.Library.ConfirmDeactivate" xml:space="preserve"><value>Are you sure you want to deactivate this resource?</value></data>
+  <data name="ResourceStudio.Library.DuplicateNameWarning" xml:space="preserve"><value>A resource with this name already exists in this scope.</value></data>
+  <data name="ResourceStudio.Library.Code" xml:space="preserve"><value>Code</value></data>
+  <data name="ResourceStudio.Library.Name" xml:space="preserve"><value>Name</value></data>
+  <data name="ResourceStudio.Library.Type" xml:space="preserve"><value>Type</value></data>
+  <data name="ResourceStudio.Library.Status" xml:space="preserve"><value>Status</value></data>
+  <data name="ResourceStudio.Library.Scope" xml:space="preserve"><value>Scope</value></data>
+  <data name="ResourceStudio.Library.DefaultRate" xml:space="preserve"><value>Default Rate</value></data>
+  <data name="ResourceStudio.Library.UnitOfMeasure" xml:space="preserve"><value>Unit of Measure</value></data>
+  <data name="ResourceStudio.Rates.Title" xml:space="preserve"><value>Rate Manager</value></data>
+  <data name="ResourceStudio.Rates.Add" xml:space="preserve"><value>Add Rate</value></data>
+  <data name="ResourceStudio.Rates.Remove" xml:space="preserve"><value>Remove Rate</value></data>
+  <data name="ResourceStudio.Rates.BulkUpdate" xml:space="preserve"><value>Bulk Update</value></data>
+  <data name="ResourceStudio.Rates.EffectiveDate" xml:space="preserve"><value>Effective Date</value></data>
+  <data name="ResourceStudio.Rates.Rate" xml:space="preserve"><value>Rate</value></data>
+  <data name="ResourceStudio.Rates.Currency" xml:space="preserve"><value>Currency</value></data>
+  <data name="ResourceStudio.Rates.IsDefault" xml:space="preserve"><value>Is Default</value></data>
+  <data name="ResourceStudio.Rates.CurrentRate" xml:space="preserve"><value>Current Rate (as of today)</value></data>
+  <data name="ResourceStudio.Rates.DuplicateDateError" xml:space="preserve"><value>A rate with this effective date already exists.</value></data>
+  <data name="ResourceStudio.Crew.Title" xml:space="preserve"><value>Crew Templates</value></data>
+  <data name="ResourceStudio.Crew.Create" xml:space="preserve"><value>Create Crew</value></data>
+  <data name="ResourceStudio.Crew.Edit" xml:space="preserve"><value>Edit Crew</value></data>
+  <data name="ResourceStudio.Crew.Clone" xml:space="preserve"><value>Clone</value></data>
+  <data name="ResourceStudio.Crew.Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="ResourceStudio.Crew.Apply" xml:space="preserve"><value>Apply to Activities</value></data>
+  <data name="ResourceStudio.Crew.BlendedRate" xml:space="preserve"><value>Blended Rate</value></data>
+  <data name="ResourceStudio.Crew.ResourceCount" xml:space="preserve"><value>Resource Count</value></data>
+  <data name="ResourceStudio.Crew.AddResource" xml:space="preserve"><value>Add Resource</value></data>
+  <data name="ResourceStudio.Crew.RemoveResource" xml:space="preserve"><value>Remove Resource</value></data>
+  <data name="ResourceStudio.Crew.EmptyCrewError" xml:space="preserve"><value>Crew must have at least one resource.</value></data>
+  <data name="ResourceStudio.Crew.HasBeenApplied" xml:space="preserve"><value>This crew has been applied to activities and cannot be deleted.</value></data>
+  <data name="ResourceStudio.Assignment.Title" xml:space="preserve"><value>Resource Assignments</value></data>
+  <data name="ResourceStudio.Assignment.Add" xml:space="preserve"><value>Add Assignment</value></data>
+  <data name="ResourceStudio.Assignment.Edit" xml:space="preserve"><value>Edit Assignment</value></data>
+  <data name="ResourceStudio.Assignment.Remove" xml:space="preserve"><value>Remove Assignment</value></data>
+  <data name="ResourceStudio.Assignment.TotalCost" xml:space="preserve"><value>Total Cost</value></data>
+  <data name="ResourceStudio.Assignment.Quantity" xml:space="preserve"><value>Quantity</value></data>
+  <data name="ResourceStudio.Assignment.Rate" xml:space="preserve"><value>Rate</value></data>
+  <data name="ResourceStudio.Assignment.ApplyCrew" xml:space="preserve"><value>Apply Crew</value></data>
+  <data name="ResourceStudio.Assignment.BlockDeletion" xml:space="preserve"><value>Cannot delete activity: resource assignments exist. Remove all assignments first.</value></data>
+  <data name="ResourceStudio.Histogram.Title" xml:space="preserve"><value>Resource Histogram</value></data>
+  <data name="ResourceStudio.Histogram.Overallocated" xml:space="preserve"><value>Overallocated</value></data>
+  <data name="ResourceStudio.Histogram.Export" xml:space="preserve"><value>Export Data</value></data>
+  <data name="ResourceStudio.Histogram.FilterType" xml:space="preserve"><value>Filter by Type</value></data>
+  <data name="ResourceStudio.Histogram.FilterDate" xml:space="preserve"><value>Date Range</value></data>
+  <data name="ResourceStudio.Histogram.OverallocatedTooltip" xml:space="preserve"><value>Overallocated by {0} units on {1}</value></data>
+  <data name="ResourceStudio.AI.Title" xml:space="preserve"><value>AI Resource Estimation</value></data>
+  <data name="ResourceStudio.AI.Estimate" xml:space="preserve"><value>Estimate Resources</value></data>
+  <data name="ResourceStudio.AI.Estimating" xml:space="preserve"><value>Estimating...</value></data>
+  <data name="ResourceStudio.AI.AcceptAll" xml:space="preserve"><value>Accept All</value></data>
+  <data name="ResourceStudio.AI.AcceptAdjusted" xml:space="preserve"><value>Accept As Adjusted</value></data>
+  <data name="ResourceStudio.AI.RejectAll" xml:space="preserve"><value>Reject All</value></data>
+  <data name="ResourceStudio.AI.Unavailable" xml:space="preserve"><value>AI estimation is currently unavailable. Please check your AI provider configuration.</value></data>
+  <data name="ResourceStudio.AI.Error" xml:space="preserve"><value>An error occurred during estimation: {0}</value></data>
+  <data name="ResourceStudio.AI.ConfidenceHigh" xml:space="preserve"><value>High confidence</value></data>
+  <data name="ResourceStudio.AI.ConfidenceMedium" xml:space="preserve"><value>Medium confidence</value></data>
+  <data name="ResourceStudio.AI.ConfidenceLow" xml:space="preserve"><value>Low confidence</value></data>
+  <data name="ResourceStudio.Report.Title" xml:space="preserve"><value>Resource Reports</value></data>
+  <data name="ResourceStudio.Report.UsageSummary" xml:space="preserve"><value>Usage Summary</value></data>
+  <data name="ResourceStudio.Report.CostReport" xml:space="preserve"><value>Cost Report</value></data>
+  <data name="ResourceStudio.Report.Generate" xml:space="preserve"><value>Generate Report</value></data>
+  <data name="ResourceStudio.Report.ExportExcel" xml:space="preserve"><value>Export to Excel</value></data>
+  <data name="ResourceStudio.Report.ExportPdf" xml:space="preserve"><value>Export to PDF</value></data>
+  <data name="ResourceStudio.Report.Print" xml:space="preserve"><value>Print Preview</value></data>
+  <data name="ResourceStudio.Report.Generating" xml:space="preserve"><value>Generating report...</value></data>
+  <data name="ResourceStudio.Studio.Title" xml:space="preserve"><value>Resource Studio</value></data>
+  <data name="ResourceStudio.Studio.LibraryTab" xml:space="preserve"><value>Library</value></data>
+  <data name="ResourceStudio.Studio.CrewTab" xml:space="preserve"><value>Crew Templates</value></data>
+  <data name="ResourceStudio.Studio.HistogramTab" xml:space="preserve"><value>Histogram</value></data>
+  <data name="ResourceStudio.Studio.ReportsTab" xml:space="preserve"><value>Reports</value></data>
+  <data name="ResourceStudio.Common.Active" xml:space="preserve"><value>Active</value></data>
+  <data name="ResourceStudio.Common.Inactive" xml:space="preserve"><value>Inactive</value></data>
+  <data name="ResourceStudio.Common.Draft" xml:space="preserve"><value>Draft</value></data>
+  <data name="ResourceStudio.Common.Global" xml:space="preserve"><value>Global</value></data>
+  <data name="ResourceStudio.Common.Project" xml:space="preserve"><value>Project</value></data>
+  <data name="ResourceStudio.Common.Save" xml:space="preserve"><value>Save</value></data>
+  <data name="ResourceStudio.Common.Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="ResourceStudio.Common.Confirm" xml:space="preserve"><value>Confirm</value></data>
+  <data name="ResourceStudio.Common.Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="ResourceStudio.Common.Error" xml:space="preserve"><value>Error</value></data>
+  <data name="ResourceStudio.Common.Success" xml:space="preserve"><value>Success</value></data>
+  <data name="ResourceStudio.Validation.CodeRequired" xml:space="preserve"><value>Code is required.</value></data>
+  <data name="ResourceStudio.Validation.NameRequired" xml:space="preserve"><value>Name is required.</value></data>
+  <data name="ResourceStudio.Validation.RatePositive" xml:space="preserve"><value>Rate must be greater than zero.</value></data>
+  <data name="ResourceStudio.Validation.QuantityPositive" xml:space="preserve"><value>Quantity must be greater than zero.</value></data>
+  <data name="ResourceStudio.Validation.EndDateAfterStart" xml:space="preserve"><value>End date must be on or after start date.</value></data>
+  <data name="ResourceStudio.Validation.ProjectRequiredForScope" xml:space="preserve"><value>Project-scoped resources must have a project selected.</value></data>
+  <data name="ResourceStudio.Import.Title" xml:space="preserve"><value>Import Resources</value></data>
+  <data name="ResourceStudio.Import.Preview" xml:space="preserve"><value>Preview Import</value></data>
+  <data name="ResourceStudio.Import.Execute" xml:space="preserve"><value>Execute Import</value></data>
+  <data name="ResourceStudio.Import.DuplicateFound" xml:space="preserve"><value>Duplicate resource found: {0}</value></data>
+  <data name="ResourceStudio.Import.Completed" xml:space="preserve"><value>Import completed: {0} success, {1} skipped, {2} errors</value></data>
+</root>

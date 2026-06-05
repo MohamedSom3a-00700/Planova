@@ -8,7 +8,9 @@
     <Project Path="tests/Planova.Activity.Tests/Planova.Activity.Tests.csproj" />
     <Project Path="tests/Planova.Boq.Tests/Planova.Boq.Tests.csproj" />
     <Project Path="tests/Planova.Wbs.Tests/Planova.Wbs.Tests.csproj" />
+    <Project Path="tests/Planova.Resource.Tests/Planova.Resource.Tests.csproj" />
   </Folder>
+  <Project Path="Planova.Resource/Planova.Resource.csproj" />
   <Project Path="Planova.Activity/Planova.Activity.csproj" />
   <Project Path="Planova.Application/Planova.Application.csproj" />
   <Project Path="Planova.Excel/Planova.Excel.csproj" />

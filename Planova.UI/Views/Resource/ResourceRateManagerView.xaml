@@ -1,0 +1,44 @@
+<UserControl x:Class="Planova.UI.Views.Resource.ResourceRateManagerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Resource"
+             d:DataContext="{d:DesignInstance vm:ResourceRateManagerViewModel}"
+             Background="{DynamicResource WorkspaceBackgroundGradient}"
+             FontFamily="{DynamicResource BrandFontFamily}"
+             mc:Ignorable="d">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
+            <Button Content="Add Rate" Command="{Binding AddRateCommand}" Margin="0,0,8,0"/>
+            <Button Content="Bulk Update" Command="{Binding BulkRateUpdateCommand}"/>
+        </StackPanel>
+
+        <DataGrid Grid.Row="1"
+                  ItemsSource="{Binding Rates}"
+                  SelectedItem="{Binding SelectedRate, Mode=TwoWay}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  Background="Transparent"
+                  BorderThickness="0"
+                   >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Rate" Binding="{Binding Rate}" Width="120"/>
+                <DataGridTextColumn Header="Effective Date" Binding="{Binding EffectiveDate}" Width="140"/>
+                <DataGridTextColumn Header="Currency" Binding="{Binding Currency}" Width="80"/>
+                <DataGridTextColumn Header="Unit of Measure" Binding="{Binding UnitOfMeasure}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Content="Remove" Command="{Binding RemoveRateCommand}"
+                    CommandParameter="{Binding SelectedRate}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

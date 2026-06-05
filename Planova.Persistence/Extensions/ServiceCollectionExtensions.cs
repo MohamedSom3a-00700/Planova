@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Planova.Activity.Domain.Interfaces;
 using Planova.Boq.Domain.Interfaces;
 using Planova.Persistence.Repositories;
+using Planova.Resource.Domain.Interfaces;
 using Planova.Wbs.Domain.Interfaces;
 
 namespace Planova.Persistence.Extensions;
@@ -29,6 +30,14 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IActivityBankRepository, ActivityBankRepository>();
         services.AddScoped<IActivityBankItemRepository, ActivityBankItemRepository>();
         services.AddScoped<IActivityBankItemRelationshipRepository, ActivityBankItemRelationshipRepository>();
+
+        // Resource repositories
+        services.AddScoped<IResourceRepository, ResourceRepository>();
+        services.AddScoped<IResourceRateRepository, ResourceRateRepository>();
+        services.AddScoped<ICrewRepository, CrewRepository>();
+        services.AddScoped<ICrewResourceRepository, CrewResourceRepository>();
+        services.AddScoped<IResourceAssignmentRepository, ResourceAssignmentRepository>();
+        services.AddScoped<IResourceUsageRepository, ResourceUsageRepository>();
 
         return services;
     }
