@@ -42,12 +42,12 @@ public class ActivityBankRepository : IActivityBankRepository
 
     public async Task<List<ActivityBank>> SearchAsync(string query, CancellationToken ct = default)
     {
-        var lower = query.ToLowerInvariant();
+        var pattern = $"%{query}%";
         return await _context.ActivityBanks
-            .Where(b => b.Name.ToLower().Contains(lower)
-                || b.Code.ToLower().Contains(lower)
-                || b.Category.ToLower().Contains(lower)
-                || b.Description!.ToLower().Contains(lower))
+            .Where(b => EF.Functions.Like(b.Name, pattern)
+                || EF.Functions.Like(b.Code, pattern)
+                || EF.Functions.Like(b.Category, pattern)
+                || (b.Description != null && EF.Functions.Like(b.Description, pattern)))
             .Include(b => b.Items)
             .Include(b => b.Relationships)
             .ToListAsync(ct);

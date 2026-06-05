@@ -27,6 +27,12 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<Planova.Activity.Domain.Entities.ActivityBank> ActivityBanks => Set<Planova.Activity.Domain.Entities.ActivityBank>();
     public DbSet<Planova.Activity.Domain.Entities.ActivityBankItem> ActivityBankItems => Set<Planova.Activity.Domain.Entities.ActivityBankItem>();
     public DbSet<Planova.Activity.Domain.Entities.ActivityBankItemRelationship> ActivityBankItemRelationships => Set<Planova.Activity.Domain.Entities.ActivityBankItemRelationship>();
+    public DbSet<Planova.Resource.Domain.Entities.Resource> Resources => Set<Planova.Resource.Domain.Entities.Resource>();
+    public DbSet<Planova.Resource.Domain.Entities.ResourceRate> ResourceRates => Set<Planova.Resource.Domain.Entities.ResourceRate>();
+    public DbSet<Planova.Resource.Domain.Entities.Crew> Crews => Set<Planova.Resource.Domain.Entities.Crew>();
+    public DbSet<Planova.Resource.Domain.Entities.CrewResource> CrewResources => Set<Planova.Resource.Domain.Entities.CrewResource>();
+    public DbSet<Planova.Resource.Domain.Entities.ResourceAssignment> ResourceAssignments => Set<Planova.Resource.Domain.Entities.ResourceAssignment>();
+    public DbSet<Planova.Resource.Domain.Entities.ResourceUsage> ResourceUsages => Set<Planova.Resource.Domain.Entities.ResourceUsage>();
 
     public PlanovaDbContext(DbContextOptions<PlanovaDbContext> options) : base(options)
     {
@@ -55,5 +61,11 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.ApplyConfiguration(new ActivityBankConfiguration());
         modelBuilder.ApplyConfiguration(new ActivityBankItemConfiguration());
         modelBuilder.ApplyConfiguration(new ActivityBankItemRelationshipConfiguration());
+        modelBuilder.ApplyConfiguration(new ResourceConfiguration());
+        modelBuilder.ApplyConfiguration(new ResourceRateConfiguration());
+        modelBuilder.ApplyConfiguration(new CrewConfiguration());
+        modelBuilder.ApplyConfiguration(new CrewResourceConfiguration());
+        modelBuilder.ApplyConfiguration(new ResourceAssignmentConfiguration());
+        modelBuilder.ApplyConfiguration(new ResourceUsageConfiguration());
     }
 }

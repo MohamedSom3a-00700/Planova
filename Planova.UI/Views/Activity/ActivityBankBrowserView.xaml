@@ -20,8 +20,10 @@
         </TextBlock>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+            <TextBlock Text="Category" VerticalAlignment="Center" Margin="0,0,4,0"/>
             <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}"
                       Width="160" Margin="0,0,8,0"/>
+            <TextBlock Text="Search" VerticalAlignment="Center" Margin="0,0,4,0"/>
             <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                      Width="200" Margin="0,0,8,0"/>
             <Button Content="Browse" Command="{Binding BrowseCategoryCommand}" Margin="0,0,8,0"/>

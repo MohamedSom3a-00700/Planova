@@ -29,10 +29,15 @@
             <StackPanel>
                 <GroupBox Header="Generation Mode" Margin="0,0,0,12" Padding="8">
                     <StackPanel>
-                        <RadioButton Content="Simple - auto generate from WBS structure" IsChecked="True"
+                        <RadioButton Content="Simple - auto generate from WBS structure"
+                                     IsChecked="{Binding IsSimpleGeneration}"
                                      GroupName="GenMode" Margin="0,0,0,4"/>
-                        <RadioButton Content="Bank - use activity bank template" GroupName="GenMode"/>
-                        <RadioButton Content="BOQ - generate from BOQ items" GroupName="GenMode" Margin="0,4,0,0"/>
+                        <RadioButton Content="Bank - use activity bank template"
+                                     IsChecked="{Binding IsBankGeneration}"
+                                     GroupName="GenMode"/>
+                        <RadioButton Content="BOQ - generate from BOQ items"
+                                     IsChecked="{Binding IsBOQGeneration}"
+                                     GroupName="GenMode" Margin="0,4,0,0"/>
                     </StackPanel>
                 </GroupBox>
 

@@ -31,6 +31,7 @@
     <ProjectReference Include="..\Planova.Persistence\Planova.Persistence.csproj" />
     <ProjectReference Include="..\Planova.Excel\Planova.Excel.csproj" />
     <ProjectReference Include="..\Planova.Activity\Planova.Activity.csproj" />
+    <ProjectReference Include="..\Planova.Resource\Planova.Resource.csproj" />
   </ItemGroup>
 
   <ItemGroup>

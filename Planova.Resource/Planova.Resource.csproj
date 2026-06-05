@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Planova.Domain\Planova.Domain.csproj" />
+    <ProjectReference Include="..\Planova.Shared\Planova.Shared.csproj" />
+    <ProjectReference Include="..\Planova.Activity\Planova.Activity.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

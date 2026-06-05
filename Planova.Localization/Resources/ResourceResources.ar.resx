@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="ResourceStudio.Library.Title" xml:space="preserve"><value>مكتبة الموارد</value></data>
+  <data name="ResourceStudio.Library.Create" xml:space="preserve"><value>إنشاء مورد</value></data>
+  <data name="ResourceStudio.Library.Edit" xml:space="preserve"><value>تعديل المورد</value></data>
+  <data name="ResourceStudio.Library.Deactivate" xml:space="preserve"><value>إلغاء التنشيط</value></data>
+  <data name="ResourceStudio.Library.Reactivate" xml:space="preserve"><value>إعادة التنشيط</value></data>
+  <data name="ResourceStudio.Library.Search" xml:space="preserve"><value>البحث عن موارد...</value></data>
+  <data name="ResourceStudio.Library.Import" xml:space="preserve"><value>استيراد من Excel</value></data>
+  <data name="ResourceStudio.Library.Export" xml:space="preserve"><value>تصدير</value></data>
+  <data name="ResourceStudio.Library.DuplicateNameWarning" xml:space="preserve"><value>يوجد مورد بهذا الاسم بالفعل في هذا النطاق.</value></data>
+  <data name="ResourceStudio.Crew.Title" xml:space="preserve"><value>قوالب الفرق</value></data>
+  <data name="ResourceStudio.Crew.BlendedRate" xml:space="preserve"><value>المعدل المدمج</value></data>
+  <data name="ResourceStudio.Histogram.Title" xml:space="preserve"><value>الرسم البياني للموارد</value></data>
+  <data name="ResourceStudio.Histogram.Overallocated" xml:space="preserve"><value>زيادة التخصيص</value></data>
+  <data name="ResourceStudio.AI.Title" xml:space="preserve"><value>تقدير الموارد بالذكاء الاصطناعي</value></data>
+  <data name="ResourceStudio.AI.Estimate" xml:space="preserve"><value>تقدير الموارد</value></data>
+  <data name="ResourceStudio.AI.Estimating" xml:space="preserve"><value>جاري التقدير...</value></data>
+  <data name="ResourceStudio.AI.Unavailable" xml:space="preserve"><value>تقدير الذكاء الاصطناعي غير متاح حالياً. يرجى التحقق من إعدادات مزود الذكاء الاصطناعي.</value></data>
+  <data name="ResourceStudio.Report.Title" xml:space="preserve"><value>تقارير الموارد</value></data>
+  <data name="ResourceStudio.Report.UsageSummary" xml:space="preserve"><value>ملخص الاستخدام</value></data>
+  <data name="ResourceStudio.Report.CostReport" xml:space="preserve"><value>تقرير التكلفة</value></data>
+  <data name="ResourceStudio.Studio.Title" xml:space="preserve"><value>استوديو الموارد</value></data>
+  <data name="ResourceStudio.Common.Save" xml:space="preserve"><value>حفظ</value></data>
+  <data name="ResourceStudio.Common.Cancel" xml:space="preserve"><value>إلغاء</value></data>
+  <data name="ResourceStudio.Common.Confirm" xml:space="preserve"><value>تأكيد</value></data>
+  <data name="ResourceStudio.Common.Delete" xml:space="preserve"><value>حذف</value></data>
+  <data name="ResourceStudio.Common.Error" xml:space="preserve"><value>خطأ</value></data>
+  <data name="ResourceStudio.Common.Success" xml:space="preserve"><value>نجاح</value></data>
+</root>

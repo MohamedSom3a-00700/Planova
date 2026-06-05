@@ -36,6 +36,9 @@ using Planova.UI.Views.Reports;
 using Planova.UI.ViewModels.Activity;
 using Planova.UI.Views.Activity;
 using Planova.Activity.Extensions;
+using Planova.Resource.Extensions;
+using Planova.UI.ViewModels.Resource;
+using Planova.UI.Views.Resource;
 using QuestPDF.Infrastructure;
 using Serilog;
 using Wpf.Ui.Appearance;
@@ -240,6 +243,31 @@ public partial class App : System.Windows.Application
         services.AddTransient<WbsGenerationWizardView>();
         services.AddTransient<ScheduleReportViewModel>();
         services.AddTransient<ScheduleReportView>();
+
+        // Resource Studio
+        services.AddTransient<ResourceStudioViewModel>();
+        services.AddTransient<ResourceStudioView>();
+        services.AddTransient<ResourceLibraryViewModel>();
+        services.AddTransient<ResourceLibraryView>();
+        services.AddTransient<ResourceEditorViewModel>();
+        services.AddTransient<ResourceEditorView>();
+        services.AddTransient<ResourceRateManagerViewModel>();
+        services.AddTransient<ResourceRateManagerView>();
+        services.AddTransient<CrewTemplateManagerViewModel>();
+        services.AddTransient<CrewTemplateManagerView>();
+        services.AddTransient<CrewTemplateEditorViewModel>();
+        services.AddTransient<CrewTemplateEditorView>();
+        services.AddTransient<ResourceAssignmentViewModel>();
+        services.AddTransient<ResourceAssignmentView>();
+        services.AddTransient<ResourceHistogramViewModel>();
+        services.AddTransient<ResourceHistogramView>();
+        services.AddTransient<ResourceAiEstimationViewModel>();
+        services.AddTransient<ResourceAiEstimationView>();
+        services.AddTransient<ResourceReportViewModel>();
+        services.AddTransient<ResourceReportView>();
+        services.AddTransient<ResourceSettingsViewModel>();
+        services.AddTransient<ResourceSettingsView>();
+        services.AddPlanovaResource();
     }
 
     private static string GetDatabasePath()

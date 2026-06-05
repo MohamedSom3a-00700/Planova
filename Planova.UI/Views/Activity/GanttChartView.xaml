@@ -19,19 +19,27 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,0,8">
-            <TextBlock Text="{Binding ZoomLevel}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBlock Text="Zoom:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBlock Text="{Binding ZoomLevel}" VerticalAlignment="Center" Width="50" Margin="0,0,8,0"/>
             <Button Content="+" Command="{Binding ZoomInCommand}" Width="30" Margin="0,0,4,0"/>
             <Button Content="-" Command="{Binding ZoomOutCommand}" Width="30"/>
         </StackPanel>
 
         <Border Grid.Row="1" Grid.Column="0" BorderBrush="Gray" BorderThickness="0,1,1,1" Margin="0,0,4,0">
-            <ItemsControl ItemsSource="{Binding Activities}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="Activities" FontWeight="Bold" Margin="4,4,4,2"/>
+                <ItemsControl Grid.Row="1" ItemsSource="{Binding Activities}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Name}" Margin="4,2" TextTrimming="CharacterEllipsis"/>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+            </Grid>
         </Border>
 
         <Border Grid.Row="1" Grid.Column="1" BorderBrush="Gray" BorderThickness="1">
