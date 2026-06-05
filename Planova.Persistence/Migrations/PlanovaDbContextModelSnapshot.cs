@@ -17,6 +17,386 @@ namespace Planova.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
 
+            modelBuilder.Entity("Planova.Activity.Domain.Entities.Activity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ActivityType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ActualFinish")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ActualStart")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("CalendarId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("Duration")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(4000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ParentActivityId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("PercentComplete")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime?>("PlannedFinish")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("PlannedStart")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("WbsItemId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("Weight")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CalendarId");
+
+                    b.HasIndex("ParentActivityId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("WbsItemId");
+
+                    b.HasIndex("ProjectId", "Code")
+                        .IsUnique();
+
+                    b.ToTable("Activities", (string)null);
+                });
+
+            modelBuilder.Entity("Planova.Activity.Domain.Entities.ActivityBank", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsStandard")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Subcategory")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Tags")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Category");
+
+                    b.HasIndex("Category", "Code")
+                        .IsUnique();
+
+                    b.ToTable("ActivityBanks", (string)null);
+                });
+
+            modelBuilder.Entity("Planova.Activity.Domain.Entities.ActivityBankItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("BankId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DefaultActivityType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DefaultDuration")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BankId");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("ActivityBankItems", (string)null);
+                });
+
+            modelBuilder.Entity("Planova.Activity.Domain.Entities.ActivityBankItemRelationship", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("BankId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DefaultLagDays")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("PredecessorItemId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("SuccessorItemId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BankId");
+
+                    b.HasIndex("PredecessorItemId");
+
+                    b.HasIndex("SuccessorItemId");
+
+                    b.ToTable("ActivityBankItemRelationships", (string)null);
+                });
+
+            modelBuilder.Entity("Planova.Activity.Domain.Entities.ActivityRelationship", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("LagDays")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("PredecessorId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("SuccessorId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PredecessorId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("SuccessorId");
+
+                    b.ToTable("ActivityRelationships", (string)null);
+                });
+
+            modelBuilder.Entity("Planova.Activity.Domain.Entities.Calendar", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DaysPerWeek")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Friday")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("HoursPerDay")
+                        .HasColumnType("decimal(4,1)");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Monday")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Saturday")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Sunday")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Thursday")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Tuesday")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Wednesday")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("Calendars", (string)null);
+                });
+
+            modelBuilder.Entity("Planova.Activity.Domain.Entities.CalendarDay", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("CalendarId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Label")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CalendarId", "Date")
+                        .IsUnique();
+
+                    b.ToTable("CalendarDays", (string)null);
+                });
+
             modelBuilder.Entity("Planova.Boq.Domain.Entities.Boq", b =>
                 {
                     b.Property<Guid>("Id")
@@ -905,6 +1285,91 @@ namespace Planova.Persistence.Migrations
                     b.ToTable("WbsTemplateItems", (string)null);
                 });
 
+            modelBuilder.Entity("Planova.Activity.Domain.Entities.Activity", b =>
+                {
+                    b.HasOne("Planova.Activity.Domain.Entities.Activity", "ParentActivity")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentActivityId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentActivity");
+                });
+
+            modelBuilder.Entity("Planova.Activity.Domain.Entities.ActivityBankItem", b =>
+                {
+                    b.HasOne("Planova.Activity.Domain.Entities.ActivityBank", "Bank")
+                        .WithMany("Items")
+                        .HasForeignKey("BankId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Planova.Activity.Domain.Entities.ActivityBankItem", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Bank");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("Planova.Activity.Domain.Entities.ActivityBankItemRelationship", b =>
+                {
+                    b.HasOne("Planova.Activity.Domain.Entities.ActivityBank", "Bank")
+                        .WithMany("Relationships")
+                        .HasForeignKey("BankId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Planova.Activity.Domain.Entities.ActivityBankItem", "PredecessorItem")
+                        .WithMany()
+                        .HasForeignKey("PredecessorItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Planova.Activity.Domain.Entities.ActivityBankItem", "SuccessorItem")
+                        .WithMany()
+                        .HasForeignKey("SuccessorItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Bank");
+
+                    b.Navigation("PredecessorItem");
+
+                    b.Navigation("SuccessorItem");
+                });
+
+            modelBuilder.Entity("Planova.Activity.Domain.Entities.ActivityRelationship", b =>
+                {
+                    b.HasOne("Planova.Activity.Domain.Entities.Activity", "Predecessor")
+                        .WithMany()
+                        .HasForeignKey("PredecessorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Planova.Activity.Domain.Entities.Activity", "Successor")
+                        .WithMany()
+                        .HasForeignKey("SuccessorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Predecessor");
+
+                    b.Navigation("Successor");
+                });
+
+            modelBuilder.Entity("Planova.Activity.Domain.Entities.CalendarDay", b =>
+                {
+                    b.HasOne("Planova.Activity.Domain.Entities.Calendar", "Calendar")
+                        .WithMany("Days")
+                        .HasForeignKey("CalendarId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Calendar");
+                });
+
             modelBuilder.Entity("Planova.Boq.Domain.Entities.BoqClassification", b =>
                 {
                     b.HasOne("Planova.Boq.Domain.Entities.BoqClassification", "Parent")
@@ -1007,6 +1472,28 @@ namespace Planova.Persistence.Migrations
                     b.Navigation("Parent");
 
                     b.Navigation("Template");
+                });
+
+            modelBuilder.Entity("Planova.Activity.Domain.Entities.Activity", b =>
+                {
+                    b.Navigation("Children");
+                });
+
+            modelBuilder.Entity("Planova.Activity.Domain.Entities.ActivityBank", b =>
+                {
+                    b.Navigation("Items");
+
+                    b.Navigation("Relationships");
+                });
+
+            modelBuilder.Entity("Planova.Activity.Domain.Entities.ActivityBankItem", b =>
+                {
+                    b.Navigation("Children");
+                });
+
+            modelBuilder.Entity("Planova.Activity.Domain.Entities.Calendar", b =>
+                {
+                    b.Navigation("Days");
                 });
 
             modelBuilder.Entity("Planova.Boq.Domain.Entities.Boq", b =>

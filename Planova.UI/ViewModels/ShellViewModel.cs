@@ -17,6 +17,7 @@ using Planova.UI.Views.Excel;
 using Planova.UI.Views.Profile;
 using Planova.UI.Views.Reports;
 using Planova.UI.Views.Wbs;
+using Planova.UI.Views.Activity;
 using Planova.UI.Views;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
@@ -234,8 +235,12 @@ public partial class ShellViewModel : ObservableObject
             view.InitializeTabs(_serviceProvider);
             return view;
         });
-        nav.RegisterTarget("activity", "Activity Studio", "CalendarDay24", true, true,
-            () => CreateEmptyState("CalendarDay24", "Activity Studio", "Activity management module is coming soon."));
+        nav.RegisterTarget("activity", "Activity Studio", "CalendarDay24", true, false, () =>
+        {
+            var view = _serviceProvider.GetRequiredService<ActivityStudioView>();
+            view.InitializeTabs(_serviceProvider);
+            return view;
+        });
         nav.RegisterTarget("resource", "Resource Studio", "People24", true, true,
             () => CreateEmptyState("People24", "Resource Studio", "Resource management module is coming soon."));
         nav.RegisterTarget("cost", "Cost Studio", "Money24", true, true,

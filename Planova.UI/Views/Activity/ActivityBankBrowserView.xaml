@@ -1,0 +1,95 @@
+<UserControl x:Class="Planova.UI.Views.Activity.ActivityBankBrowserView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Activity"
+             d:DataContext="{d:DesignInstance vm:ActivityBankBrowserViewModel}"
+             mc:Ignorable="d">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" TextWrapping="Wrap" Margin="0,0,0,8" Foreground="Gray">
+            Browse, preview, and apply Activity Bank templates to your WBS items.
+            You can also import/export templates via Excel or generate new ones with AI.
+        </TextBlock>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+            <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}"
+                      Width="160" Margin="0,0,8,0"/>
+            <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                     Width="200" Margin="0,0,8,0"/>
+            <Button Content="Browse" Command="{Binding BrowseCategoryCommand}" Margin="0,0,8,0"/>
+            <Button Content="Import Excel" Command="{Binding ImportFromExcelCommand}" Margin="0,0,8,0"/>
+            <Button Content="Export Excel" Command="{Binding ExportToExcelCommand}" Margin="0,0,8,0"/>
+            <Button Content="AI Generate" Command="{Binding AiGenerateBankEntryCommand}"/>
+        </StackPanel>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1" Padding="8" Margin="0,0,8,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="Bank Entries" FontWeight="Bold" Margin="0,0,0,8"/>
+                    <ListBox Grid.Row="1" ItemsSource="{Binding Entries}" SelectedItem="{Binding SelectedEntry}"
+                             DisplayMemberPath="Name"/>
+                </Grid>
+            </Border>
+
+            <GridSplitter Grid.Column="1" Width="4" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+
+            <Border Grid.Column="2" BorderBrush="Gray" BorderThickness="1" Padding="8">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="Preview" FontWeight="Bold" Margin="0,0,0,8"/>
+
+                    <StackPanel Grid.Row="1" Margin="0,0,0,8">
+                        <TextBlock Text="{Binding SelectedEntry.Name}" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding SelectedEntry.Category}" Foreground="Gray"/>
+                        <TextBlock Text="{Binding SelectedEntry.Description}" TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="2" ItemsSource="{Binding SelectedEntry.Items}"
+                              AutoGenerateColumns="False" IsReadOnly="True"
+                              Margin="0,0,0,8">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Code" Binding="{Binding Code}" Width="80"/>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                            <DataGridTextColumn Header="Type" Binding="{Binding DefaultActivityType}" Width="80"/>
+                            <DataGridTextColumn Header="Duration" Binding="{Binding DefaultDuration}" Width="60"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <StackPanel Grid.Row="3" Orientation="Horizontal">
+                        <Button Content="Preview Details" Command="{Binding PreviewEntryCommand}"
+                                Margin="0,0,8,0"/>
+                        <Button Content="Apply to WBS" Command="{Binding ApplyToWbsCommand}"
+                                Margin="0,0,8,0"/>
+                        <Button Content="Save as Custom" Command="{Binding SaveAsCustomEntryCommand}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <TextBlock Grid.Row="3" Text="{Binding StatusMessage}" Margin="0,8,0,0" Foreground="Green"/>
+    </Grid>
+</UserControl>

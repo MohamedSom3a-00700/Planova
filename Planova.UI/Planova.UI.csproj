@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
       <PrivateAssets>all</PrivateAssets>
@@ -30,6 +30,7 @@
     <ProjectReference Include="..\Planova.Infrastructure\Planova.Infrastructure.csproj" />
     <ProjectReference Include="..\Planova.Persistence\Planova.Persistence.csproj" />
     <ProjectReference Include="..\Planova.Excel\Planova.Excel.csproj" />
+    <ProjectReference Include="..\Planova.Activity\Planova.Activity.csproj" />
   </ItemGroup>
 
   <ItemGroup>

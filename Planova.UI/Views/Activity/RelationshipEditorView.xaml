@@ -1,0 +1,100 @@
+<UserControl x:Class="Planova.UI.Views.Activity.RelationshipEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Activity"
+             d:DataContext="{d:DesignInstance vm:RelationshipEditorViewModel}"
+             mc:Ignorable="d">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" TextWrapping="Wrap" Margin="0,0,0,8" Foreground="Gray">
+            Define logic relationships (FS, SS, FF, SF) between activities to model schedule dependencies.
+            Use <Run FontStyle="Italic">Validate</Run> to check for circular references before creating.
+        </TextBlock>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1" Padding="8" Margin="0,0,8,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="Relationships" FontWeight="Bold" Margin="0,0,0,8"/>
+                <DataGrid Grid.Row="1" ItemsSource="{Binding Relationships}"
+                          SelectedItem="{Binding SelectedRelationship}"
+                          AutoGenerateColumns="False" IsReadOnly="True"
+                          Margin="0,0,0,8">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Predecessor" Binding="{Binding PredecessorName}" Width="*"/>
+                        <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="50"/>
+                        <DataGridTextColumn Header="Lag" Binding="{Binding LagDays}" Width="50"/>
+                        <DataGridTextColumn Header="Successor" Binding="{Binding SuccessorName}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Button Grid.Row="2" Content="Delete Selected" Command="{Binding DeleteRelationshipCommand}"
+                        HorizontalAlignment="Left"/>
+            </Grid>
+        </Border>
+
+        <GridSplitter Grid.Column="1" Width="4" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+
+        <Border Grid.Column="2" BorderBrush="Gray" BorderThickness="1" Padding="8">
+            <StackPanel>
+                <TextBlock Text="Create Relationship" FontWeight="Bold" Margin="0,0,0,12"/>
+
+                <TextBlock Text="Predecessor" Margin="0,0,0,4"/>
+                <ComboBox ItemsSource="{Binding AvailableActivities}"
+                          SelectedValue="{Binding SelectedPredecessorId}"
+                          SelectedValuePath="Id"
+                          DisplayMemberPath="Name"
+                          Margin="0,0,0,8"/>
+
+                <TextBlock Text="Successor" Margin="0,0,0,4"/>
+                <ComboBox ItemsSource="{Binding AvailableActivities}"
+                          SelectedValue="{Binding SelectedSuccessorId}"
+                          SelectedValuePath="Id"
+                          DisplayMemberPath="Name"
+                          Margin="0,0,0,8"/>
+
+                <TextBlock Text="Relationship Type" Margin="0,0,0,4"/>
+                <ComboBox SelectedItem="{Binding SelectedType}" Margin="0,0,0,8"
+                          xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                    <sys:String>FS</sys:String>
+                    <sys:String>SS</sys:String>
+                    <sys:String>FF</sys:String>
+                    <sys:String>SF</sys:String>
+                </ComboBox>
+
+                <TextBlock Text="Lag (days)" Margin="0,0,0,4"/>
+                <TextBox Text="{Binding LagDays}" Margin="0,0,0,8"/>
+
+                <Button Content="Validate" Command="{Binding ValidateRelationshipCommand}"
+                        Margin="0,0,0,4"/>
+                <Button Content="Create" Command="{Binding CreateRelationshipCommand}"
+                        Margin="0,0,0,8"/>
+
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+        </Grid>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,8,0,0">
+                <Button Content="Load from Excel" Command="{Binding LoadFromExcelCommand}" Margin="0,0,8,0"/>
+                <Button Content="AI Generate" Command="{Binding AiGenerateRelationshipsCommand}" Margin="0,0,8,0"/>
+                <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center" Foreground="Gray"/>
+            </StackPanel>
+    </Grid>
+</UserControl>

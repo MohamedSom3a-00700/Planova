@@ -14,8 +14,7 @@ public class WbsValidationService : IWbsValidationService
 
         if (string.IsNullOrWhiteSpace(wbs.Name))
             errors.Add(new ValidationError(nameof(wbs.Name), "WBS name is required"));
-
-        if (wbs.Name.Length > 200)
+        else if (wbs.Name.Length > 200)
             errors.Add(new ValidationError(nameof(wbs.Name), "WBS name must not exceed 200 characters"));
 
         return Task.FromResult<IReadOnlyList<ValidationError>>(errors);
@@ -27,8 +26,7 @@ public class WbsValidationService : IWbsValidationService
 
         if (string.IsNullOrWhiteSpace(item.Name))
             errors.Add(new ValidationError(nameof(item.Name), "Item name is required"));
-
-        if (item.Name.Length > 200)
+        else if (item.Name.Length > 200)
             errors.Add(new ValidationError(nameof(item.Name), "Item name must not exceed 200 characters"));
 
         if (item.Weight.HasValue)

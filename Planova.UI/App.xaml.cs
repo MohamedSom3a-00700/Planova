@@ -33,6 +33,9 @@ using Planova.UI.Views.Dashboard;
 using Planova.UI.Views.Excel;
 using Planova.UI.Views.Profile;
 using Planova.UI.Views.Reports;
+using Planova.UI.ViewModels.Activity;
+using Planova.UI.Views.Activity;
+using Planova.Activity.Extensions;
 using QuestPDF.Infrastructure;
 using Serilog;
 using Wpf.Ui.Appearance;
@@ -161,6 +164,7 @@ public partial class App : System.Windows.Application
         services.AddPlanovaPersistence();
         services.AddPlanovaBoq();
         services.AddPlanovaWbs();
+        services.AddPlanovaActivity();
         services.AddScoped<IExcelRowReader, ExcelRowReader>();
         services.AddScoped<IMappingProfileService, MappingProfileService>();
         services.AddTransient<WorkbookBrowserViewModel>();
@@ -213,6 +217,29 @@ public partial class App : System.Windows.Application
         services.AddTransient<WbsStudioView>();
         services.AddTransient<WbsSettingsViewModel>();
         services.AddTransient<WbsSettingsView>();
+
+        services.AddTransient<ActivityStudioViewModel>();
+        services.AddTransient<ActivityStudioView>();
+        services.AddTransient<ActivityListViewModel>();
+        services.AddTransient<ActivityListView>();
+        services.AddTransient<ActivityEditorViewModel>();
+        services.AddTransient<ActivityEditorView>();
+        services.AddTransient<RelationshipEditorViewModel>();
+        services.AddTransient<RelationshipEditorView>();
+        services.AddTransient<GanttChartViewModel>();
+        services.AddTransient<GanttChartView>();
+        services.AddTransient<CalendarManagerViewModel>();
+        services.AddTransient<CalendarManagerView>();
+        services.AddTransient<CalendarDayGridViewModel>();
+        services.AddTransient<CalendarDayGridView>();
+        services.AddTransient<ActivityBankBrowserViewModel>();
+        services.AddTransient<ActivityBankBrowserView>();
+        services.AddTransient<ActivityBankPreviewViewModel>();
+        services.AddTransient<ActivityBankPreviewView>();
+        services.AddTransient<WbsGenerationWizardViewModel>();
+        services.AddTransient<WbsGenerationWizardView>();
+        services.AddTransient<ScheduleReportViewModel>();
+        services.AddTransient<ScheduleReportView>();
     }
 
     private static string GetDatabasePath()

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter</value></resheader>
+  <data name="ActivityStudio_Title" xml:space="preserve"><value>استوديو النشاطات</value></data>
+  <data name="ActivityList" xml:space="preserve"><value>قائمة النشاطات</value></data>
+  <data name="ActivityCreate" xml:space="preserve"><value>إنشاء نشاط</value></data>
+  <data name="ActivityDelete" xml:space="preserve"><value>حذف النشاط</value></data>
+  <data name="ActivitySave" xml:space="preserve"><value>حفظ</value></data>
+  <data name="ActivityCancel" xml:space="preserve"><value>إلغاء</value></data>
+  <data name="ActivitySearch" xml:space="preserve"><value>البحث عن نشاطات...</value></data>
+  <data name="ActivityCode" xml:space="preserve"><value>الكود</value></data>
+  <data name="ActivityName" xml:space="preserve"><value>الاسم</value></data>
+  <data name="ActivityType" xml:space="preserve"><value>النوع</value></data>
+  <data name="ActivityStatus" xml:space="preserve"><value>الحالة</value></data>
+  <data name="ActivityDuration" xml:space="preserve"><value>المدة (أيام)</value></data>
+  <data name="ActivityPlannedStart" xml:space="preserve"><value>البداية المخطط لها</value></data>
+  <data name="ActivityPlannedFinish" xml:space="preserve"><value>النهاية المخطط لها</value></data>
+  <data name="ActivityPercentComplete" xml:space="preserve"><value>نسبة الإنجاز</value></data>
+  <data name="ActivityPredecessors" xml:space="preserve"><value>السوابق</value></data>
+  <data name="ActivitySuccessors" xml:space="preserve"><value>اللواحق</value></data>
+  <data name="ActivityWeight" xml:space="preserve"><value>الوزن</value></data>
+  <data name="ActivityDescription" xml:space="preserve"><value>الوصف</value></data>
+  <data name="ActivityNotes" xml:space="preserve"><value>ملاحظات</value></data>
+  <data name="ActivityCalendar" xml:space="preserve"><value>التقويم</value></data>
+  <data name="ActivityWbsItem" xml:space="preserve"><value>عنصر هيكل العمل</value></data>
+  <data name="GanttChart" xml:space="preserve"><value>مخطط جانت</value></data>
+  <data name="GanttZoomIn" xml:space="preserve"><value>تكبير</value></data>
+  <data name="GanttZoomOut" xml:space="preserve"><value>تصغير</value></data>
+  <data name="GanttDay" xml:space="preserve"><value>يوم</value></data>
+  <data name="GanttWeek" xml:space="preserve"><value>أسبوع</value></data>
+  <data name="GanttMonth" xml:space="preserve"><value>شهر</value></data>
+  <data name="Relationships" xml:space="preserve"><value>العلاقات</value></data>
+  <data name="RelationshipCreate" xml:space="preserve"><value>إنشاء علاقة</value></data>
+  <data name="RelationshipDelete" xml:space="preserve"><value>حذف</value></data>
+  <data name="RelationshipType" xml:space="preserve"><value>النوع</value></data>
+  <data name="RelationshipLagDays" xml:space="preserve"><value>أيام التأخير</value></data>
+  <data name="RelationshipPredecessor" xml:space="preserve"><value>السابق</value></data>
+  <data name="RelationshipSuccessor" xml:space="preserve"><value>اللاحق</value></data>
+  <data name="RelationshipCircularRef" xml:space="preserve"><value>هذه العلاقة ستؤدي إلى مرجع دائري.</value></data>
+  <data name="RelationshipSelfRef" xml:space="preserve"><value>لا يمكن إنشاء علاقة بين نفس النشاط.</value></data>
+  <data name="CalendarManager" xml:space="preserve"><value>مدير التقويم</value></data>
+  <data name="CalendarCreate" xml:space="preserve"><value>إنشاء تقويم</value></data>
+  <data name="CalendarName" xml:space="preserve"><value>اسم التقويم</value></data>
+  <data name="CalendarType" xml:space="preserve"><value>النوع</value></data>
+  <data name="CalendarGlobal" xml:space="preserve"><value>عام</value></data>
+  <data name="CalendarProject" xml:space="preserve"><value>خاص بالمشروع</value></data>
+  <data name="CalendarWorking" xml:space="preserve"><value>عمل</value></data>
+  <data name="CalendarNonWorking" xml:space="preserve"><value>غير عمل</value></data>
+  <data name="CalendarException" xml:space="preserve"><value>استثناء</value></data>
+  <data name="CalendarBulkSet" xml:space="preserve"><value>تعيين غير عمل لمجموعة</value></data>
+  <data name="ActivityBank" xml:space="preserve"><value>بنك النشاطات</value></data>
+  <data name="BankBrowse" xml:space="preserve"><value>تصفح</value></data>
+  <data name="BankSearch" xml:space="preserve"><value>البحث في بنك النشاطات...</value></data>
+  <data name="BankCategory" xml:space="preserve"><value>التصنيف</value></data>
+  <data name="BankApplyToWbs" xml:space="preserve"><value>تطبيق على هيكل العمل</value></data>
+  <data name="BankSaveCustom" xml:space="preserve"><value>حفظ كمدخل مخصص</value></data>
+  <data name="BankPreview" xml:space="preserve"><value>معاينة</value></data>
+  <data name="WbsGeneration" xml:space="preserve"><value>توليد من هيكل العمل</value></data>
+  <data name="GenerationSimple" xml:space="preserve"><value>1:1 بسيط</value></data>
+  <data name="GenerationBank" xml:space="preserve"><value>بنك النشاطات</value></data>
+  <data name="GenerationPreview" xml:space="preserve"><value>معاينة</value></data>
+  <data name="GenerationCommit" xml:space="preserve"><value>توليد النشاطات</value></data>
+  <data name="GenerationReplace" xml:space="preserve"><value>استبدال الموجود</value></data>
+  <data name="GenerationMerge" xml:space="preserve"><value>دمج مع الموجود</value></data>
+  <data name="GenerationProgress" xml:space="preserve"><value>جاري توليد النشاطات...</value></data>
+  <data name="ScheduleReport" xml:space="preserve"><value>تقرير الجدول الزمني</value></data>
+  <data name="ReportGenerate" xml:space="preserve"><value>توليد التقرير</value></data>
+  <data name="ReportExportExcel" xml:space="preserve"><value>تصدير إلى إكسل</value></data>
+  <data name="ReportExportPdf" xml:space="preserve"><value>تصدير إلى PDF</value></data>
+  <data name="ReportLoading" xml:space="preserve"><value>جاري توليد التقرير...</value></data>
+  <data name="DeleteConfirm" xml:space="preserve"><value>هل أنت متأكد من حذف هذا النشاط؟</value></data>
+  <data name="DeletePredecessorWarning" xml:space="preserve"><value>هذا النشاط سابق لنشاطات أخرى. سيؤدي حذفه إلى إزالة جميع العلاقات المرتبطة. هل تريد المتابعة؟</value></data>
+  <data name="ValidationNameRequired" xml:space="preserve"><value>الاسم مطلوب.</value></data>
+  <data name="ValidationDurationPositive" xml:space="preserve"><value>يجب أن تكون المدة أكبر من 0 للمهام وأنشطة الجهد المستمر.</value></data>
+  <data name="ValidationDurationZeroMilestone" xml:space="preserve"><value>يجب أن تكون المدة 0 لنوع المعلم.</value></data>
+  <data name="ValidationDateRange" xml:space="preserve"><value>يجب أن تكون البداية المخطط لها قبل النهاية المخطط لها.</value></data>
+  <data name="ValidationWeightRange" xml:space="preserve"><value>يجب أن يكون الوزن بين 0 و 100.</value></data>
+</root>

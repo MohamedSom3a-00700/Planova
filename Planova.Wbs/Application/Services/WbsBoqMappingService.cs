@@ -253,17 +253,17 @@ public class WbsBoqMappingService : IWbsBoqMappingService
         for (int i = 0; i < roots.Count; i++)
         {
             roots[i].Code = (i + 1).ToString();
-            RecalculateChildCodes(items, roots[i], i + 1);
+            RecalculateChildCodes(items, roots[i], roots[i].Code);
         }
     }
 
-    private static void RecalculateChildCodes(List<WbsItemEntity> items, WbsItemEntity parent, int parentNum)
+    private static void RecalculateChildCodes(List<WbsItemEntity> items, WbsItemEntity parent, string parentCode)
     {
         var children = items.Where(i => i.ParentId == parent.Id).OrderBy(i => i.SortOrder).ToList();
         for (int i = 0; i < children.Count; i++)
         {
-            children[i].Code = $"{parentNum}.{i + 1}";
-            RecalculateChildCodes(items, children[i], i + 1);
+            children[i].Code = $"{parentCode}.{i + 1}";
+            RecalculateChildCodes(items, children[i], children[i].Code);
         }
     }
 }
