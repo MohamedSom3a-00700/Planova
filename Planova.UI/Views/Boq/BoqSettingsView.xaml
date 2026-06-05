@@ -1,0 +1,128 @@
+<UserControl x:Class="Planova.UI.Views.Boq.BoqSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:enums="clr-namespace:Planova.Boq.Domain.Enums;assembly=Planova.Boq"
+             mc:Ignorable="d"
+             d:DesignHeight="700" d:DesignWidth="900">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="BOQ Settings" FontSize="20" FontWeight="Bold" Margin="0,0,0,16"/>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <GroupBox Header="General" Margin="0,0,0,12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Default Currency:" VerticalAlignment="Center" Margin="0,0,0,6"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding DefaultCurrency}" Margin="0,0,0,6" Width="100" HorizontalAlignment="Left"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Quantity Decimal Places:" VerticalAlignment="Center" Margin="0,0,0,6"/>
+                        <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding DecimalOptions}"
+                                  SelectedItem="{Binding QuantityDecimals}" Margin="0,0,0,6" Width="80" HorizontalAlignment="Left"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Rate Decimal Places:" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding DecimalOptions}"
+                                  SelectedItem="{Binding RateDecimals}" Width="80" HorizontalAlignment="Left"/>
+                    </Grid>
+                </GroupBox>
+
+                <GroupBox Header="Import Defaults" Margin="0,0,0,12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="CSV Delimiter:" VerticalAlignment="Center" Margin="0,0,0,6"/>
+                        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding DelimiterOptions}"
+                                  Text="{Binding DefaultDelimiter}" IsEditable="True" Margin="0,0,0,6" Width="100" HorizontalAlignment="Left"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Default Code Column:" VerticalAlignment="Center" Margin="0,0,0,6"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DefaultCodeColumn}" Margin="0,0,0,6" Width="200" HorizontalAlignment="Left"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Default Description Column:" VerticalAlignment="Center" Margin="0,0,0,6"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding DefaultDescriptionColumn}" Margin="0,0,0,6" Width="200" HorizontalAlignment="Left"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Default Unit Column:" VerticalAlignment="Center" Margin="0,0,0,6"/>
+                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding DefaultUnitColumn}" Margin="0,0,0,6" Width="200" HorizontalAlignment="Left"/>
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Default Quantity Column:" VerticalAlignment="Center" Margin="0,0,0,6"/>
+                        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding DefaultQuantityColumn}" Margin="0,0,0,6" Width="200" HorizontalAlignment="Left"/>
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Default Rate Column:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding DefaultRateColumn}" Width="200" HorizontalAlignment="Left"/>
+                    </Grid>
+                </GroupBox>
+
+                <GroupBox Header="Behavior" Margin="0,0,0,12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                  Content="Auto-validate on BOQ load" IsChecked="{Binding AutoValidateOnLoad}" Margin="0,0,0,6"/>
+                        <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                  Content="Expand tree on load" IsChecked="{Binding ExpandTreeOnLoad}"/>
+                    </Grid>
+                </GroupBox>
+
+                <GroupBox Header="Reports" Margin="0,0,0,12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Default Report Type:" VerticalAlignment="Center" Margin="0,0,0,6"/>
+                        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding ReportTypeOptions}"
+                                  SelectedItem="{Binding DefaultReportType}" Margin="0,0,0,6" Width="160" HorizontalAlignment="Left"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Default Format:" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding ReportFormatOptions}"
+                                  SelectedItem="{Binding DefaultReportFormat}" Width="160" HorizontalAlignment="Left"/>
+                    </Grid>
+                </GroupBox>
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,12,0,0">
+            <Button Content="Save" Command="{Binding SaveCommand}" MinWidth="100" Margin="0,0,8,0"/>
+            <Button Content="Reset Defaults" Command="{Binding ResetDefaultsCommand}" MinWidth="100" Margin="0,0,16,0"/>
+            <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center" Foreground="Gray"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

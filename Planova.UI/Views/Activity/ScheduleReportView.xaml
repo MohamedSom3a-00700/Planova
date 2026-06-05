@@ -1,0 +1,54 @@
+<UserControl x:Class="Planova.UI.Views.Activity.ScheduleReportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Activity"
+             d:DataContext="{d:DesignInstance vm:ScheduleReportViewModel}"
+             mc:Ignorable="d">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+            <Button Content="Generate Report" Command="{Binding GenerateReportCommand}"
+                    Margin="0,0,8,0" Width="140"/>
+            <Button Content="Export to Excel" Command="{Binding ExportToExcelCommand}"
+                    Margin="0,0,8,0" Width="120"/>
+            <Button Content="Export to PDF" Command="{Binding ExportToPdfCommand}"
+                    Width="120"/>
+        </StackPanel>
+
+        <TextBlock Grid.Row="1" Margin="0,0,0,8">
+            <Run Text="{Binding Report.ProjectName, FallbackValue='Project'}"/>
+            <Run Text=" - "/>
+            <Run Text="Generated:"/>
+            <Run Text="{Binding Report.GeneratedAt, StringFormat={}{0:g}, FallbackValue='--'}"/>
+        </TextBlock>
+
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Report.Rows}"
+                  AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Code" Binding="{Binding Code}" Width="80"/>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="80"/>
+                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="80"/>
+                <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" Width="60"/>
+                <DataGridTextColumn Header="Planned Start" Binding="{Binding PlannedStart, StringFormat={}{0:d}}" Width="100"/>
+                <DataGridTextColumn Header="Planned Finish" Binding="{Binding PlannedFinish, StringFormat={}{0:d}}" Width="100"/>
+                <DataGridTextColumn Header="%" Binding="{Binding PercentComplete}" Width="60"/>
+                <DataGridTextColumn Header="Predecessors" Binding="{Binding Predecessors}" Width="120"/>
+                <DataGridTextColumn Header="Successors" Binding="{Binding Successors}" Width="120"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <TextBlock Grid.Row="3" Margin="0,8,0,0" Foreground="Gray">
+            <Run Text="{Binding Report.Rows.Count, FallbackValue='0'}"/>
+            <Run Text=" activities"/>
+        </TextBlock>
+    </Grid>
+</UserControl>

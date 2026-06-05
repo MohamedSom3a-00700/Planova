@@ -1,0 +1,131 @@
+<UserControl x:Class="Planova.UI.Views.NavigationRail"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ui="clr-namespace:Wpf.Ui.Controls;assembly=Wpf.Ui"
+             xmlns:conv="clr-namespace:Planova.UI.Converters"
+             mc:Ignorable="d"
+             Width="232"
+             Background="{DynamicResource BrandChromeSurface}">
+    <UserControl.Resources>
+        <conv:CollapseIconConverter x:Key="CollapseIconConverter"/>
+        <conv:BoolToVisibilityConverter x:Key="InverseBoolToVis" Invert="True"/>
+        <Style x:Key="RailButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="{DynamicResource BrandChromeForeground}" />
+            <Setter Property="FontFamily" Value="{DynamicResource BrandFontFamily}" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="12,10" />
+            <Setter Property="Margin" Value="8,2" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{DynamicResource BrandRadiusSmall}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Left"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource BrandElevationMedium}" />
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource BrandBorderDefault}" />
+                                <Setter Property="Foreground" Value="{DynamicResource BrandChromeForeground}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource ThemeCard}" />
+                            </Trigger>
+                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource ThemeCard}" />
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource ThemeAccent}" />
+                                <Setter Property="Foreground" Value="{DynamicResource BrandChromeForeground}" />
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="RailHeaderButtonStyle" TargetType="ui:Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="{DynamicResource BrandChromeForeground}" />
+            <Setter Property="Padding" Value="8" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Margin" Value="8,8,8,4" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ui:Button Grid.Row="0"
+                   Style="{StaticResource RailHeaderButtonStyle}"
+                   ToolTip="Toggle navigation"
+                   Click="OnToggleClick">
+            <ui:Button.Icon>
+                <ui:SymbolIcon Symbol="{Binding IsCollapsed, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CollapseIconConverter}}" />
+            </ui:Button.Icon>
+        </ui:Button>
+
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Margin="0,2,0,0">
+            <ItemsControl x:Name="NavItems"
+                          ItemsSource="{Binding NavigationItems}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Style="{StaticResource RailButtonStyle}"
+                                Command="{Binding Command}"
+                                CommandParameter="{Binding CommandParameter}">
+                            <StackPanel>
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Orientation" Value="Horizontal"/>
+                                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCollapsed, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <ui:SymbolIcon Symbol="{Binding IconGlyph}"
+                                               FontSize="18"
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}">
+                                    <ui:SymbolIcon.Style>
+                                        <Style TargetType="ui:SymbolIcon">
+                                            <Setter Property="Margin" Value="0,0,12,0"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCollapsed, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
+                                                    <Setter Property="Margin" Value="0"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ui:SymbolIcon.Style>
+                                </ui:SymbolIcon>
+                                <TextBlock Text="{Binding DisplayName}"
+                                           VerticalAlignment="Center"
+                                           FontSize="{DynamicResource BrandBodySize}"
+                                           FontFamily="{DynamicResource BrandFontFamily}"
+                                           TextTrimming="CharacterEllipsis"
+                                           Visibility="{Binding IsCollapsed, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBoolToVis}}"
+                                           Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                            </StackPanel>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

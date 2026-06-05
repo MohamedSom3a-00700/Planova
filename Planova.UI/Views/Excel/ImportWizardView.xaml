@@ -1,0 +1,142 @@
+<UserControl x:Class="Planova.UI.Views.Excel.ImportWizardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Excel"
+             xmlns:conv="clr-namespace:Planova.UI.Converters"
+             d:DataContext="{d:DesignInstance vm:ImportViewModel}"
+             Background="{DynamicResource WorkspaceBackgroundGradient}"
+             FontFamily="{DynamicResource BrandFontFamily}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:BoolToVisibilityConverter x:Key="InvertedBoolToVis" Invert="True"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="12">
+            <TextBlock Text="Import Wizard" FontSize="24" FontWeight="Bold"
+                       Foreground="{DynamicResource ThemeForeground}"/>
+            <ItemsControl ItemsSource="{Binding StepTitles}" Margin="0,8,0,0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate><StackPanel Orientation="Horizontal"/></ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" Margin="8,0" FontWeight="SemiBold"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="Red"
+                       Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"
+                       Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Step 1: Select File -->
+        <StackPanel Grid.Row="2" Margin="12"
+                    Visibility="{Binding IsStep1Visible, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="Select Excel file to import" FontSize="16"/>
+            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                <TextBox Text="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}" Width="300" Height="28"/>
+                <Button Content="Open" Command="{Binding SelectFileCommand}" Margin="8,0,0,0" Height="28"/>
+            </StackPanel>
+            <StackPanel Margin="0,12,0,0"
+                        Visibility="{Binding WorkbookInfo, Converter={StaticResource BoolToVis}}">
+                <TextBlock Text="Select Worksheet:" FontWeight="SemiBold"/>
+                <ComboBox ItemsSource="{Binding Worksheets}" DisplayMemberPath="Name"
+                          SelectedValuePath="Name" SelectedValue="{Binding SelectedWorksheet}"
+                          Width="250" Margin="0,4,0,0"/>
+                <TextBlock Text="Select Entity Type:" FontWeight="SemiBold" Margin="0,12,0,0"/>
+                <ComboBox ItemsSource="{Binding EntityTypes}" SelectedItem="{Binding SelectedEntityType}"
+                          Width="250" Margin="0,4,0,0"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Step 2: Map Columns -->
+        <Grid Grid.Row="2" Margin="12"
+              Visibility="{Binding IsStep2Visible, Converter={StaticResource BoolToVis}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="Map columns from Excel to Planova fields" FontSize="16"/>
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0"
+                            Visibility="{Binding HasAvailableProfiles, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Load Profile:" VerticalAlignment="Center"/>
+                    <ComboBox ItemsSource="{Binding AvailableProfiles}" DisplayMemberPath="Name"
+                              SelectedItem="{Binding SelectedProfile}" Width="200" Margin="8,0"/>
+                    <Button Content="Apply Profile" Command="{Binding ApplyProfileCommand}" Height="26"/>
+                </StackPanel>
+            </StackPanel>
+            <DataGrid Grid.Row="1" ItemsSource="{Binding ColumnMappingEntries}" AutoGenerateColumns="False"
+                      IsReadOnly="False" Margin="0,8,0,0"
+                      CanUserAddRows="False" CanUserDeleteRows="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Excel Column" Binding="{Binding ExcelColumn, Mode=OneWay}" Width="200" IsReadOnly="True"/>
+                    <DataGridTemplateColumn Header="Planova Field" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=DataContext.EntityFields}"
+                                          SelectedItem="{Binding MappedField, UpdateSourceTrigger=PropertyChanged}"
+                                          IsEditable="True" Margin="2"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+        <!-- Step 3: Validate -->
+        <StackPanel Grid.Row="2" Margin="12"
+                    Visibility="{Binding IsStep3Visible, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="Validation" FontSize="16"/>
+            <StackPanel Visibility="{Binding ValidationResult, Converter={StaticResource BoolToVis}}">
+                <TextBlock Text="{Binding ValidationResult.IsValid, StringFormat='Valid: {0}'}" Margin="0,8"/>
+                <TextBlock Text="{Binding ValidationResult.TotalErrors, StringFormat='Errors: {0}'}"/>
+                <ItemsControl ItemsSource="{Binding ValidationResult.Errors}" MaxHeight="200">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Message}" Margin="0,2"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Step 4: Import -->
+        <StackPanel Grid.Row="2" Margin="12"
+                    Visibility="{Binding IsStep4Visible, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="Import Progress" FontSize="16"/>
+            <ProgressBar Value="{Binding ImportProgress}" Height="20" Margin="0,12,0,0"/>
+            <TextBlock Text="{Binding ImportProgress}" Margin="0,4"/>
+            <StackPanel Visibility="{Binding ImportResult, Converter={StaticResource BoolToVis}}" Margin="0,12,0,0">
+                <TextBlock Text="{Binding ImportResult.ImportedRecords, StringFormat='Imported: {0}'}"/>
+                <TextBlock Text="{Binding ImportResult.UpdatedRecords, StringFormat='Updated: {0}'}"/>
+                <TextBlock Text="{Binding ImportResult.SkippedRecords, StringFormat='Skipped: {0}'}"/>
+                <TextBlock Text="{Binding ImportResult.FailedRecords, StringFormat='Failed: {0}'}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Navigation -->
+        <StackPanel Grid.Row="3" Margin="12" Orientation="Horizontal">
+            <Button Content="Back" Command="{Binding PreviousStepCommand}" Height="28" MinWidth="70"
+                    IsEnabled="{Binding CanGoBack}"/>
+            <Button Content="Next" Command="{Binding NextStepCommand}" Height="28" MinWidth="70" Margin="8,0"
+                    IsEnabled="{Binding CanGoNext}"
+                    Visibility="{Binding IsNotStep3, Converter={StaticResource BoolToVis}}"/>
+            <Button Content="Validate" Command="{Binding ValidateCommand}" Height="28" MinWidth="70"
+                    Visibility="{Binding IsStep3, Converter={StaticResource BoolToVis}}"/>
+            <Button Content="Import" Command="{Binding ImportCommand}" Height="28" MinWidth="70" Margin="8,0"
+                    Visibility="{Binding IsStep4Visible, Converter={StaticResource BoolToVis}}"/>
+            <Button Content="Reset" Command="{Binding ResetCommand}" Height="28" MinWidth="70" Margin="8,0"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

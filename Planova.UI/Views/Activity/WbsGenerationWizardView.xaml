@@ -1,0 +1,85 @@
+<UserControl x:Class="Planova.UI.Views.Activity.WbsGenerationWizardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Activity"
+             d:DataContext="{d:DesignInstance vm:WbsGenerationWizardViewModel}"
+             mc:Ignorable="d">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" TextWrapping="Wrap" Margin="0,0,0,8" Foreground="Gray">
+            Generate schedule activities from WBS work packages, activity bank templates, or BOQ items.
+            Preview the result before committing, then commit to create activities in the current project.
+        </TextBlock>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock Text="Step 1: Configure" FontWeight="Bold" Margin="0,0,20,0"/>
+            <TextBlock Text="Step 2: Preview" FontWeight="Bold" Margin="0,0,20,0"/>
+            <TextBlock Text="Step 3: Commit" FontWeight="Bold"/>
+        </StackPanel>
+
+        <Grid Grid.Row="2">
+            <StackPanel>
+                <GroupBox Header="Generation Mode" Margin="0,0,0,12" Padding="8">
+                    <StackPanel>
+                        <RadioButton Content="Simple - auto generate from WBS structure"
+                                     IsChecked="{Binding IsSimpleGeneration}"
+                                     GroupName="GenMode" Margin="0,0,0,4"/>
+                        <RadioButton Content="Bank - use activity bank template"
+                                     IsChecked="{Binding IsBankGeneration}"
+                                     GroupName="GenMode"/>
+                        <RadioButton Content="BOQ - generate from BOQ items"
+                                     IsChecked="{Binding IsBOQGeneration}"
+                                     GroupName="GenMode" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Header="WBS Items" Margin="0,0,0,12" Padding="8">
+                    <TextBlock Text="{Binding SelectedWbsItems.Count, StringFormat={}{0} WBS item(s) selected}"/>
+                </GroupBox>
+
+                <GroupBox Header="BOQ Items (for BOQ mode)" Margin="0,0,0,12" Padding="8">
+                    <StackPanel>
+                        <TextBlock Text="{Binding SelectedBoqCodes.Count, StringFormat={}{0} BOQ item(s) selected}"
+                                   Margin="0,0,0,8"/>
+                        <Button Content="Load BOQ from Studio / Select BOQ Items"
+                                Command="{Binding LoadBoqItemsCommand}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Header="Preview" Padding="8" Height="Auto">
+                    <DataGrid ItemsSource="{Binding Preview.Previews}"
+                              AutoGenerateColumns="False" IsReadOnly="True"
+                              MaxHeight="300">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="WBS Item" Binding="{Binding WbsItemName}" Width="*"/>
+                            <DataGridTextColumn Header="Code" Binding="{Binding Code}" Width="80"/>
+                            <DataGridTextColumn Header="Activity Name" Binding="{Binding Name}" Width="*"/>
+                            <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="80"/>
+                            <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" Width="60"/>
+                            <DataGridCheckBoxColumn Header="New" Binding="{Binding IsNew}" Width="50"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </StackPanel>
+
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="Generating..." FontSize="16" Margin="0,0,0,8"/>
+                <ProgressBar Value="{Binding ProgressPercentage}" Width="300" Height="20"/>
+                <TextBlock Text="{Binding ProgressMessage}" Margin="0,4,0,0"/>
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+            <Button Content="Next Step" Command="{Binding NextStepCommand}" Margin="0,0,8,0" Width="100"/>
+            <Button Content="Commit" Command="{Binding CommitGenerationCommand}" Width="100"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

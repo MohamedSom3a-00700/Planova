@@ -1,0 +1,51 @@
+<UserControl x:Class="Planova.UI.Views.Resource.CrewTemplateManagerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Resource"
+             d:DataContext="{d:DesignInstance vm:CrewTemplateManagerViewModel}"
+             Background="{DynamicResource WorkspaceBackgroundGradient}"
+             FontFamily="{DynamicResource BrandFontFamily}"
+             mc:Ignorable="d">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Crew Templates" FontSize="20" FontWeight="Bold"
+                   Foreground="{DynamicResource ThemeForeground}" Margin="0,0,0,12"/>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBox Text="{Binding NewCrewName, UpdateSourceTrigger=PropertyChanged}"
+                     Width="200" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <Button Content="Create Crew" Command="{Binding CreateCrewCommand}" Margin="0,0,8,0"/>
+            <Button Content="Clone" Command="{Binding CloneCrewCommand}"
+                    CommandParameter="{Binding SelectedCrew}" Margin="0,0,8,0"/>
+            <Button Content="Delete" Command="{Binding DeleteCrewCommand}"
+                    CommandParameter="{Binding SelectedCrew}"/>
+        </StackPanel>
+
+        <DataGrid Grid.Row="2"
+                  ItemsSource="{Binding Crews}"
+                  SelectedItem="{Binding SelectedCrew, Mode=TwoWay}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  Background="Transparent"
+                  BorderThickness="0">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="120"/>
+                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
+                <DataGridTextColumn Header="Resources" Binding="{Binding ResourceCount}" Width="80"/>
+                <DataGridTextColumn Header="Blended Rate" Binding="{Binding BlendedRate}" Width="120"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <TextBlock Grid.Row="3" Text="{Binding StatusMessage}" Margin="0,8,0,0"
+                   Foreground="{DynamicResource ThemeForeground}"/>
+    </Grid>
+</UserControl>

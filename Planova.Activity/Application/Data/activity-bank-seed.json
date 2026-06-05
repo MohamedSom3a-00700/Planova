@@ -1,0 +1,659 @@
+[
+  {
+    "category": "Preliminary",
+    "subcategory": "Site Preparation",
+    "code": "PRELIM-SITE-001",
+    "name": "Site Mobilization",
+    "description": "Mobilize equipment, site office, and utilities",
+    "items": [
+      { "code": "1", "name": "Site Mobilization", "level": 0, "sortOrder": 1, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Site Office Setup", "level": 0, "sortOrder": 2, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Utility Connections", "level": 0, "sortOrder": 3, "defaultDuration": 4, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Site Security Installation", "level": 0, "sortOrder": 4, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Site Mobilization Complete", "level": 0, "sortOrder": 5, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "1", "successorItemCode": "3", "type": "FS", "defaultLagDays": 1 },
+      { "predecessorItemCode": "1", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Preliminary",
+    "subcategory": "Survey",
+    "code": "PRELIM-SRVY-001",
+    "name": "Site Survey & Setting Out",
+    "description": "Topographic survey and construction setting out",
+    "items": [
+      { "code": "1", "name": "Topographic Survey", "level": 0, "sortOrder": 1, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Benchmark Establishment", "level": 0, "sortOrder": 2, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Grid Lines Setting Out", "level": 0, "sortOrder": 3, "defaultDuration": 4, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Survey Report Submission", "level": 0, "sortOrder": 4, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Survey Complete", "level": 0, "sortOrder": 5, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Earthworks",
+    "subcategory": "Excavation",
+    "code": "EARTH-EXCV-001",
+    "name": "Bulk Excavation",
+    "description": "General bulk earthworks and excavation to formation level",
+    "items": [
+      { "code": "1", "name": "Topsoil Stripping", "level": 0, "sortOrder": 1, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Bulk Excavation", "level": 0, "sortOrder": 2, "defaultDuration": 10, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Formation Level Trim", "level": 0, "sortOrder": 3, "defaultDuration": 4, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Excavation Inspection", "level": 0, "sortOrder": 4, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Excavation Complete", "level": 0, "sortOrder": 5, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Earthworks",
+    "subcategory": "Backfill",
+    "code": "EARTH-BKFL-001",
+    "name": "Backfill & Compaction",
+    "description": "Structural backfill operations with compaction testing",
+    "items": [
+      { "code": "1", "name": "Import Fill Material", "level": 0, "sortOrder": 1, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Layer 1 Backfill & Compact", "level": 0, "sortOrder": 2, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Compaction Test", "level": 0, "sortOrder": 3, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Layer 2 Backfill & Compact", "level": 0, "sortOrder": 4, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Final Compaction Test", "level": 0, "sortOrder": 5, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Backfill Complete", "level": 0, "sortOrder": 6, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Concrete",
+    "subcategory": "Foundations",
+    "code": "CONC-FNDN-001",
+    "name": "Pad Foundation Construction",
+    "description": "Reinforced concrete pad foundations",
+    "items": [
+      { "code": "1", "name": "Excavate Pad Footings", "level": 0, "sortOrder": 1, "defaultDuration": 4, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Blinding Concrete", "level": 0, "sortOrder": 2, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Reinforcement Installation", "level": 0, "sortOrder": 3, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Formwork Installation", "level": 0, "sortOrder": 4, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Concrete Pour", "level": 0, "sortOrder": 5, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Curing", "level": 0, "sortOrder": 6, "defaultDuration": 7, "defaultActivityType": "Task" },
+      { "code": "7", "name": "Strip Formwork", "level": 0, "sortOrder": 7, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "8", "name": "Foundation Complete", "level": 0, "sortOrder": 8, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 1 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "6", "successorItemCode": "7", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "7", "successorItemCode": "8", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Concrete",
+    "subcategory": "Columns",
+    "code": "CONC-COL-001",
+    "name": "Column Construction",
+    "description": "Reinforced concrete column construction",
+    "items": [
+      { "code": "1", "name": "Column Reinforcement", "level": 0, "sortOrder": 1, "defaultDuration": 4, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Column Formwork Erection", "level": 0, "sortOrder": 2, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Column Concrete Pour", "level": 0, "sortOrder": 3, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Column Curing", "level": 0, "sortOrder": 4, "defaultDuration": 7, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Strip Column Formwork", "level": 0, "sortOrder": 5, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Column Complete", "level": 0, "sortOrder": 6, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Concrete",
+    "subcategory": "Slabs",
+    "code": "CONC-SLAB-001",
+    "name": "Suspended Slab Construction",
+    "description": "Reinforced concrete suspended slab construction with post-tensioning option",
+    "items": [
+      { "code": "1", "name": "Soffit Formwork Installation", "level": 0, "sortOrder": 1, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Bottom Reinforcement", "level": 0, "sortOrder": 2, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Services Embedment", "level": 0, "sortOrder": 3, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Top Reinforcement", "level": 0, "sortOrder": 4, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Concrete Pour", "level": 0, "sortOrder": 5, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Slab Curing", "level": 0, "sortOrder": 6, "defaultDuration": 7, "defaultActivityType": "Task" },
+      { "code": "7", "name": "Strip Soffit Formwork", "level": 0, "sortOrder": 7, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "8", "name": "Slab Complete", "level": 0, "sortOrder": 8, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "6", "successorItemCode": "7", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "7", "successorItemCode": "8", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Formwork",
+    "subcategory": "Wall Formwork",
+    "code": "FMWK-WALL-001",
+    "name": "Wall Formwork Installation",
+    "description": "Formwork installation for reinforced concrete walls",
+    "items": [
+      { "code": "1", "name": "Wall Rebar Inspection", "level": 0, "sortOrder": 1, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Side 1 Formwork Erection", "level": 0, "sortOrder": 2, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Side 2 Formwork Erection", "level": 0, "sortOrder": 3, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Alignment Check", "level": 0, "sortOrder": 4, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Wall Formwork Complete", "level": 0, "sortOrder": 5, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Reinforcement",
+    "subcategory": "Steel Fixing",
+    "code": "REINF-FIX-001",
+    "name": "Steel Reinforcement Fixing",
+    "description": "Cutting, bending, and fixing steel reinforcement bars",
+    "items": [
+      { "code": "1", "name": "Material Delivery & Storage", "level": 0, "sortOrder": 1, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Cutting & Bending", "level": 0, "sortOrder": 2, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Main Reinforcement Fixing", "level": 0, "sortOrder": 3, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Shear Links Installation", "level": 0, "sortOrder": 4, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Spacer & Cover Blocks", "level": 0, "sortOrder": 5, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Rebar Inspection", "level": 0, "sortOrder": 6, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "7", "name": "Reinforcement Complete", "level": 0, "sortOrder": 7, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "6", "successorItemCode": "7", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Steel",
+    "subcategory": "Structural Steel",
+    "code": "STEEL-STRC-001",
+    "name": "Structural Steel Erection",
+    "description": "Erection of structural steel framework",
+    "items": [
+      { "code": "1", "name": "Steel Procurement & Delivery", "level": 0, "sortOrder": 1, "defaultDuration": 15, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Base Plate Installation", "level": 0, "sortOrder": 2, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Column Erection", "level": 0, "sortOrder": 3, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Beam Erection", "level": 0, "sortOrder": 4, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Bolting & Welding", "level": 0, "sortOrder": 5, "defaultDuration": 4, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Steelwork Inspection", "level": 0, "sortOrder": 6, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "7", "name": "Steel Erection Complete", "level": 0, "sortOrder": 7, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "6", "successorItemCode": "7", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Steel",
+    "subcategory": "Metal Decking",
+    "code": "STEEL-DECK-001",
+    "name": "Metal Decking Installation",
+    "description": "Profiled metal decking for composite slabs",
+    "items": [
+      { "code": "1", "name": "Decking Material Delivery", "level": 0, "sortOrder": 1, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Decking Layout & Positioning", "level": 0, "sortOrder": 2, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Decking Fixing & Welding", "level": 0, "sortOrder": 3, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Shear Stud Welding", "level": 0, "sortOrder": 4, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Decking Inspection", "level": 0, "sortOrder": 5, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Decking Complete", "level": 0, "sortOrder": 6, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Masonry",
+    "subcategory": "Blockwork",
+    "code": "MASON-BLCK-001",
+    "name": "Concrete Blockwork",
+    "description": "Concrete block wall construction",
+    "items": [
+      { "code": "1", "name": "Blockwork Material Delivery", "level": 0, "sortOrder": 1, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "2", "name": "First Course Laying", "level": 0, "sortOrder": 2, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Blockwork to Mid Height", "level": 0, "sortOrder": 3, "defaultDuration": 4, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Lintel Installation", "level": 0, "sortOrder": 4, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Blockwork to Full Height", "level": 0, "sortOrder": 5, "defaultDuration": 4, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Blockwork Complete", "level": 0, "sortOrder": 6, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Masonry",
+    "subcategory": "Brickwork",
+    "code": "MASON-BRCK-001",
+    "name": "Brickwork Cladding",
+    "description": "External brickwork cladding and detailing",
+    "items": [
+      { "code": "1", "name": "Brick Delivery & Sorting", "level": 0, "sortOrder": 1, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Damp Proof Course", "level": 0, "sortOrder": 2, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Brickwork Lifting to Mid", "level": 0, "sortOrder": 3, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Wall Ties & Cavity Insulation", "level": 0, "sortOrder": 4, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Brickwork to Full Height", "level": 0, "sortOrder": 5, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Pointing & Cleaning", "level": 0, "sortOrder": 6, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "7", "name": "Brickwork Complete", "level": 0, "sortOrder": 7, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "6", "successorItemCode": "7", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Waterproofing",
+    "subcategory": "Basement",
+    "code": "WP-BSMT-001",
+    "name": "Basement Waterproofing",
+    "description": "External basement tanking and waterproofing membrane",
+    "items": [
+      { "code": "1", "name": "Surface Preparation", "level": 0, "sortOrder": 1, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Primer Application", "level": 0, "sortOrder": 2, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Membrane Layer 1", "level": 0, "sortOrder": 3, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Membrane Layer 2", "level": 0, "sortOrder": 4, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Protection Board", "level": 0, "sortOrder": 5, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Waterproofing Inspection", "level": 0, "sortOrder": 6, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "7", "name": "Waterproofing Complete", "level": 0, "sortOrder": 7, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 1 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "6", "successorItemCode": "7", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "MEP",
+    "subcategory": "Electrical",
+    "code": "MEP-ELEC-001",
+    "name": "Electrical Rough-In",
+    "description": "First fix electrical installations including conduits and cables",
+    "items": [
+      { "code": "1", "name": "Conduit Installation", "level": 0, "sortOrder": 1, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Cable Pulling", "level": 0, "sortOrder": 2, "defaultDuration": 4, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Back Box Installation", "level": 0, "sortOrder": 3, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Panel Installation", "level": 0, "sortOrder": 4, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Continuity Testing", "level": 0, "sortOrder": 5, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Electrical Rough-In Complete", "level": 0, "sortOrder": 6, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "1", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "MEP",
+    "subcategory": "Plumbing",
+    "code": "MEP-PLMB-001",
+    "name": "Plumbing Rough-In",
+    "description": "First fix plumbing and drainage installations",
+    "items": [
+      { "code": "1", "name": "Drainage Pipe Installation", "level": 0, "sortOrder": 1, "defaultDuration": 4, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Water Supply Pipes", "level": 0, "sortOrder": 2, "defaultDuration": 4, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Pipe Insulation", "level": 0, "sortOrder": 3, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Pressure Testing", "level": 0, "sortOrder": 4, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Drainage Testing", "level": 0, "sortOrder": 5, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Plumbing Rough-In Complete", "level": 0, "sortOrder": 6, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "1", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "MEP",
+    "subcategory": "HVAC",
+    "code": "MEP-HVAC-001",
+    "name": "HVAC Ductwork Installation",
+    "description": "HVAC ductwork first fix installation",
+    "items": [
+      { "code": "1", "name": "Ductwork Fabrication", "level": 0, "sortOrder": 1, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Ductwork Installation", "level": 0, "sortOrder": 2, "defaultDuration": 6, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Damper Installation", "level": 0, "sortOrder": 3, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Duct Insulation", "level": 0, "sortOrder": 4, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Air Balancing", "level": 0, "sortOrder": 5, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "6", "name": "HVAC Rough-In Complete", "level": 0, "sortOrder": 6, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Finishing",
+    "subcategory": "Plastering",
+    "code": "FIN-PLST-001",
+    "name": "Internal Plastering",
+    "description": "Internal wall plastering and rendering works",
+    "items": [
+      { "code": "1", "name": "Surface Preparation", "level": 0, "sortOrder": 1, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Render Coat Application", "level": 0, "sortOrder": 2, "defaultDuration": 4, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Finish Coat Application", "level": 0, "sortOrder": 3, "defaultDuration": 4, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Beads & Corners", "level": 0, "sortOrder": 4, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Curing & Drying", "level": 0, "sortOrder": 5, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Plastering Complete", "level": 0, "sortOrder": 6, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 1 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Finishing",
+    "subcategory": "Flooring",
+    "code": "FIN-FLOR-001",
+    "name": "Floor Finishing",
+    "description": "Screed, tiling, and floor finishing works",
+    "items": [
+      { "code": "1", "name": "Screed Application", "level": 0, "sortOrder": 1, "defaultDuration": 4, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Screed Curing", "level": 0, "sortOrder": 2, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Tile Installation", "level": 0, "sortOrder": 3, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Grouting", "level": 0, "sortOrder": 4, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Skirting Installation", "level": 0, "sortOrder": 5, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Flooring Complete", "level": 0, "sortOrder": 6, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Infrastructure",
+    "subcategory": "Roads",
+    "code": "INFRA-ROAD-001",
+    "name": "Road Construction",
+    "description": "Internal road construction including sub-base and asphalt",
+    "items": [
+      { "code": "1", "name": "Subgrade Preparation", "level": 0, "sortOrder": 1, "defaultDuration": 4, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Sub-Base Layer", "level": 0, "sortOrder": 2, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Base Course Asphalt", "level": 0, "sortOrder": 3, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Wearing Course Asphalt", "level": 0, "sortOrder": 4, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Road Markings", "level": 0, "sortOrder": 5, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Road Construction Complete", "level": 0, "sortOrder": 6, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 1 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Infrastructure",
+    "subcategory": "Utilities",
+    "code": "INFRA-UTIL-001",
+    "name": "Underground Utilities",
+    "description": "Underground utility networks installation",
+    "items": [
+      { "code": "1", "name": "Trench Excavation", "level": 0, "sortOrder": 1, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Bedding Layer", "level": 0, "sortOrder": 2, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Pipe/Cable Laying", "level": 0, "sortOrder": 3, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Jointing & Testing", "level": 0, "sortOrder": 4, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Trench Backfill", "level": 0, "sortOrder": 5, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Restoration", "level": 0, "sortOrder": 6, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "7", "name": "Utilities Complete", "level": 0, "sortOrder": 7, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "6", "successorItemCode": "7", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Landscaping",
+    "subcategory": "Planting",
+    "code": "LAND-PLNT-001",
+    "name": "Soft Landscaping",
+    "description": "Topsoil, planting, and turfing works",
+    "items": [
+      { "code": "1", "name": "Topsoil Spreading", "level": 0, "sortOrder": 1, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Tree Planting", "level": 0, "sortOrder": 2, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Shrub Planting", "level": 0, "sortOrder": 3, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Turfing / Seeding", "level": 0, "sortOrder": 4, "defaultDuration": 4, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Irrigation Installation", "level": 0, "sortOrder": 5, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Landscaping Complete", "level": 0, "sortOrder": 6, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "1", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "1", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Landscaping",
+    "subcategory": "Hardscape",
+    "code": "LAND-HARD-001",
+    "name": "Hard Landscaping",
+    "description": "Paving, kerbs, and external hard surfaces",
+    "items": [
+      { "code": "1", "name": "Sub-Base Preparation", "level": 0, "sortOrder": 1, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Kerb Installation", "level": 0, "sortOrder": 2, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Paving Base Layer", "level": 0, "sortOrder": 3, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Paving Installation", "level": 0, "sortOrder": 4, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Joint Filling", "level": 0, "sortOrder": 5, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Hardscape Complete", "level": 0, "sortOrder": 6, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "1", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Testing & Handover",
+    "subcategory": "Commissioning",
+    "code": "TEST-COMM-001",
+    "name": "MEP Commissioning",
+    "description": "Testing and commissioning of all MEP systems",
+    "items": [
+      { "code": "1", "name": "Electrical Testing", "level": 0, "sortOrder": 1, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Plumbing Testing", "level": 0, "sortOrder": 2, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "3", "name": "HVAC Commissioning", "level": 0, "sortOrder": 3, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Fire Alarm Testing", "level": 0, "sortOrder": 4, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "5", "name": "BMS Integration", "level": 0, "sortOrder": 5, "defaultDuration": 4, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Commissioning Complete", "level": 0, "sortOrder": 6, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": -1 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Testing & Handover",
+    "subcategory": "Snagging",
+    "code": "TEST-SNAG-001",
+    "name": "Snagging & Handover",
+    "description": "Final snagging, inspections, and project handover",
+    "items": [
+      { "code": "1", "name": "Snagging Inspection", "level": 0, "sortOrder": 1, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Snag Rectification", "level": 0, "sortOrder": 2, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Final Cleaning", "level": 0, "sortOrder": 3, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Documentation Handover", "level": 0, "sortOrder": 4, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Client Walkthrough", "level": 0, "sortOrder": 5, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Project Handover Complete", "level": 0, "sortOrder": 6, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Preliminary",
+    "subcategory": "Demolition",
+    "code": "PRELIM-DEMO-001",
+    "name": "Selective Demolition",
+    "description": "Selective demolition and soft stripping of existing structures",
+    "items": [
+      { "code": "1", "name": "Asbestos Survey", "level": 0, "sortOrder": 1, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Soft Strip", "level": 0, "sortOrder": 2, "defaultDuration": 4, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Structural Demolition", "level": 0, "sortOrder": 3, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Debris Removal", "level": 0, "sortOrder": 4, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Demolition Complete", "level": 0, "sortOrder": 5, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Concrete",
+    "subcategory": "Beams",
+    "code": "CONC-BEAM-001",
+    "name": "Concrete Beam Construction",
+    "description": "Reinforced concrete beam construction",
+    "items": [
+      { "code": "1", "name": "Beam Bottom Formwork", "level": 0, "sortOrder": 1, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Beam Reinforcement", "level": 0, "sortOrder": 2, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Beam Side Formwork", "level": 0, "sortOrder": 3, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Concrete Pour", "level": 0, "sortOrder": 4, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Curing & Strip Formwork", "level": 0, "sortOrder": 5, "defaultDuration": 5, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Beam Complete", "level": 0, "sortOrder": 6, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Masonry",
+    "subcategory": "Lightweight",
+    "code": "MASON-LWGT-001",
+    "name": "Lightweight Partition Walls",
+    "description": "Lightweight partition wall systems (metal stud / drywall)",
+    "items": [
+      { "code": "1", "name": "Track Installation", "level": 0, "sortOrder": 1, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Stud Installation", "level": 0, "sortOrder": 2, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "3", "name": "Service Cavity", "level": 0, "sortOrder": 3, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Board Installation Side 1", "level": 0, "sortOrder": 4, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Insulation Installation", "level": 0, "sortOrder": 5, "defaultDuration": 1, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Board Installation Side 2", "level": 0, "sortOrder": 6, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "7", "name": "Jointing & Finishing", "level": 0, "sortOrder": 7, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "8", "name": "Partition Complete", "level": 0, "sortOrder": 8, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "6", "successorItemCode": "7", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "7", "successorItemCode": "8", "type": "FS", "defaultLagDays": 0 }
+    ]
+  },
+  {
+    "category": "Finishing",
+    "subcategory": "Painting",
+    "code": "FIN-PAINT-001",
+    "name": "Internal Painting & Decorating",
+    "description": "Internal painting and decorative finishes",
+    "items": [
+      { "code": "1", "name": "Surface Preparation", "level": 0, "sortOrder": 1, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "2", "name": "Primer Application", "level": 0, "sortOrder": 2, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "3", "name": "First Coat Paint", "level": 0, "sortOrder": 3, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "4", "name": "Second Coat Paint", "level": 0, "sortOrder": 4, "defaultDuration": 3, "defaultActivityType": "Task" },
+      { "code": "5", "name": "Touch Up & Inspection", "level": 0, "sortOrder": 5, "defaultDuration": 2, "defaultActivityType": "Task" },
+      { "code": "6", "name": "Painting Complete", "level": 0, "sortOrder": 6, "defaultDuration": 0, "defaultActivityType": "Milestone" }
+    ],
+    "relationships": [
+      { "predecessorItemCode": "1", "successorItemCode": "2", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "2", "successorItemCode": "3", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "3", "successorItemCode": "4", "type": "FS", "defaultLagDays": 1 },
+      { "predecessorItemCode": "4", "successorItemCode": "5", "type": "FS", "defaultLagDays": 0 },
+      { "predecessorItemCode": "5", "successorItemCode": "6", "type": "FS", "defaultLagDays": 0 }
+    ]
+  }
+]

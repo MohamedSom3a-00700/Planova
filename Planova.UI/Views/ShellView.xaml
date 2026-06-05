@@ -1,0 +1,178 @@
+<ui:FluentWindow x:Class="Planova.UI.Views.ShellView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:Planova.UI.Views"
+        xmlns:ai="clr-namespace:Planova.UI.Views.AI"
+        xmlns:conv="clr-namespace:Planova.UI.Converters"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        mc:Ignorable="d"
+        Title="Planova"
+        Icon="pack://application:,,,/Resources/Branding/LogoLight.png"
+        Width="1280"
+        Height="720"
+        MinWidth="960"
+        MinHeight="640"
+        ResizeMode="CanResize"
+        ExtendsContentIntoTitleBar="True"
+        WindowBackdropType="Tabbed"
+        WindowCornerPreference="Round"
+        Background="{DynamicResource ShellBackgroundGradient}"
+        Foreground="{DynamicResource BrandHeaderForeground}">
+    <Window.Resources>
+        <Style x:Key="ShellTabItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="{DynamicResource BrandHeaderForeground}" />
+            <Setter Property="FontFamily" Value="{DynamicResource BrandFontFamily}" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Chrome"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{DynamicResource BrandRadiusSmall}"
+                                Padding="14,6">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource ThemeCard}" />
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource ThemeAccent}" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource BrandElevationMedium}" />
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource BrandBorderDefault}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.6" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="{DynamicResource ShellBackgroundGradient}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Grid.Row="0"
+                     Title=""
+                     Background="{DynamicResource BrandChromeSurface}"
+                     Foreground="{DynamicResource BrandChromeForeground}"
+                     ButtonsForeground="{DynamicResource BrandChromeForeground}"
+                     ButtonsBackground="{DynamicResource BrandElevationMedium}"
+                     ShowHelp="False"
+                     ShowMinimize="True"
+                     ShowMaximize="True"
+                     ShowClose="True"
+                     CloseWindowByDoubleClickOnIcon="False">
+            <ui:TitleBar.Header>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,18,0">
+                    <Image x:Name="HeaderLogo"
+                           Source="{Binding LogoSource}"
+                           Width="32"
+                           Height="32"
+                           Stretch="Uniform"
+                           Margin="0,0,10,0" />
+                    <Image x:Name="HeaderWordmark"
+                           Source="{Binding WordmarkSource}"
+                           Height="32"
+                           Stretch="Uniform"
+                           VerticalAlignment="Center" />
+                </StackPanel>
+            </ui:TitleBar.Header>
+
+            <ui:TitleBar.CenterContent>
+                <Border Background="Transparent" VerticalAlignment="Center">
+                    <ListBox x:Name="ShellTabs"
+                             ItemsSource="{Binding Tabs}"
+                             SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                             ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                             ScrollViewer.CanContentScroll="True"
+                             ItemContainerStyle="{StaticResource ShellTabItemStyle}">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DisplayName}"
+                                           FontFamily="{DynamicResource BrandFontFamily}"
+                                           FontSize="{DynamicResource BrandBodySize}"
+                                           TextTrimming="CharacterEllipsis" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
+            </ui:TitleBar.CenterContent>
+
+            <ui:TitleBar.TrailingContent>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <ui:Button Command="{Binding ToggleThemeCommand}"
+                               Margin="0,0,8,0"
+                               Width="40"
+                               Height="32"
+                               Padding="0"
+                               ToolTip="Toggle theme">
+                        <ui:Button.Icon>
+                            <ui:SymbolIcon Symbol="WeatherMoon24" />
+                        </ui:Button.Icon>
+                    </ui:Button>
+                    <ui:Button Command="{Binding ToggleLanguageCommand}"
+                               Width="40"
+                               Height="32"
+                               Padding="0"
+                               ToolTip="Toggle language">
+                        <ui:Button.Icon>
+                            <ui:SymbolIcon Symbol="Globe24" />
+                        </ui:Button.Icon>
+                    </ui:Button>
+                </StackPanel>
+            </ui:TitleBar.TrailingContent>
+        </ui:TitleBar>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <views:NavigationRail x:Name="NavigationRail" Grid.Column="0" />
+            <views:WorkspaceArea x:Name="WorkspaceArea" Grid.Column="1" />
+            <ai:AssistantPanelView x:Name="AssistantPanel" Grid.Column="2" DataContext="{Binding AssistantPanel}" />
+        </Grid>
+
+        <Border Grid.Row="2"
+                Background="{DynamicResource BrandElevationLow}"
+                BorderBrush="{DynamicResource BrandBorderDefault}"
+                BorderThickness="0,1,0,0"
+                Padding="10,4">
+            <TextBlock Text="{Binding StatusText}"
+                       VerticalAlignment="Center"
+                       FontSize="{DynamicResource BrandCaptionSize}"
+                       Foreground="{DynamicResource BrandTextSecondary}"
+                       FontFamily="{DynamicResource BrandFontFamily}" />
+        </Border>
+    </Grid>
+</ui:FluentWindow>

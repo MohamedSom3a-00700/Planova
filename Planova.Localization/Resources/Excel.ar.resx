@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter</value>
+  </resheader>
+  <data name="WorkbookBrowserTitle" xml:space="preserve"><value>مستعرض المصنف</value></data>
+  <data name="WorkbookBrowserBrowse" xml:space="preserve"><value>تصفح</value></data>
+  <data name="WorkbookBrowserSearch" xml:space="preserve"><value>بحث</value></data>
+  <data name="WorkbookBrowserFile" xml:space="preserve"><value>ملف</value></data>
+  <data name="WorkbookBrowserSize" xml:space="preserve"><value>الحجم</value></data>
+  <data name="WorkbookBrowserFormat" xml:space="preserve"><value>التنسيق</value></data>
+  <data name="WorkbookBrowserWorksheets" xml:space="preserve"><value>أوراق العمل</value></data>
+  <data name="WorkbookBrowserSearchResults" xml:space="preserve"><value>نتائج البحث</value></data>
+  <data name="WorkbookBrowserPrevious" xml:space="preserve"><value>السابق</value></data>
+  <data name="WorkbookBrowserNext" xml:space="preserve"><value>التالي</value></data>
+  <data name="WorkbookBrowserPage" xml:space="preserve"><value>صفحة</value></data>
+  <data name="ImportWizardTitle" xml:space="preserve"><value>معالج الاستيراد</value></data>
+  <data name="ImportWizardSelectFile" xml:space="preserve"><value>اختيار ملف</value></data>
+  <data name="ImportWizardMapColumns" xml:space="preserve"><value>تعيين الأعمدة</value></data>
+  <data name="ImportWizardValidate" xml:space="preserve"><value>التحقق</value></data>
+  <data name="ImportWizardImport" xml:space="preserve"><value>استيراد</value></data>
+  <data name="ImportWizardSelectFilePrompt" xml:space="preserve"><value>اختر ملف Excel للاستيراد</value></data>
+  <data name="ImportWizardOpen" xml:space="preserve"><value>فتح</value></data>
+  <data name="ImportWizardSelectWorksheet" xml:space="preserve"><value>اختر ورقة العمل</value></data>
+  <data name="ImportWizardSelectEntityType" xml:space="preserve"><value>اختر نوع الكيان</value></data>
+  <data name="ImportWizardValidation" xml:space="preserve"><value>التحقق</value></data>
+  <data name="ImportWizardValid" xml:space="preserve"><value>صالح</value></data>
+  <data name="ImportWizardErrors" xml:space="preserve"><value>أخطاء</value></data>
+  <data name="ImportWizardProgress" xml:space="preserve"><value>تقدم الاستيراد</value></data>
+  <data name="ImportWizardImported" xml:space="preserve"><value>تم الاستيراد</value></data>
+  <data name="ImportWizardUpdated" xml:space="preserve"><value>تم التحديث</value></data>
+  <data name="ImportWizardSkipped" xml:space="preserve"><value>تم التخطي</value></data>
+  <data name="ImportWizardFailed" xml:space="preserve"><value>فشل</value></data>
+  <data name="ImportWizardBack" xml:space="preserve"><value>رجوع</value></data>
+  <data name="ImportWizardNext" xml:space="preserve"><value>التالي</value></data>
+  <data name="ImportWizardReset" xml:space="preserve"><value>إعادة تعيين</value></data>
+  <data name="ExportWizardTitle" xml:space="preserve"><value>معالج التصدير</value></data>
+  <data name="ExportWizardSelectEntity" xml:space="preserve"><value>اختر نوع الكيان للتصدير</value></data>
+  <data name="ExportWizardSelectedColumns" xml:space="preserve"><value>الأعمدة المحددة للتصدير</value></data>
+  <data name="ExportWizardOutputPath" xml:space="preserve"><value>مسار ملف الإخراج</value></data>
+  <data name="ExportWizardExport" xml:space="preserve"><value>تصدير</value></data>
+  <data name="ExportWizardExportedRecords" xml:space="preserve"><value>السجلات المصدرة</value></data>
+  <data name="ExportWizardSavedTo" xml:space="preserve"><value>تم الحفظ في</value></data>
+  <data name="MappingProfilesTitle" xml:space="preserve"><value>ملفات تعريف التعيين</value></data>
+  <data name="MappingProfilesLoad" xml:space="preserve"><value>تحميل</value></data>
+  <data name="MappingProfilesName" xml:space="preserve"><value>الاسم</value></data>
+  <data name="MappingProfilesVersion" xml:space="preserve"><value>الإصدار</value></data>
+  <data name="MappingProfilesEntity" xml:space="preserve"><value>الكيان</value></data>
+  <data name="MappingProfilesEdit" xml:space="preserve"><value>تعديل</value></data>
+  <data name="MappingProfilesDelete" xml:space="preserve"><value>حذف</value></data>
+  <data name="MappingProfilesClone" xml:space="preserve"><value>نسخ</value></data>
+  <data name="MappingProfilesCreate" xml:space="preserve"><value>إنشاء ملف تعريف جديد</value></data>
+  <data name="MappingProfilesEditName" xml:space="preserve"><value>تعديل الاسم</value></data>
+  <data name="MappingProfilesSave" xml:space="preserve"><value>حفظ</value></data>
+  <data name="MappingProfilesCancel" xml:space="preserve"><value>إلغاء</value></data>
+</root>

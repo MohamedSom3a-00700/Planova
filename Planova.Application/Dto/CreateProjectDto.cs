@@ -1,0 +1,13 @@
+namespace Planova.Application.Dto;
+
+public record CreateProjectDto(
+    string Code,
+    string Name,
+    string? Description,
+    DateTime? StartDate,
+    DateTime? FinishDate,
+    string? Currency,
+    string? Location,
+    int? ClientId,
+    string? Notes
+);

@@ -1,0 +1,61 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.log
+*.tmp
+*.swp
+*.sln.docstates
+packages/
+*.nupkg
+*.snk
+
+# Build
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm64]/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio
+.vs/
+*.sln.ide/
+*.VC.db
+*.VC.opendb
+*.VC.VC.opendb
+*.user
+*.suo
+*.sln.docstates
+*.userprefs
+*.csproj.user
+UpgradeLog*.htm
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+*.dotSettings
+
+# Environment
+.env*
+appsettings.Local.*
+local.settings.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tooling
+node_modules/
+coverage/
+
+# Branding assets
+Planova Branding Master/
