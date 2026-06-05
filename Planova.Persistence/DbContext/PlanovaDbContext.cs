@@ -20,6 +20,13 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<Planova.Wbs.Domain.Entities.WbsItem> WbsItems => Set<Planova.Wbs.Domain.Entities.WbsItem>();
     public DbSet<Planova.Wbs.Domain.Entities.WbsTemplate> WbsTemplates => Set<Planova.Wbs.Domain.Entities.WbsTemplate>();
     public DbSet<Planova.Wbs.Domain.Entities.WbsTemplateItem> WbsTemplateItems => Set<Planova.Wbs.Domain.Entities.WbsTemplateItem>();
+    public DbSet<Planova.Activity.Domain.Entities.Activity> Activities => Set<Planova.Activity.Domain.Entities.Activity>();
+    public DbSet<Planova.Activity.Domain.Entities.ActivityRelationship> ActivityRelationships => Set<Planova.Activity.Domain.Entities.ActivityRelationship>();
+    public DbSet<Planova.Activity.Domain.Entities.Calendar> Calendars => Set<Planova.Activity.Domain.Entities.Calendar>();
+    public DbSet<Planova.Activity.Domain.Entities.CalendarDay> CalendarDays => Set<Planova.Activity.Domain.Entities.CalendarDay>();
+    public DbSet<Planova.Activity.Domain.Entities.ActivityBank> ActivityBanks => Set<Planova.Activity.Domain.Entities.ActivityBank>();
+    public DbSet<Planova.Activity.Domain.Entities.ActivityBankItem> ActivityBankItems => Set<Planova.Activity.Domain.Entities.ActivityBankItem>();
+    public DbSet<Planova.Activity.Domain.Entities.ActivityBankItemRelationship> ActivityBankItemRelationships => Set<Planova.Activity.Domain.Entities.ActivityBankItemRelationship>();
 
     public PlanovaDbContext(DbContextOptions<PlanovaDbContext> options) : base(options)
     {
@@ -41,5 +48,12 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.ApplyConfiguration(new WbsItemConfiguration());
         modelBuilder.ApplyConfiguration(new WbsTemplateConfiguration());
         modelBuilder.ApplyConfiguration(new WbsTemplateItemConfiguration());
+        modelBuilder.ApplyConfiguration(new ActivityConfiguration());
+        modelBuilder.ApplyConfiguration(new ActivityRelationshipConfiguration());
+        modelBuilder.ApplyConfiguration(new CalendarConfiguration());
+        modelBuilder.ApplyConfiguration(new CalendarDayConfiguration());
+        modelBuilder.ApplyConfiguration(new ActivityBankConfiguration());
+        modelBuilder.ApplyConfiguration(new ActivityBankItemConfiguration());
+        modelBuilder.ApplyConfiguration(new ActivityBankItemRelationshipConfiguration());
     }
 }
