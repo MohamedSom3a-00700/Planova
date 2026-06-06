@@ -29,4 +29,7 @@ public sealed partial class NavigationItemViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isSelected;
+
+    [ObservableProperty]
+    private bool _isEnabled = true;
 }

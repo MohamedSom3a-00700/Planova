@@ -46,6 +46,10 @@
                                 <Setter TargetName="Chrome" Property="BorderBrush" Value="{DynamicResource ThemeAccent}" />
                                 <Setter Property="Foreground" Value="{DynamicResource BrandChromeForeground}" />
                             </DataTrigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.45" />
+                                <Setter Property="Foreground" Value="{DynamicResource BrandTextSecondary}" />
+                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
@@ -65,6 +69,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -77,7 +82,34 @@
             </ui:Button.Icon>
         </ui:Button>
 
-        <ScrollViewer Grid.Row="1"
+        <Border Grid.Row="1" Margin="8,0,8,8" CornerRadius="{DynamicResource BrandRadiusSmall}"
+                Background="{DynamicResource BrandElevationMedium}"
+                Padding="8,6"
+                Visibility="{Binding IsCollapsed, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBoolToVis}}">
+            <StackPanel>
+                <TextBlock Text="Active Project" FontSize="11" Foreground="{DynamicResource BrandTextSecondary}"
+                           Margin="0,0,0,4"/>
+                <StackPanel Visibility="{Binding HasActiveProject, Converter={StaticResource InverseBoolToVis}}">
+                    <ComboBox x:Name="ProjectSelector"
+                              ItemsSource="{Binding ProjectSelectorItems}"
+                              DisplayMemberPath="Name"
+                              MinHeight="24"
+                              FontSize="13"
+                              SelectionChanged="OnProjectSelected"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Visibility="{Binding HasActiveProject, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="{Binding CurrentProject.Name}" FontWeight="SemiBold" FontSize="13"
+                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="140"/>
+                    <Button Content="✕" Command="{Binding ClearProjectCommand}"
+                            Background="Transparent" BorderThickness="0"
+                            Foreground="{DynamicResource BrandTextSecondary}"
+                            FontSize="11" Margin="4,0,0,0" Padding="2,0"
+                            VerticalAlignment="Center" ToolTip="Close project"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <ScrollViewer Grid.Row="2"
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled"
                       Margin="0,2,0,0">
@@ -87,7 +119,8 @@
                     <DataTemplate>
                         <Button Style="{StaticResource RailButtonStyle}"
                                 Command="{Binding Command}"
-                                CommandParameter="{Binding CommandParameter}">
+                                CommandParameter="{Binding CommandParameter}"
+                                IsEnabled="{Binding IsEnabled}">
                             <StackPanel>
                                 <StackPanel.Style>
                                     <Style TargetType="StackPanel">

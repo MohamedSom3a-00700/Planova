@@ -25,7 +25,7 @@ public class ClientServiceTests
         _repo.Setup(r => r.CodeExistsAsync("C1", null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var dto = new CreateClientDto("C1", "Test", null, null, null, null);
+        var dto = new CreateClientDto("C1", "Test", null, null, null, null, null);
 
         Func<Task> act = () => _service.CreateAsync(dto);
         await act.Should().ThrowAsync<DuplicateEntityException>();
@@ -37,7 +37,7 @@ public class ClientServiceTests
         _repo.Setup(r => r.NameExistsAsync("Test", null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var dto = new CreateClientDto("C1", "Test", null, null, null, null);
+        var dto = new CreateClientDto("C1", "Test", null, null, null, null, null);
 
         Func<Task> act = () => _service.CreateAsync(dto);
         await act.Should().ThrowAsync<DuplicateEntityException>();

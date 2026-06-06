@@ -41,6 +41,7 @@ public class ClientService : IClientService
             ContactEmail = dto.ContactEmail,
             ContactPhone = dto.ContactPhone,
             OrganizationDetails = dto.OrganizationDetails,
+            Logo = dto.Logo,
             Notes = dto.Notes,
         };
 
@@ -65,6 +66,7 @@ public class ClientService : IClientService
         client.ContactEmail = dto.ContactEmail;
         client.ContactPhone = dto.ContactPhone;
         client.OrganizationDetails = dto.OrganizationDetails;
+        client.Logo = dto.Logo;
         client.Notes = dto.Notes;
         client.UpdatedAt = DateTime.UtcNow;
 

@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Planova.Application.Dto;
 using Planova.Application.Services;
+using Planova.Shared.Abstractions;
 
 namespace Planova.UI.ViewModels;
 
@@ -10,15 +11,33 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
 {
     private readonly IProjectService _projectService;
     private readonly IClientService _clientService;
+    private readonly IContractorService _contractorService;
+    private readonly ISubcontractorService _subcontractorService;
+    private readonly ICurrentProjectService _currentProjectService;
+    private List<ProjectSummaryDto> _allProjects = new();
 
-    public ProjectsWorkspaceViewModel(IProjectService projectService, IClientService clientService)
+    public ProjectsWorkspaceViewModel(
+        IProjectService projectService,
+        IClientService clientService,
+        IContractorService contractorService,
+        ISubcontractorService subcontractorService,
+        ICurrentProjectService currentProjectService)
     {
         _projectService = projectService;
         _clientService = clientService;
+        _contractorService = contractorService;
+        _subcontractorService = subcontractorService;
+        _currentProjectService = currentProjectService;
     }
 
     public ObservableCollection<ProjectSummaryDto> Projects { get; } = new();
     public ObservableCollection<ClientSummaryDto> Clients { get; } = new();
+    public ObservableCollection<ContractorSummaryDto> Contractors { get; } = new();
+    public ObservableCollection<SubcontractorSummaryDto> Subcontractors { get; } = new();
+    public ObservableCollection<string> Currencies { get; } = new()
+    {
+        "USD", "EUR", "GBP", "EGP", "SAR", "AED", "JOD", "KWD", "QAR", "OMR", "BHD", "LYD", "TND", "DZD", "MAD"
+    };
     public ObservableCollection<string> StatusFilters { get; } = new()
     {
         "All", "Draft", "Under Review", "Approved", "In Progress", "On Hold", "Completed", "Cancelled"
@@ -45,6 +64,16 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
             SelectProjectCommand.Execute(value);
     }
 
+    partial void OnSearchQueryChanged(string value)
+    {
+        ApplyFilters();
+    }
+
+    partial void OnSelectedStatusFilterChanged(string value)
+    {
+        ApplyFilters();
+    }
+
     [ObservableProperty]
     private bool _isEditing;
 
@@ -61,10 +90,10 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
     private string? _editDescription;
 
     [ObservableProperty]
-    private string? _editStartDate;
+    private DateTime? _editStartDate;
 
     [ObservableProperty]
-    private string? _editFinishDate;
+    private DateTime? _editFinishDate;
 
     [ObservableProperty]
     private string? _editCurrency;
@@ -76,6 +105,12 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
     private int? _editClientId;
 
     [ObservableProperty]
+    private int? _editContractorId;
+
+    [ObservableProperty]
+    private int? _editSubcontractorId;
+
+    [ObservableProperty]
     private string? _editNotes;
 
     [ObservableProperty]
@@ -83,6 +118,28 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _hasError;
+
+    private void ApplyFilters()
+    {
+        Projects.Clear();
+        var filtered = _allProjects.AsEnumerable();
+
+        if (SelectedStatusFilter != "All")
+            filtered = filtered.Where(p => p.Status == SelectedStatusFilter);
+
+        if (!string.IsNullOrEmpty(SearchQuery))
+        {
+            var query = SearchQuery.Trim().ToLowerInvariant();
+            filtered = filtered.Where(p =>
+                (p.Code?.ToLowerInvariant().Contains(query) == true) ||
+                (p.Name?.ToLowerInvariant().Contains(query) == true) ||
+                (p.ClientName?.ToLowerInvariant().Contains(query) == true) ||
+                (p.Status?.ToLowerInvariant().Contains(query) == true));
+        }
+
+        foreach (var p in filtered)
+            Projects.Add(p);
+    }
 
     [RelayCommand]
     private async Task LoadAsync()
@@ -92,27 +149,24 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
 
         try
         {
-            var projects = SelectedStatusFilter == "All"
-                ? await _projectService.GetAllAsync()
-                : await _projectService.GetByStatusAsync(SelectedStatusFilter);
-
-            Projects.Clear();
-            foreach (var p in projects)
-                Projects.Add(p);
-
-            if (!string.IsNullOrEmpty(SearchQuery))
-            {
-                var filtered = await _projectService.SearchAsync(SearchQuery);
-                Projects.Clear();
-                foreach (var p in filtered.Where(p =>
-                    SelectedStatusFilter == "All" || p.Status == SelectedStatusFilter))
-                    Projects.Add(p);
-            }
+            _allProjects = (await _projectService.GetAllAsync()).ToList();
 
             var clients = await _clientService.GetAllAsync();
             Clients.Clear();
             foreach (var c in clients)
                 Clients.Add(c);
+
+            var contractors = await _contractorService.GetAllAsync();
+            Contractors.Clear();
+            foreach (var c in contractors)
+                Contractors.Add(c);
+
+            var subcontractors = await _subcontractorService.GetAllAsync();
+            Subcontractors.Clear();
+            foreach (var s in subcontractors)
+                Subcontractors.Add(s);
+
+            ApplyFilters();
         }
         catch (Exception ex)
         {
@@ -126,16 +180,15 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task SearchAsync()
+    private void Search()
     {
-        await LoadAsync();
+        ApplyFilters();
     }
 
     [RelayCommand]
-    private async Task FilterByStatusAsync(string? status)
+    private void FilterByStatus(string? status)
     {
         SelectedStatusFilter = status ?? "All";
-        await LoadAsync();
     }
 
     [RelayCommand]
@@ -149,6 +202,14 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
             SelectedProject = await _projectService.GetByIdAsync(project.Id);
             IsEditing = false;
             IsCreating = false;
+
+            if (SelectedProject != null)
+            {
+                _currentProjectService.SetProject(new ProjectContext(
+                    SelectedProject.Id,
+                    SelectedProject.Code,
+                    SelectedProject.Name));
+            }
         }
         catch (Exception ex)
         {
@@ -175,6 +236,8 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         EditCurrency = null;
         EditLocation = null;
         EditClientId = null;
+        EditContractorId = null;
+        EditSubcontractorId = null;
         EditNotes = null;
         ErrorMessage = string.Empty;
         HasError = false;
@@ -190,11 +253,13 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         EditCode = SelectedProject.Code;
         EditName = SelectedProject.Name;
         EditDescription = SelectedProject.Description;
-        EditStartDate = SelectedProject.StartDate?.ToString("yyyy-MM-dd");
-        EditFinishDate = SelectedProject.FinishDate?.ToString("yyyy-MM-dd");
+        EditStartDate = SelectedProject.StartDate;
+        EditFinishDate = SelectedProject.FinishDate;
         EditCurrency = SelectedProject.Currency;
         EditLocation = SelectedProject.Location;
         EditClientId = SelectedProject.ClientId;
+        EditContractorId = SelectedProject.ContractorId;
+        EditSubcontractorId = SelectedProject.SubcontractorId;
         EditNotes = SelectedProject.Notes;
         ErrorMessage = string.Empty;
         HasError = false;
@@ -219,23 +284,19 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         {
             if (IsCreating)
             {
-                var startDate = ParseDate(EditStartDate);
-                var finishDate = ParseDate(EditFinishDate);
                 var dto = new CreateProjectDto(
                     EditCode, EditName, EditDescription,
-                    startDate, finishDate, EditCurrency,
-                    EditLocation, EditClientId, EditNotes);
+                    EditStartDate, EditFinishDate, EditCurrency,
+                    EditLocation, EditClientId, EditContractorId, EditSubcontractorId, EditNotes);
 
                 SelectedProject = await _projectService.CreateAsync(dto);
             }
             else if (SelectedProject != null)
             {
-                var startDate = ParseDate(EditStartDate);
-                var finishDate = ParseDate(EditFinishDate);
                 var dto = new UpdateProjectDto(
                     EditCode, EditName, EditDescription,
-                    startDate, finishDate, EditCurrency,
-                    EditLocation, EditClientId, EditNotes);
+                    EditStartDate, EditFinishDate, EditCurrency,
+                    EditLocation, EditClientId, EditContractorId, EditSubcontractorId, EditNotes);
 
                 SelectedProject = await _projectService.UpdateAsync(SelectedProject.Id, dto);
             }
@@ -264,6 +325,7 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         try
         {
             await _projectService.DeleteAsync(SelectedProject.Id);
+            _currentProjectService.SetProject(null);
             SelectedProject = null;
             await LoadAsync();
         }
@@ -276,12 +338,6 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         {
             IsLoading = false;
         }
-    }
-
-    private static DateTime? ParseDate(string? dateStr)
-    {
-        if (string.IsNullOrWhiteSpace(dateStr)) return null;
-        return DateTime.TryParse(dateStr, out var dt) ? dt : null;
     }
 
     [RelayCommand]

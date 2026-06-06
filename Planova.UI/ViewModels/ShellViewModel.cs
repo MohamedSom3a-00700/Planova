@@ -5,6 +5,7 @@ using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Planova.Application.Dto;
 using Planova.Application.Services;
 using Planova.Shared.Abstractions;
 using Planova.UI.Views.Empty;
@@ -19,6 +20,7 @@ using Planova.UI.Views.Reports;
 using Planova.UI.Views.Wbs;
 using Planova.UI.Views.Activity;
 using Planova.UI.Views.Resource;
+using Planova.UI.Views.Cost;
 using Planova.UI.Views;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
@@ -33,7 +35,12 @@ public partial class ShellViewModel : ObservableObject
     private readonly ISettingsService _settingsService;
     private readonly IServiceProvider _serviceProvider;
     private readonly IHighContrastDetector? _highContrastDetector;
+    private readonly ICurrentProjectService _currentProjectService;
+    private readonly IProjectService _projectService;
     private readonly Dictionary<string, WorkspaceTabViewModel> _openTabs = new();
+    private readonly List<string> _studioTargetIds = new()
+    { "boq", "wbs", "activity", "resource", "cost", "excel-studio", "primavera",
+      "schedule-compare", "delay-analysis", "chronology", "knowledge-base", "integration-hub" };
 
     public ShellViewModel(
         INavigationService navigationService,
@@ -42,6 +49,8 @@ public partial class ShellViewModel : ObservableObject
         ILocalizationService localizationService,
         ISettingsService settingsService,
         IServiceProvider serviceProvider,
+        ICurrentProjectService currentProjectService,
+        IProjectService projectService,
         IHighContrastDetector? highContrastDetector = null)
     {
         _navigationService = navigationService;
@@ -49,11 +58,14 @@ public partial class ShellViewModel : ObservableObject
         _localizationService = localizationService;
         _settingsService = settingsService;
         _serviceProvider = serviceProvider;
+        _currentProjectService = currentProjectService;
+        _projectService = projectService;
         _highContrastDetector = highContrastDetector;
 
         _themeService.ThemeChanged += OnThemeChanged;
         _localizationService.LanguageChanged += OnLanguageChanged;
         _navigationService.ActiveTargetChanged += OnActiveTargetChanged;
+        _currentProjectService.CurrentProjectChanged += OnCurrentProjectChanged;
 
         if (_highContrastDetector != null)
         {
@@ -64,7 +76,10 @@ public partial class ShellViewModel : ObservableObject
 
         RegisterNavigationTargets();
         BuildNavigationItems();
+        UpdateStudioNavigationStates();
         NavigateToTarget("dashboard");
+
+        _ = LoadProjectsAsync();
     }
 
     public ObservableCollection<NavigationItemViewModel> NavigationItems { get; } = new();
@@ -84,6 +99,44 @@ public partial class ShellViewModel : ObservableObject
 
     [ObservableProperty]
     private BitmapImage? _wordmarkSource;
+
+    [ObservableProperty]
+    private ProjectContext? _currentProject;
+
+    [ObservableProperty]
+    private bool _hasActiveProject;
+
+    public ObservableCollection<ProjectSummaryDto> ProjectSelectorItems { get; } = new();
+
+    partial void OnCurrentProjectChanged(ProjectContext? value)
+    {
+        HasActiveProject = value != null;
+        StatusText = value != null ? $"Project: {value.Name}" : "Ready";
+        UpdateStudioNavigationStates();
+    }
+
+    private void OnCurrentProjectChanged(object? sender, ProjectContext? project)
+    {
+        CurrentProject = project;
+    }
+
+    [RelayCommand]
+    private async Task SelectProjectAsync(ProjectSummaryDto? project)
+    {
+        if (project == null) return;
+        var detail = await _projectService.GetByIdAsync(project.Id);
+        if (detail != null)
+        {
+            _currentProjectService.SetProject(new ProjectContext(
+                detail.Id, detail.Code, detail.Name));
+        }
+    }
+
+    [RelayCommand]
+    private void ClearProject()
+    {
+        _currentProjectService.SetProject(null);
+    }
 
     [RelayCommand]
     private void ToggleTheme()
@@ -193,6 +246,9 @@ public partial class ShellViewModel : ObservableObject
     [RelayCommand]
     private void NavigateTo(string targetId)
     {
+        if (_studioTargetIds.Contains(targetId) && !HasActiveProject)
+            return;
+
         _navigationService.NavigateTo(targetId);
     }
 
@@ -249,8 +305,12 @@ public partial class ShellViewModel : ObservableObject
                 view.InitializeTabs(_serviceProvider);
                 return view;
             });
-        nav.RegisterTarget("cost", "Cost Studio", "Money24", true, true,
-            () => CreateEmptyState("Money24", "Cost Studio", "Cost management module is coming soon."));
+        nav.RegisterTarget("cost", "Cost Studio", "Money24", true, false, () =>
+        {
+            var view = _serviceProvider.GetRequiredService<CostStudioView>();
+            view.InitializeTabs(_serviceProvider);
+            return view;
+        });
         nav.RegisterTarget("reports", "Reports", "DocumentText24", false, false,
             () => _serviceProvider.GetRequiredService<ReportView>());
         nav.RegisterTarget("primavera", "Primavera Studio", "HardDrive24", true, true,
@@ -299,6 +359,26 @@ public partial class ShellViewModel : ObservableObject
         SetSelectedNavigation("dashboard");
     }
 
+    [RelayCommand]
+    private async Task LoadProjectsAsync()
+    {
+        var projects = await _projectService.GetAllAsync();
+        ProjectSelectorItems.Clear();
+        foreach (var p in projects)
+            ProjectSelectorItems.Add(p);
+    }
+
+    private void UpdateStudioNavigationStates()
+    {
+        foreach (var item in NavigationItems)
+        {
+            if (_studioTargetIds.Contains(item.Id))
+            {
+                item.IsEnabled = HasActiveProject;
+            }
+        }
+    }
+
     private static EmptyStateView CreateEmptyState(string iconGlyph, string title, string description)
     {
         return new EmptyStateView
@@ -320,6 +400,9 @@ public partial class ShellViewModel : ObservableObject
 
     private void OpenTarget(string targetId)
     {
+        if (_studioTargetIds.Contains(targetId) && !HasActiveProject)
+            return;
+
         if (_openTabs.TryGetValue(targetId, out var existing))
         {
             SetSelectedTab(existing);

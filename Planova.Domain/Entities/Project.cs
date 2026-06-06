@@ -10,6 +10,8 @@ public class Project
     public DateTime? StartDate { get; set; }
     public DateTime? FinishDate { get; set; }
     public int? ClientId { get; set; }
+    public int? ContractorId { get; set; }
+    public int? SubcontractorId { get; set; }
     public string? Currency { get; set; }
     public string? Location { get; set; }
     public string? Notes { get; set; }
@@ -17,5 +19,7 @@ public class Project
     public DateTime UpdatedAt { get; set; }
 
     public Client? Client { get; set; }
+    public Contractor? Contractor { get; set; }
+    public Subcontractor? Subcontractor { get; set; }
     public ICollection<Contract> Contracts { get; set; } = new List<Contract>();
 }

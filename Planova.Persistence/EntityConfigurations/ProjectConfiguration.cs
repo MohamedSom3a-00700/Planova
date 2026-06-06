@@ -52,12 +52,28 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.HasIndex(e => e.ClientId)
             .HasDatabaseName("IX_Projects_ClientId");
 
+        builder.HasIndex(e => e.ContractorId)
+            .HasDatabaseName("IX_Projects_ContractorId");
+
+        builder.HasIndex(e => e.SubcontractorId)
+            .HasDatabaseName("IX_Projects_SubcontractorId");
+
         builder.HasIndex(e => e.UpdatedAt)
             .HasDatabaseName("IX_Projects_UpdatedAt");
 
         builder.HasOne(e => e.Client)
             .WithMany(c => c.Projects)
             .HasForeignKey(e => e.ClientId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(e => e.Contractor)
+            .WithMany(c => c.Projects)
+            .HasForeignKey(e => e.ContractorId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(e => e.Subcontractor)
+            .WithMany(s => s.Projects)
+            .HasForeignKey(e => e.SubcontractorId)
             .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasMany(e => e.Contracts)

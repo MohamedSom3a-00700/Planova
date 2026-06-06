@@ -3,12 +3,15 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Planova.Resource.Application.Dto;
 using Planova.Resource.Domain.Interfaces;
+using Planova.Shared.Abstractions;
 
 namespace Planova.UI.ViewModels.Resource;
 
 public partial class ResourceRateManagerViewModel : ObservableObject
 {
     private readonly IResourceRateService _rateService;
+    private readonly IResourceService _resourceService;
+    private readonly ICurrentProjectService _currentProjectService;
 
     [ObservableProperty]
     private Guid _resourceId;
@@ -18,6 +21,12 @@ public partial class ResourceRateManagerViewModel : ObservableObject
 
     [ObservableProperty]
     private ResourceRateDto? _selectedRate;
+
+    [ObservableProperty]
+    private ObservableCollection<ResourceDto> _availableResources = new();
+
+    [ObservableProperty]
+    private ResourceDto? _selectedResource;
 
     [ObservableProperty]
     private decimal _newRateValue;
@@ -31,13 +40,42 @@ public partial class ResourceRateManagerViewModel : ObservableObject
     [ObservableProperty]
     private string _newUnitOfMeasure = "hr";
 
-    public ResourceRateManagerViewModel(IResourceRateService rateService)
+    public ResourceRateManagerViewModel(
+        IResourceRateService rateService,
+        IResourceService resourceService,
+        ICurrentProjectService currentProjectService)
     {
         _rateService = rateService;
+        _resourceService = resourceService;
+        _currentProjectService = currentProjectService;
+        _currentProjectService.CurrentProjectChanged += OnProjectChanged;
+        _ = LoadResourcesAsync();
+    }
+
+    partial void OnSelectedResourceChanged(ResourceDto? value)
+    {
+        if (value is not null)
+            _ = LoadRateHistoryAsync(value.Id);
+    }
+
+    private void OnProjectChanged(object? sender, ProjectContext? project)
+    {
+        _ = LoadResourcesAsync();
     }
 
     [RelayCommand]
-    private async Task LoadRateHistory(Guid resourceId)
+    private async Task LoadResourcesAsync()
+    {
+        var filter = new ResourceFilter
+        {
+            ProjectId = _currentProjectService.CurrentProject?.Id
+        };
+        var resources = await _resourceService.SearchAsync(filter);
+        AvailableResources = new ObservableCollection<ResourceDto>(resources);
+    }
+
+    [RelayCommand]
+    private async Task LoadRateHistoryAsync(Guid resourceId)
     {
         ResourceId = resourceId;
         var rates = await _rateService.GetRateHistoryAsync(resourceId);
@@ -59,7 +97,9 @@ public partial class ResourceRateManagerViewModel : ObservableObject
         };
 
         await _rateService.AddRateAsync(request);
-        await LoadRateHistory(ResourceId);
+        NewRateValue = 0;
+        NewEffectiveDate = DateTime.Today;
+        await LoadRateHistoryAsync(ResourceId);
     }
 
     [RelayCommand]
@@ -67,7 +107,7 @@ public partial class ResourceRateManagerViewModel : ObservableObject
     {
         if (rate is null) return;
         await _rateService.DeleteRateAsync(rate.Id);
-        await LoadRateHistory(ResourceId);
+        await LoadRateHistoryAsync(ResourceId);
     }
 
     [RelayCommand]
@@ -76,6 +116,6 @@ public partial class ResourceRateManagerViewModel : ObservableObject
         if (ResourceId == Guid.Empty) return;
 
         await _rateService.BulkUpdateRatesAsync([ResourceId], NewRateValue, DateTime.Today, "USD", "hr");
-        await LoadRateHistory(ResourceId);
+        await LoadRateHistoryAsync(ResourceId);
     }
 }

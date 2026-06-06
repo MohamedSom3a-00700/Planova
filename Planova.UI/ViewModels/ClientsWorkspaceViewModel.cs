@@ -48,6 +48,9 @@ public partial class ClientsWorkspaceViewModel : ObservableObject
     private string? _editOrganizationDetails;
 
     [ObservableProperty]
+    private string? _editLogo;
+
+    [ObservableProperty]
     private string? _editNotes;
 
     [ObservableProperty]
@@ -123,6 +126,7 @@ public partial class ClientsWorkspaceViewModel : ObservableObject
         EditContactEmail = null;
         EditContactPhone = null;
         EditOrganizationDetails = null;
+        EditLogo = null;
         EditNotes = null;
         ErrorMessage = string.Empty;
         HasError = false;
@@ -140,6 +144,7 @@ public partial class ClientsWorkspaceViewModel : ObservableObject
         EditContactEmail = SelectedClient.ContactEmail;
         EditContactPhone = SelectedClient.ContactPhone;
         EditOrganizationDetails = SelectedClient.OrganizationDetails;
+        EditLogo = SelectedClient.Logo;
         EditNotes = SelectedClient.Notes;
     }
 
@@ -163,14 +168,14 @@ public partial class ClientsWorkspaceViewModel : ObservableObject
             if (IsCreating)
             {
                 var dto = new CreateClientDto(EditCode, EditName, EditContactEmail,
-                    EditContactPhone, EditOrganizationDetails, EditNotes);
+                    EditContactPhone, EditOrganizationDetails, EditLogo, EditNotes);
 
                 SelectedClient = await _clientService.CreateAsync(dto);
             }
             else if (SelectedClient != null)
             {
                 var dto = new UpdateClientDto(EditCode, EditName, EditContactEmail,
-                    EditContactPhone, EditOrganizationDetails, EditNotes);
+                    EditContactPhone, EditOrganizationDetails, EditLogo, EditNotes);
 
                 SelectedClient = await _clientService.UpdateAsync(SelectedClient.Id, dto);
             }

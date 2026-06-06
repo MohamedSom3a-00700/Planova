@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Planova.Cost.Domain.Interfaces;
 using Planova.Excel.Readers;
 using Planova.Excel.Services;
 using Planova.Excel.Validation;
@@ -14,6 +15,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IWorkbookWriter, WorkbookWriter>();
         services.AddSingleton<IWorkbookPreviewService, WorkbookPreviewService>();
         services.AddSingleton<IValidationService, ValidationService>();
+        services.AddScoped<ICostImportService, CostImportService>();
         services.AddSingleton<IImportService, ImportService>();
         services.AddSingleton<IExportService, ExportService>();
         services.AddScoped<IMappingProfileService, MappingProfileService>();

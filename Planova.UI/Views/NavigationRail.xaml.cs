@@ -2,6 +2,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Planova.Application.Dto;
+using Planova.UI.ViewModels;
 
 namespace Planova.UI.Views;
 
@@ -14,6 +16,15 @@ public partial class NavigationRail : UserControl, INotifyPropertyChanged
     public NavigationRail()
     {
         InitializeComponent();
+    }
+
+    private void OnProjectSelected(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.AddedItems.Count > 0 && e.AddedItems[0] is ProjectSummaryDto project)
+        {
+            var vm = DataContext as ShellViewModel;
+            vm?.SelectProjectCommand.Execute(project);
+        }
     }
 
     public bool IsCollapsed

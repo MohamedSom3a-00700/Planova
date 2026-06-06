@@ -1,0 +1,42 @@
+<UserControl x:Class="Planova.UI.Views.Cost.CostAiView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Cost"
+             d:DataContext="{d:DesignInstance vm:CostAiViewModel}"
+             Background="{DynamicResource WorkspaceBackgroundGradient}"
+             FontFamily="{DynamicResource BrandFontFamily}"
+             mc:Ignorable="d">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="AI Cost Services" FontSize="18" FontWeight="SemiBold"
+                   Foreground="{DynamicResource ThemeForeground}" Margin="0,0,0,12"/>
+
+        <Border Grid.Row="1" Background="#FFF0E0" BorderBrush="#FFD080" BorderThickness="1" Padding="8"
+                Visibility="{Binding IsAiAvailable, Converter={StaticResource InverseBoolToVis}}">
+            <TextBlock Text="AI provider is not configured. AI features are disabled."
+                       Foreground="#CC6600"/>
+        </Border>
+
+        <StackPanel Grid.Row="2" Margin="0,12,0,0">
+            <Button Content="Estimate Cost" Command="{Binding EstimateCostCommand}"
+                    IsEnabled="{Binding IsAiAvailable}" Margin="0,0,0,8"
+                    FontFamily="{DynamicResource BrandFontFamily}"/>
+            <Button Content="Detect Anomalies" Command="{Binding DetectAnomaliesCommand}"
+                    IsEnabled="{Binding IsAiAvailable}" Margin="0,0,0,8"
+                    FontFamily="{DynamicResource BrandFontFamily}"/>
+            <Button Content="Forecast EAC" Command="{Binding ForecastCommand}"
+                    IsEnabled="{Binding IsAiAvailable}" Margin="0,0,0,8"
+                    FontFamily="{DynamicResource BrandFontFamily}"/>
+            <Button Content="Generate Narrative" Command="{Binding GenerateNarrativeCommand}"
+                    IsEnabled="{Binding IsAiAvailable}" Margin="0,0,0,8"
+                    FontFamily="{DynamicResource BrandFontFamily}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -22,7 +22,7 @@ public class DashboardServiceTests
         contractRepo.Setup(r => r.GetCountAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(3);
 
-        var service = new ProjectService(projectRepo.Object, clientRepo.Object, contractRepo.Object);
+        var service = new ProjectService(projectRepo.Object, clientRepo.Object, contractRepo.Object, Mock.Of<IContractorRepository>(), Mock.Of<ISubcontractorRepository>());
         var result = await service.GetDashboardSummaryAsync();
 
         result.TotalClients.Should().Be(5);

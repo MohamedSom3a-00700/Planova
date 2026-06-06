@@ -11,15 +11,21 @@ public class ProjectService : IProjectService
     private readonly IProjectRepository _projectRepository;
     private readonly IClientRepository _clientRepository;
     private readonly IContractRepository _contractRepository;
+    private readonly IContractorRepository _contractorRepository;
+    private readonly ISubcontractorRepository _subcontractorRepository;
 
     public ProjectService(
         IProjectRepository projectRepository,
         IClientRepository clientRepository,
-        IContractRepository contractRepository)
+        IContractRepository contractRepository,
+        IContractorRepository contractorRepository,
+        ISubcontractorRepository subcontractorRepository)
     {
         _projectRepository = projectRepository;
         _clientRepository = clientRepository;
         _contractRepository = contractRepository;
+        _contractorRepository = contractorRepository;
+        _subcontractorRepository = subcontractorRepository;
     }
 
     public async Task<IEnumerable<ProjectSummaryDto>> GetAllAsync(CancellationToken ct = default)
@@ -50,6 +56,8 @@ public class ProjectService : IProjectService
             Currency = dto.Currency,
             Location = dto.Location,
             ClientId = dto.ClientId,
+            ContractorId = dto.ContractorId,
+            SubcontractorId = dto.SubcontractorId,
             Notes = dto.Notes,
         };
 
@@ -77,6 +85,8 @@ public class ProjectService : IProjectService
         project.Currency = dto.Currency;
         project.Location = dto.Location;
         project.ClientId = dto.ClientId;
+        project.ContractorId = dto.ContractorId;
+        project.SubcontractorId = dto.SubcontractorId;
         project.Notes = dto.Notes;
         project.UpdatedAt = DateTime.UtcNow;
 
@@ -150,7 +160,15 @@ public class ProjectService : IProjectService
             projects.Count(),
             totalClients,
             totalContracts,
+            0,
+            0,
+            0,
+            0,
             byStatus,
+            new Dictionary<string, int>(),
+            new Dictionary<string, int>(),
+            new Dictionary<string, int>(),
+            new Dictionary<string, int>(),
             recent
         );
     }

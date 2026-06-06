@@ -10,6 +10,8 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<Client> Clients => Set<Client>();
     public DbSet<Contract> Contracts => Set<Contract>();
+    public DbSet<Contractor> Contractors => Set<Contractor>();
+    public DbSet<Subcontractor> Subcontractors => Set<Subcontractor>();
     public DbSet<ExcelMappingProfile> ExcelMappingProfiles => Set<ExcelMappingProfile>();
     public DbSet<Planova.Boq.Domain.Entities.Boq> Boqs => Set<Planova.Boq.Domain.Entities.Boq>();
     public DbSet<Planova.Boq.Domain.Entities.BoqItem> BoqItems => Set<Planova.Boq.Domain.Entities.BoqItem>();
@@ -33,6 +35,13 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<Planova.Resource.Domain.Entities.CrewResource> CrewResources => Set<Planova.Resource.Domain.Entities.CrewResource>();
     public DbSet<Planova.Resource.Domain.Entities.ResourceAssignment> ResourceAssignments => Set<Planova.Resource.Domain.Entities.ResourceAssignment>();
     public DbSet<Planova.Resource.Domain.Entities.ResourceUsage> ResourceUsages => Set<Planova.Resource.Domain.Entities.ResourceUsage>();
+    public DbSet<Planova.Cost.Domain.Entities.Budget> Budgets => Set<Planova.Cost.Domain.Entities.Budget>();
+    public DbSet<Planova.Cost.Domain.Entities.BudgetRevision> BudgetRevisions => Set<Planova.Cost.Domain.Entities.BudgetRevision>();
+    public DbSet<Planova.Cost.Domain.Entities.DirectCost> DirectCosts => Set<Planova.Cost.Domain.Entities.DirectCost>();
+    public DbSet<Planova.Cost.Domain.Entities.CostBaseline> CostBaselines => Set<Planova.Cost.Domain.Entities.CostBaseline>();
+    public DbSet<Planova.Cost.Domain.Entities.CostBaselineRow> CostBaselineRows => Set<Planova.Cost.Domain.Entities.CostBaselineRow>();
+    public DbSet<Planova.Cost.Domain.Entities.ActualCost> ActualCosts => Set<Planova.Cost.Domain.Entities.ActualCost>();
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
     public PlanovaDbContext(DbContextOptions<PlanovaDbContext> options) : base(options)
     {
@@ -44,6 +53,8 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.ApplyConfiguration(new ProjectConfiguration());
         modelBuilder.ApplyConfiguration(new ClientConfiguration());
         modelBuilder.ApplyConfiguration(new ContractConfiguration());
+        modelBuilder.ApplyConfiguration(new ContractorConfiguration());
+        modelBuilder.ApplyConfiguration(new SubcontractorConfiguration());
         modelBuilder.ApplyConfiguration(new ExcelMappingProfileConfiguration());
         modelBuilder.ApplyConfiguration(new BoqConfiguration());
         modelBuilder.ApplyConfiguration(new BoqItemConfiguration());
@@ -67,5 +78,13 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.ApplyConfiguration(new CrewResourceConfiguration());
         modelBuilder.ApplyConfiguration(new ResourceAssignmentConfiguration());
         modelBuilder.ApplyConfiguration(new ResourceUsageConfiguration());
+
+        modelBuilder.ApplyConfiguration(new BudgetConfiguration());
+        modelBuilder.ApplyConfiguration(new BudgetRevisionConfiguration());
+        modelBuilder.ApplyConfiguration(new DirectCostConfiguration());
+        modelBuilder.ApplyConfiguration(new CostBaselineConfiguration());
+        modelBuilder.ApplyConfiguration(new CostBaselineRowConfiguration());
+        modelBuilder.ApplyConfiguration(new ActualCostConfiguration());
+        modelBuilder.ApplyConfiguration(new AuditLogConfiguration());
     }
 }

@@ -36,6 +36,10 @@ public static class MappingProfile
             project.Notes,
             project.ClientId,
             project.Client?.Name,
+            project.ContractorId,
+            project.Contractor?.Name,
+            project.SubcontractorId,
+            project.Subcontractor?.Name,
             project.Contracts?.Select(c => c.ToSummaryDto()).ToList() ?? new(),
             project.CreatedAt,
             project.UpdatedAt,
@@ -64,11 +68,73 @@ public static class MappingProfile
             client.ContactEmail,
             client.ContactPhone,
             client.OrganizationDetails,
+            client.Logo,
             client.Notes,
             client.Projects?.Select(p => p.ToSummaryDto()).ToList() ?? new(),
             client.Contracts?.Select(c => c.ToSummaryDto()).ToList() ?? new(),
             client.CreatedAt,
             client.UpdatedAt
+        );
+    }
+
+    public static ContractorSummaryDto ToSummaryDto(this Contractor contractor)
+    {
+        return new ContractorSummaryDto(
+            contractor.Id,
+            contractor.Code,
+            contractor.Name,
+            contractor.ContactEmail,
+            contractor.Projects?.Count ?? 0,
+            contractor.UpdatedAt
+        );
+    }
+
+    public static ContractorDetailDto ToDetailDto(this Contractor contractor)
+    {
+        return new ContractorDetailDto(
+            contractor.Id,
+            contractor.Code,
+            contractor.Name,
+            contractor.ContactEmail,
+            contractor.ContactPhone,
+            contractor.OrganizationDetails,
+            contractor.Logo,
+            contractor.Notes,
+            contractor.Projects?.Select(p => p.ToSummaryDto()).ToList() ?? new(),
+            contractor.CreatedAt,
+            contractor.UpdatedAt
+        );
+    }
+
+    public static SubcontractorSummaryDto ToSummaryDto(this Subcontractor subcontractor)
+    {
+        return new SubcontractorSummaryDto(
+            subcontractor.Id,
+            subcontractor.Code,
+            subcontractor.Name,
+            subcontractor.ContactEmail,
+            subcontractor.Trade,
+            subcontractor.Projects?.Count ?? 0,
+            subcontractor.UpdatedAt
+        );
+    }
+
+    public static SubcontractorDetailDto ToDetailDto(this Subcontractor subcontractor)
+    {
+        return new SubcontractorDetailDto(
+            subcontractor.Id,
+            subcontractor.Code,
+            subcontractor.Name,
+            subcontractor.ContactEmail,
+            subcontractor.ContactPhone,
+            subcontractor.OrganizationDetails,
+            subcontractor.Trade,
+            subcontractor.LicenseNumber,
+            subcontractor.Logo,
+            subcontractor.Notes,
+            subcontractor.Projects?.Select(p => p.ToSummaryDto()).ToList() ?? new(),
+            subcontractor.CreatedAt,
+            subcontractor.UpdatedAt
         );
     }
 

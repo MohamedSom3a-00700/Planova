@@ -15,7 +15,7 @@ public class ReportServiceTests
         projectRepo.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Project>());
 
-        var service = new ProjectService(projectRepo.Object, Mock.Of<IClientRepository>(), Mock.Of<IContractRepository>());
+        var service = new ProjectService(projectRepo.Object, Mock.Of<IClientRepository>(), Mock.Of<IContractRepository>(), Mock.Of<IContractorRepository>(), Mock.Of<ISubcontractorRepository>());
         var result = await service.GetAllAsync();
 
         result.Should().BeEmpty();

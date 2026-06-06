@@ -6,5 +6,6 @@ public record CreateClientDto(
     string? ContactEmail,
     string? ContactPhone,
     string? OrganizationDetails,
+    string? Logo,
     string? Notes
 );

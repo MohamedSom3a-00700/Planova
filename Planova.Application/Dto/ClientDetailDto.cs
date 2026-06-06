@@ -7,6 +7,7 @@ public record ClientDetailDto(
     string? ContactEmail,
     string? ContactPhone,
     string? OrganizationDetails,
+    string? Logo,
     string? Notes,
     List<ProjectSummaryDto> Projects,
     List<ContractSummaryDto> Contracts,

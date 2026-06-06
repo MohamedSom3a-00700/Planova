@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter</value></resheader>
+  <data name="CostStudio" xml:space="preserve"><value>استوديو التكاليف</value></data>
+  <data name="CostBreakdown" xml:space="preserve"><value>تفصيل التكاليف</value></data>
+  <data name="DirectCosts" xml:space="preserve"><value>التكاليف المباشرة</value></data>
+  <data name="Budget" xml:space="preserve"><value>الميزانية</value></data>
+  <data name="ActualCosts" xml:space="preserve"><value>التكاليف الفعلية</value></data>
+  <data name="CashFlow" xml:space="preserve"><value>التدفق النقدي</value></data>
+  <data name="EVM" xml:space="preserve"><value>إدارة القيمة المكتسبة</value></data>
+  <data name="AIServices" xml:space="preserve"><value>خدمات الذكاء الاصطناعي</value></data>
+  <data name="Reports" xml:space="preserve"><value>التقارير</value></data>
+  <data name="AddDirectCost" xml:space="preserve"><value>إضافة تكلفة مباشرة</value></data>
+  <data name="EditDirectCost" xml:space="preserve"><value>تعديل</value></data>
+  <data name="DeleteDirectCost" xml:space="preserve"><value>حذف</value></data>
+  <data name="ImportExcel" xml:space="preserve"><value>استيراد من إكسل</value></data>
+  <data name="ToggleWeekly" xml:space="preserve"><value>أسبوعي</value></data>
+  <data name="ToggleMonthly" xml:space="preserve"><value>شهري</value></data>
+  <data name="SaveBudget" xml:space="preserve"><value>حفظ</value></data>
+  <data name="ResourceCostTotal" xml:space="preserve"><value>إجمالي تكلفة الموارد</value></data>
+  <data name="DirectCostTotal" xml:space="preserve"><value>إجمالي التكاليف المباشرة</value></data>
+  <data name="ContingencyAmount" xml:space="preserve"><value>مبلغ الطوارئ</value></data>
+  <data name="ContingencyPercent" xml:space="preserve"><value>نسبة الطوارئ</value></data>
+  <data name="ManualOverride" xml:space="preserve"><value>تجاوز يدوي</value></data>
+  <data name="TotalBudget" xml:space="preserve"><value>إجمالي الميزانية</value></data>
+  <data name="GenerateReport" xml:space="preserve"><value>توليد</value></data>
+  <data name="ExportExcel" xml:space="preserve"><value>تصدير إكسل</value></data>
+  <data name="ExportPdf" xml:space="preserve"><value>تصدير PDF</value></data>
+  <data name="AIDisabledMessage" xml:space="preserve"><value>موفر الذكاء الاصطناعي غير مهيأ. خدمات الذكاء الاصطناعي معطلة.</value></data>
+  <data name="NoBaselineWarning" xml:space="preserve"><value>لا يوجد خط أساس نشط. قم بتعيين خط أساس لتمكين حساب إدارة القيمة المكتسبة.</value></data>
+  <data name="Category" xml:space="preserve"><value>الفئة</value></data>
+  <data name="Description" xml:space="preserve"><value>الوصف</value></data>
+  <data name="Quantity" xml:space="preserve"><value>الكمية</value></data>
+  <data name="UnitOfMeasure" xml:space="preserve"><value>وحدة القياس</value></data>
+  <data name="UnitRate" xml:space="preserve"><value>السعر</value></data>
+  <data name="TotalAmount" xml:space="preserve"><value>الإجمالي</value></data>
+  <data name="Scope" xml:space="preserve"><value>النطاق</value></data>
+</root>

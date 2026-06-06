@@ -11,18 +11,61 @@
     <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
-            <TextBlock Text="Resource Assignments" FontSize="20" FontWeight="Bold"
-                       Foreground="{DynamicResource ThemeForeground}" Margin="0,0,16,0"/>
-            <Button Content="Add Assignment" Command="{Binding AddAssignmentCommand}" Margin="0,0,8,0" VerticalAlignment="Center"/>
-            <Button Content="Apply Crew" Command="{Binding ApplyCrewCommand}" VerticalAlignment="Center"/>
-        </StackPanel>
+        <TextBlock Grid.Row="0" Text="Resource Assignments" FontSize="20" FontWeight="Bold"
+                   Foreground="{DynamicResource ThemeForeground}" Margin="0,0,0,8"/>
 
-        <DataGrid Grid.Row="1" x:Name="AssignmentsGrid"
+        <Expander Grid.Row="1" Header="Add Assignment / Apply Crew" IsExpanded="True" Margin="0,0,0,8"
+                  Background="{DynamicResource ExpanderBackground}"
+                  BorderBrush="{DynamicResource ExpanderBorder}"
+                  Foreground="{DynamicResource ThemeForeground}">
+            <StackPanel Margin="8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Resource:" VerticalAlignment="Center" Margin="0,0,4,0" FontWeight="SemiBold"/>
+                    <ComboBox Grid.Row="0" Grid.Column="1"
+                              ItemsSource="{Binding AvailableResources}"
+                              SelectedItem="{Binding SelectedNewResource, Mode=TwoWay}"
+                              DisplayMemberPath="Name"
+                              MinHeight="28" Margin="0,0,16,4"/>
+
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Quantity:" VerticalAlignment="Center" Margin="0,0,4,0" FontWeight="SemiBold"/>
+                    <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding NewQuantity}" MinHeight="28" Margin="0,0,0,4"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Rate:" VerticalAlignment="Center" Margin="0,0,4,0" FontWeight="SemiBold"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding NewRate}" MinHeight="28" Margin="0,0,16,4"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Crew:" VerticalAlignment="Center" Margin="0,0,4,0" FontWeight="SemiBold"/>
+                    <ComboBox Grid.Row="1" Grid.Column="3"
+                              ItemsSource="{Binding AvailableCrews}"
+                              SelectedItem="{Binding SelectedCrew, Mode=TwoWay}"
+                              DisplayMemberPath="Name"
+                              MinHeight="28" Margin="0,0,0,4"/>
+
+                    <StackPanel Grid.Row="2" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Add Assignment" Command="{Binding AddAssignmentCommand}" Margin="0,8,8,0" MinHeight="28"/>
+                        <Button Content="Apply Crew" Command="{Binding ApplyCrewCommand}" Margin="0,8,0,0" MinHeight="28"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Expander>
+
+        <DataGrid Grid.Row="2" x:Name="AssignmentsGrid"
                   ItemsSource="{Binding Assignments}"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
@@ -37,13 +80,13 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
             <TextBlock Text="{Binding TotalCost, StringFormat='Total: {0:N2}'}"
                        FontSize="16" FontWeight="Bold"
                        Foreground="{DynamicResource ThemeForeground}"
                        VerticalAlignment="Center" Margin="0,0,12,0"/>
             <Button Content="Remove" Command="{Binding RemoveAssignmentCommand}"
-                    CommandParameter="{Binding ElementName=AssignmentsGrid, Path=SelectedItem}"/>
+                    CommandParameter="{Binding ElementName=AssignmentsGrid, Path=SelectedItem}" MinHeight="28"/>
         </StackPanel>
     </Grid>
 </UserControl>

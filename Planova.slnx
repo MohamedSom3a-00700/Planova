@@ -4,6 +4,7 @@
     <Project Path="tests/Domain.Tests/Domain.Tests.csproj" />
     <Project Path="tests/Persistence.Tests/Persistence.Tests.csproj" />
     <Project Path="tests/Planova.UI.Tests/Planova.UI.Tests.csproj" />
+    <Project Path="tests/Planova.Cost.Tests/Planova.Cost.Tests.csproj" />
     <Project Path="tests/Planova.Excel.Tests/Planova.Excel.Tests.csproj" />
     <Project Path="tests/Planova.Activity.Tests/Planova.Activity.Tests.csproj" />
     <Project Path="tests/Planova.Boq.Tests/Planova.Boq.Tests.csproj" />
@@ -14,6 +15,7 @@
   <Project Path="Planova.Activity/Planova.Activity.csproj" />
   <Project Path="Planova.Application/Planova.Application.csproj" />
   <Project Path="Planova.Excel/Planova.Excel.csproj" />
+  <Project Path="Planova.Cost/Planova.Cost.csproj" />
   <Project Path="Planova.Domain/Planova.Domain.csproj" />
   <Project Path="Planova.Infrastructure/Planova.Infrastructure.csproj" />
   <Project Path="Planova.Localization/Planova.Localization.csproj" />

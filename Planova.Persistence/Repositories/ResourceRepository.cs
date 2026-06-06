@@ -41,7 +41,7 @@ public class ResourceRepository : IResourceRepository
         if (scope.HasValue)
             q = q.Where(r => r.Scope == scope.Value);
         if (projectId.HasValue)
-            q = q.Where(r => r.ProjectId == projectId || r.IsGlobal);
+            q = q.Where(r => r.ProjectId == projectId || r.Scope == ResourceScope.Global);
         return await q.ToListAsync(ct);
     }
 
@@ -51,7 +51,7 @@ public class ResourceRepository : IResourceRepository
         if (scope.HasValue)
             q = q.Where(r => r.Scope == scope.Value);
         if (projectId.HasValue)
-            q = q.Where(r => r.ProjectId == projectId || r.IsGlobal);
+            q = q.Where(r => r.ProjectId == projectId || r.Scope == ResourceScope.Global);
         return await q.ToListAsync(ct);
     }
 

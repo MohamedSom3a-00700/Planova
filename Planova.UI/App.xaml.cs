@@ -1,8 +1,9 @@
-﻿using System.IO;
+using System.IO;
 using System.Windows;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
 using Planova.Application.Repositories;
 using Planova.Application.Services;
 using Planova.Infrastructure.Logging;
@@ -13,6 +14,7 @@ using Planova.Persistence.Repositories;
 using Planova.Persistence.Services;
 using Planova.Shared.Abstractions;
 using Planova.Boq.Domain.Interfaces;
+
 using Planova.Boq.Extensions;
 using Planova.Wbs.Extensions;
 using Planova.Excel.Extensions;
@@ -37,8 +39,11 @@ using Planova.UI.ViewModels.Activity;
 using Planova.UI.Views.Activity;
 using Planova.Activity.Extensions;
 using Planova.Resource.Extensions;
+using Planova.Cost.Extensions;
 using Planova.UI.ViewModels.Resource;
+using Planova.UI.ViewModels.Cost;
 using Planova.UI.Views.Resource;
+using Planova.UI.Views.Cost;
 using QuestPDF.Infrastructure;
 using Serilog;
 using Wpf.Ui.Appearance;
@@ -128,6 +133,7 @@ public partial class App : System.Windows.Application
         services.AddSingleton<IHighContrastDetector, HighContrastDetector>();
         services.AddSingleton<IThemeService, Services.ThemeService>();
         services.AddSingleton<ILocalizationService, LocalizationService>();
+        services.AddSingleton<ICurrentProjectService, CurrentProjectService>();
         services.AddScoped<IDatabaseService, DatabaseService>();
         services.AddScoped<ISettingsService, SettingsService>();
 
@@ -137,11 +143,15 @@ public partial class App : System.Windows.Application
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IClientRepository, ClientRepository>();
         services.AddScoped<IContractRepository, ContractRepository>();
+        services.AddScoped<IContractorRepository, ContractorRepository>();
+        services.AddScoped<ISubcontractorRepository, SubcontractorRepository>();
         services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IClientService, ClientService>();
         services.AddScoped<IContractService, ContractService>();
+        services.AddScoped<IContractorService, ContractorService>();
+        services.AddScoped<ISubcontractorService, SubcontractorService>();
         services.AddScoped<IUserProfileService, UserProfileService>();
         services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<IReportService, ReportService>();
@@ -268,6 +278,29 @@ public partial class App : System.Windows.Application
         services.AddTransient<ResourceSettingsViewModel>();
         services.AddTransient<ResourceSettingsView>();
         services.AddPlanovaResource();
+        services.AddPlanovaCost();
+
+        // Cost Studio
+        services.AddTransient<CostStudioViewModel>();
+        services.AddTransient<CostBreakdownViewModel>();
+        services.AddTransient<DirectCostManagerViewModel>();
+        services.AddTransient<BudgetViewModel>();
+        services.AddTransient<BudgetRevisionViewModel>();
+        services.AddTransient<ActualCostViewModel>();
+        services.AddTransient<CashFlowViewModel>();
+        services.AddTransient<EvmViewModel>();
+        services.AddTransient<CostAiViewModel>();
+        services.AddTransient<CostReportViewModel>();
+        services.AddTransient<CostStudioView>();
+        services.AddTransient<CostBreakdownView>();
+        services.AddTransient<DirectCostManagerView>();
+        services.AddTransient<BudgetView>();
+        services.AddTransient<BudgetRevisionView>();
+        services.AddTransient<ActualCostView>();
+        services.AddTransient<CashFlowView>();
+        services.AddTransient<EvmView>();
+        services.AddTransient<CostAiView>();
+        services.AddTransient<CostReportView>();
     }
 
     private static string GetDatabasePath()

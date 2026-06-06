@@ -11,23 +11,61 @@
     <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
-            <Button Content="Add Rate" Command="{Binding AddRateCommand}" Margin="0,0,8,0"/>
-            <Button Content="Bulk Update" Command="{Binding BulkRateUpdateCommand}"/>
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+            <TextBlock Text="Resource:" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
+            <ComboBox ItemsSource="{Binding AvailableResources}"
+                      SelectedItem="{Binding SelectedResource, Mode=TwoWay}"
+                      DisplayMemberPath="Name"
+                      Width="240"
+                      MinHeight="28"/>
         </StackPanel>
 
-        <DataGrid Grid.Row="1"
+        <Expander Grid.Row="1" Header="Add New Rate" IsExpanded="True" Margin="0,0,0,8"
+                  Background="{DynamicResource ExpanderBackground}"
+                  BorderBrush="{DynamicResource ExpanderBorder}"
+                  Foreground="{DynamicResource ThemeForeground}">
+            <StackPanel Margin="8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Rate:" VerticalAlignment="Center" Margin="0,0,4,0" FontWeight="SemiBold"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding NewRateValue}" Width="120" Margin="0,0,16,4" MinHeight="28"/>
+
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Effective Date:" VerticalAlignment="Center" Margin="0,0,4,0" FontWeight="SemiBold"/>
+                    <DatePicker Grid.Row="0" Grid.Column="3" SelectedDate="{Binding NewEffectiveDate}" Width="140" Margin="0,0,0,4" MinHeight="28"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Currency:" VerticalAlignment="Center" Margin="0,0,4,0" FontWeight="SemiBold"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding NewCurrency}" Width="120" Margin="0,0,16,0" MinHeight="28"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Unit of Measure:" VerticalAlignment="Center" Margin="0,0,4,0" FontWeight="SemiBold"/>
+                    <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding NewUnitOfMeasure}" Width="140" Margin="0,0,0,0" MinHeight="28"/>
+                </Grid>
+                <Button Content="Add Rate" Command="{Binding AddRateCommand}"
+                        HorizontalAlignment="Right" Margin="0,8,0,0" MinHeight="28"/>
+            </StackPanel>
+        </Expander>
+
+        <DataGrid Grid.Row="2"
                   ItemsSource="{Binding Rates}"
                   SelectedItem="{Binding SelectedRate, Mode=TwoWay}"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
                   Background="Transparent"
-                  BorderThickness="0"
-                   >
+                  BorderThickness="0">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Rate" Binding="{Binding Rate}" Width="120"/>
                 <DataGridTextColumn Header="Effective Date" Binding="{Binding EffectiveDate}" Width="140"/>
@@ -36,9 +74,10 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
-            <Button Content="Remove" Command="{Binding RemoveRateCommand}"
-                    CommandParameter="{Binding SelectedRate}"/>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Content="Bulk Update" Command="{Binding BulkRateUpdateCommand}" Margin="0,0,8,0" MinHeight="28"/>
+            <Button Content="Remove Rate" Command="{Binding RemoveRateCommand}"
+                    CommandParameter="{Binding SelectedRate}" MinHeight="28"/>
         </StackPanel>
     </Grid>
 </UserControl>
