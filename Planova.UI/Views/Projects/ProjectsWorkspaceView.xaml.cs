@@ -9,5 +9,6 @@ public partial class ProjectsWorkspaceView : UserControl
     {
         InitializeComponent();
         DataContext = viewModel;
+        Loaded += (_, _) => viewModel.LoadCommand.Execute(null);
     }
 }

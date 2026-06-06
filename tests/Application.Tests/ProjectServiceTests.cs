@@ -13,6 +13,8 @@ public class ProjectServiceTests
     private readonly Mock<IProjectRepository> _projectRepo;
     private readonly Mock<IClientRepository> _clientRepo;
     private readonly Mock<IContractRepository> _contractRepo;
+    private readonly Mock<IContractorRepository> _contractorRepo;
+    private readonly Mock<ISubcontractorRepository> _subcontractorRepo;
     private readonly ProjectService _service;
 
     public ProjectServiceTests()
@@ -20,7 +22,9 @@ public class ProjectServiceTests
         _projectRepo = new Mock<IProjectRepository>();
         _clientRepo = new Mock<IClientRepository>();
         _contractRepo = new Mock<IContractRepository>();
-        _service = new ProjectService(_projectRepo.Object, _clientRepo.Object, _contractRepo.Object);
+        _contractorRepo = new Mock<IContractorRepository>();
+        _subcontractorRepo = new Mock<ISubcontractorRepository>();
+        _service = new ProjectService(_projectRepo.Object, _clientRepo.Object, _contractRepo.Object, _contractorRepo.Object, _subcontractorRepo.Object);
     }
 
     [Fact]
@@ -40,7 +44,7 @@ public class ProjectServiceTests
         _projectRepo.Setup(r => r.CodeExistsAsync("P1", null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var dto = new CreateProjectDto("P1", "Test", null, null, null, null, null, null, null);
+        var dto = new CreateProjectDto("P1", "Test", null, null, null, null, null, null, null, null, null);
 
         Func<Task> act = () => _service.CreateAsync(dto);
         await act.Should().ThrowAsync<DuplicateEntityException>();

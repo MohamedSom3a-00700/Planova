@@ -18,6 +18,7 @@
     <ProjectReference Include="..\Planova.Persistence\Planova.Persistence.csproj" />
     <ProjectReference Include="..\Planova.Domain\Planova.Domain.csproj" />
     <ProjectReference Include="..\Planova.Shared\Planova.Shared.csproj" />
+    <ProjectReference Include="..\Planova.Cost\Planova.Cost.csproj" />
   </ItemGroup>
 
 </Project>

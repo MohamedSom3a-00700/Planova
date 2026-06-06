@@ -11,17 +11,28 @@
     <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
             <TextBlock Text="Resource Histogram" FontSize="20" FontWeight="Bold"
-                       Foreground="{DynamicResource ThemeForeground}" Margin="0,0,16,0"/>
-            <Button Content="Export" Command="{Binding ExportDataCommand}" VerticalAlignment="Center"/>
+                       Foreground="{DynamicResource ThemeForeground}" VerticalAlignment="Center"/>
+            <Button Content="Export" Command="{Binding ExportDataCommand}"
+                    Margin="16,0,0,0" VerticalAlignment="Center" MinHeight="28"/>
         </StackPanel>
 
-        <DataGrid Grid.Row="1"
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+            <TextBlock Text="Select Resource:" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
+            <ComboBox ItemsSource="{Binding AvailableResources}"
+                      SelectedItem="{Binding SelectedResource, Mode=TwoWay}"
+                      DisplayMemberPath="Name"
+                      Width="240"
+                      MinHeight="28"/>
+        </StackPanel>
+
+        <DataGrid Grid.Row="2"
                   ItemsSource="{Binding HistogramData.DailyData}"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
@@ -34,13 +45,13 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <TextBlock Grid.Row="2" Margin="0,8,0,0">
+        <TextBlock Grid.Row="3" Margin="0,8,0,0">
             <TextBlock.Style>
                 <Style TargetType="TextBlock">
                     <Setter Property="Text" Value=""/>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding HistogramData}" Value="{x:Null}">
-                            <Setter Property="Text" Value="Load histogram data by selecting a project and resource"/>
+                            <Setter Property="Text" Value="Select a resource to load histogram data"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

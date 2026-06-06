@@ -18,6 +18,8 @@ public class ProjectRepository : IProjectRepository
     {
         return await _context.Projects
             .Include(p => p.Client)
+            .Include(p => p.Contractor)
+            .Include(p => p.Subcontractor)
             .OrderByDescending(p => p.UpdatedAt)
             .ToListAsync(ct);
     }
@@ -26,6 +28,8 @@ public class ProjectRepository : IProjectRepository
     {
         var project = await _context.Projects
             .Include(p => p.Client)
+            .Include(p => p.Contractor)
+            .Include(p => p.Subcontractor)
             .FirstOrDefaultAsync(p => p.Id == id, ct);
 
         if (project != null)
@@ -63,6 +67,8 @@ public class ProjectRepository : IProjectRepository
         var q = query.ToLower();
         return await _context.Projects
             .Include(p => p.Client)
+            .Include(p => p.Contractor)
+            .Include(p => p.Subcontractor)
             .Where(p => p.Name.ToLower().Contains(q) || p.Code.ToLower().Contains(q))
             .OrderByDescending(p => p.UpdatedAt)
             .ToListAsync(ct);
@@ -72,6 +78,8 @@ public class ProjectRepository : IProjectRepository
     {
         return await _context.Projects
             .Include(p => p.Client)
+            .Include(p => p.Contractor)
+            .Include(p => p.Subcontractor)
             .Where(p => p.Status == status)
             .OrderByDescending(p => p.UpdatedAt)
             .ToListAsync(ct);

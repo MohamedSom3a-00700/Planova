@@ -1,0 +1,96 @@
+<UserControl x:Class="Planova.UI.Views.Cost.EvmView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Cost"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+             d:DataContext="{d:DesignInstance vm:EvmViewModel}"
+             Background="{DynamicResource WorkspaceBackgroundGradient}"
+             FontFamily="{DynamicResource BrandFontFamily}"
+             mc:Ignorable="d">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Earned Value Management" FontSize="18" FontWeight="SemiBold"
+                   Foreground="{DynamicResource ThemeForeground}" Margin="0,0,0,12"/>
+
+        <Border Grid.Row="1" Background="{DynamicResource ThemeBackgroundMedium}"
+                BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" Padding="8"
+                Visibility="{Binding HasBaseline, Converter={StaticResource BoolToVis}}">
+            <StackPanel>
+                <TextBlock Text="Data Date:" FontWeight="SemiBold"/>
+                <DatePicker SelectedDate="{Binding DataDate}" Margin="0,4,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="2" Background="#FFF0E0" BorderBrush="#FFD080" BorderThickness="1" Padding="8"
+                Visibility="{Binding HasBaseline, Converter={StaticResource InverseBoolToVis}}">
+            <TextBlock Text="{Binding WarningMessage}" Foreground="#CC6600"/>
+        </Border>
+
+        <lvc:CartesianChart Grid.Row="3"
+                            Series="{Binding Series}"
+                            XAxes="{Binding XAxes}"
+                            YAxes="{Binding YAxes}"
+                            Margin="0,8,0,8"
+                            Background="{DynamicResource ThemeBackgroundMedium}"/>
+
+        <ScrollViewer Grid.Row="4">
+            <StackPanel>
+                <Border Background="{DynamicResource ThemeBackgroundMedium}"
+                        BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" Padding="8">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Status" FontWeight="SemiBold" Foreground="{Binding Metrics.StatusColor}"/>
+                            <TextBlock Text="{Binding Metrics.PlannedValue, StringFormat='PV: {0:N2}'}"/>
+                            <TextBlock Text="{Binding Metrics.EarnedValue, StringFormat='EV: {0:N2}'}"/>
+                            <TextBlock Text="{Binding Metrics.ActualCost, StringFormat='AC: {0:N2}'}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Variances" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding Metrics.CostVariance, StringFormat='CV: {0:N2}'}"/>
+                            <TextBlock Text="{Binding Metrics.ScheduleVariance, StringFormat='SV: {0:N2}'}"/>
+                            <TextBlock Text="{Binding Metrics.CostPerformanceIndex, StringFormat='CPI: {0:N2}'}"/>
+                            <TextBlock Text="{Binding Metrics.SchedulePerformanceIndex, StringFormat='SPI: {0:N2}'}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Forecast" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding Metrics.BudgetAtCompletion, StringFormat='BAC: {0:N2}'}"/>
+                            <TextBlock Text="{Binding Metrics.EstimateAtCompletion, StringFormat='EAC: {0:N2}'}"/>
+                            <TextBlock Text="{Binding Metrics.EstimateToComplete, StringFormat='ETC: {0:N2}'}"/>
+                            <TextBlock Text="{Binding Metrics.VarianceAtCompletion, StringFormat='VAC: {0:N2}'}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <DataGrid ItemsSource="{Binding ActivityDetails}" Margin="0,8,0,0"
+                          AutoGenerateColumns="False" IsReadOnly="True"
+                          Background="{DynamicResource ThemeBackgroundMedium}"
+                          BorderBrush="{DynamicResource ThemeBorder}" MaxHeight="200">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Code" Binding="{Binding ActivityCode}" Width="80"/>
+                        <DataGridTextColumn Header="Name" Binding="{Binding ActivityName}" Width="150"/>
+                        <DataGridTextColumn Header="PV" Binding="{Binding PlannedValue}" Width="80"/>
+                        <DataGridTextColumn Header="EV" Binding="{Binding EarnedValue}" Width="80"/>
+                        <DataGridTextColumn Header="AC" Binding="{Binding ActualCost}" Width="80"/>
+                        <DataGridTextColumn Header="%Complete" Binding="{Binding PercentComplete}" Width="80"/>
+                        <DataGridTextColumn Header="CPI" Binding="{Binding Cpi}" Width="60"/>
+                        <DataGridTextColumn Header="SPI" Binding="{Binding Spi}" Width="60"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

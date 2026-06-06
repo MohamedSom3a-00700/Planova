@@ -29,6 +29,9 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
         builder.Property(e => e.OrganizationDetails)
             .HasMaxLength(2000);
 
+        builder.Property(e => e.Logo)
+            .HasMaxLength(500);
+
         builder.Property(e => e.Notes)
             .HasMaxLength(4000);
 

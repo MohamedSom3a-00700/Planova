@@ -9,5 +9,7 @@ public record CreateProjectDto(
     string? Currency,
     string? Location,
     int? ClientId,
+    int? ContractorId,
+    int? SubcontractorId,
     string? Notes
 );

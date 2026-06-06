@@ -6,6 +6,7 @@ using Microsoft.Win32;
 using Planova.Resource.Application.Dto;
 using Planova.Resource.Domain.Enums;
 using Planova.Resource.Domain.Interfaces;
+using Planova.Shared.Abstractions;
 
 namespace Planova.UI.ViewModels.Resource;
 
@@ -13,6 +14,7 @@ public partial class ResourceLibraryViewModel : ObservableObject
 {
     private readonly IResourceService _resourceService;
     private readonly IResourceImportService _importService;
+    private readonly ICurrentProjectService _currentProjectService;
 
     [ObservableProperty]
     private ObservableCollection<ResourceDto> _resources = new();
@@ -56,14 +58,32 @@ public partial class ResourceLibraryViewModel : ObservableObject
     [ObservableProperty]
     private string _editCurrency = "USD";
 
-    public ResourceLibraryViewModel(IResourceService resourceService, IResourceImportService importService)
+    public ResourceLibraryViewModel(
+        IResourceService resourceService,
+        IResourceImportService importService,
+        ICurrentProjectService currentProjectService)
     {
         _resourceService = resourceService;
         _importService = importService;
+        _currentProjectService = currentProjectService;
+        _currentProjectService.CurrentProjectChanged += OnProjectChanged;
+        SetProjectFilter();
+    }
+
+    private void OnProjectChanged(object? sender, ProjectContext? project)
+    {
+        SetProjectFilter();
+        _ = LoadResourcesAsync();
+    }
+
+    private void SetProjectFilter()
+    {
+        var projectId = _currentProjectService.CurrentProject?.Id;
+        Filter = Filter with { ProjectId = projectId };
     }
 
     [RelayCommand]
-    private async Task LoadResources()
+    private async Task LoadResourcesAsync()
     {
         IsLoading = true;
         try
@@ -82,7 +102,7 @@ public partial class ResourceLibraryViewModel : ObservableObject
     private async Task Search()
     {
         Filter = Filter with { SearchQuery = SearchQuery };
-        await LoadResources();
+        await LoadResourcesAsync();
     }
 
     [RelayCommand]
@@ -124,6 +144,7 @@ public partial class ResourceLibraryViewModel : ObservableObject
                     Name = EditName,
                     ResourceType = EditResourceType,
                     Scope = EditScope,
+                    ProjectId = _currentProjectService.CurrentProject?.Id,
                     DefaultRate = EditDefaultRate,
                     UnitOfMeasure = EditUnitOfMeasure,
                     Currency = EditCurrency
@@ -146,7 +167,7 @@ public partial class ResourceLibraryViewModel : ObservableObject
             }
 
             IsEditing = false;
-            await LoadResources();
+            await LoadResourcesAsync();
         }
         catch (Exception ex)
         {
@@ -166,7 +187,7 @@ public partial class ResourceLibraryViewModel : ObservableObject
         if (resource is null) return;
         await _resourceService.DeactivateAsync(resource.Id);
         StatusMessage = "Resource deactivated";
-        await LoadResources();
+        await LoadResourcesAsync();
     }
 
     [RelayCommand]
@@ -175,7 +196,7 @@ public partial class ResourceLibraryViewModel : ObservableObject
         if (resource is null) return;
         await _resourceService.ReactivateAsync(resource.Id);
         StatusMessage = "Resource reactivated";
-        await LoadResources();
+        await LoadResourcesAsync();
     }
 
     [RelayCommand]
@@ -217,7 +238,7 @@ public partial class ResourceLibraryViewModel : ObservableObject
             IsLoading = false;
         }
 
-        await LoadResources();
+        await LoadResourcesAsync();
     }
 
     [RelayCommand]

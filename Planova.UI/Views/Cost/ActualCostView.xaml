@@ -1,0 +1,41 @@
+<UserControl x:Class="Planova.UI.Views.Cost.ActualCostView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Cost"
+             d:DataContext="{d:DesignInstance vm:ActualCostViewModel}"
+             Background="{DynamicResource WorkspaceBackgroundGradient}"
+             FontFamily="{DynamicResource BrandFontFamily}"
+             mc:Ignorable="d">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Actual Costs" FontSize="18" FontWeight="SemiBold"
+                   Foreground="{DynamicResource ThemeForeground}" Margin="0,0,0,8"/>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+            <Button Content="Import from Excel" Command="{Binding ImportExcelCommand}" Margin="0,0,8,0"
+                    FontFamily="{DynamicResource BrandFontFamily}"/>
+        </StackPanel>
+
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Variances}"
+                  SelectedItem="{Binding SelectedVariance, Mode=TwoWay}"
+                  AutoGenerateColumns="False" IsReadOnly="True"
+                  Background="{DynamicResource ThemeBackgroundMedium}"
+                  BorderBrush="{DynamicResource ThemeBorder}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Activity Code" Binding="{Binding ActivityCode}" Width="100"/>
+                <DataGridTextColumn Header="Activity Name" Binding="{Binding ActivityName}" Width="*"/>
+                <DataGridTextColumn Header="Planned" Binding="{Binding PlannedCost}" Width="100"/>
+                <DataGridTextColumn Header="Actual" Binding="{Binding ActualCost}" Width="100"/>
+                <DataGridTextColumn Header="Variance" Binding="{Binding Variance}" Width="100"/>
+                <DataGridTextColumn Header="Var %" Binding="{Binding VariancePercent}" Width="80"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

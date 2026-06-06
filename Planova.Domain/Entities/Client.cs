@@ -8,6 +8,7 @@ public class Client
     public string? ContactEmail { get; set; }
     public string? ContactPhone { get; set; }
     public string? OrganizationDetails { get; set; }
+    public string? Logo { get; set; }
     public string? Notes { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
