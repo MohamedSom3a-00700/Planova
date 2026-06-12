@@ -20,5 +20,11 @@ public record ProjectDetailDto(
     List<ContractSummaryDto> Contracts,
     DateTime CreatedAt,
     DateTime UpdatedAt,
-    string[] AllowedNextStatuses
+    string[] AllowedNextStatuses,
+    string? LogoPath = null,
+    string? DocumentsFolder = null,
+    double? Latitude = null,
+    double? Longitude = null,
+    string? QrCodePath = null,
+    List<ProjectDocumentDto>? Documents = null
 );

@@ -11,5 +11,9 @@ public record UpdateProjectDto(
     int? ClientId,
     int? ContractorId,
     int? SubcontractorId,
-    string? Notes
+    string? Notes,
+    string? LogoSourcePath = null,
+    string? DocumentsFolder = null,
+    double? Latitude = null,
+    double? Longitude = null
 );

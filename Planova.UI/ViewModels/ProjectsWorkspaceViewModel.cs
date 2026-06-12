@@ -1,9 +1,13 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Win32;
 using Planova.Application.Dto;
 using Planova.Application.Services;
 using Planova.Shared.Abstractions;
+using Planova.UI.Services;
 
 namespace Planova.UI.ViewModels;
 
@@ -14,6 +18,9 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
     private readonly IContractorService _contractorService;
     private readonly ISubcontractorService _subcontractorService;
     private readonly ICurrentProjectService _currentProjectService;
+    private readonly IProjectDocumentService _projectDocumentService;
+    private readonly QrCodeService _qrCodeService;
+    private readonly MapHtmlService _mapHtmlService;
     private List<ProjectSummaryDto> _allProjects = new();
 
     public ProjectsWorkspaceViewModel(
@@ -21,13 +28,19 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         IClientService clientService,
         IContractorService contractorService,
         ISubcontractorService subcontractorService,
-        ICurrentProjectService currentProjectService)
+        ICurrentProjectService currentProjectService,
+        IProjectDocumentService projectDocumentService,
+        QrCodeService qrCodeService,
+        MapHtmlService mapHtmlService)
     {
         _projectService = projectService;
         _clientService = clientService;
         _contractorService = contractorService;
         _subcontractorService = subcontractorService;
         _currentProjectService = currentProjectService;
+        _projectDocumentService = projectDocumentService;
+        _qrCodeService = qrCodeService;
+        _mapHtmlService = mapHtmlService;
     }
 
     public ObservableCollection<ProjectSummaryDto> Projects { get; } = new();
@@ -114,10 +127,41 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
     private string? _editNotes;
 
     [ObservableProperty]
+    private string? _editLogoSourcePath;
+
+    [ObservableProperty]
+    private string? _editDocumentsFolder;
+
+    [ObservableProperty]
+    private double? _editLatitude;
+
+    [ObservableProperty]
+    private double? _editLongitude;
+
+    [ObservableProperty]
+    private string? _logoPreviewPath;
+
+    [ObservableProperty]
+    private string? _qrCodePath;
+
+    [ObservableProperty]
+    private string? _mapHtmlPath;
+
+    [ObservableProperty]
+    private string _selectedDocumentTypeFilter = "All";
+
+    [ObservableProperty]
+    private ProjectDocumentDto? _selectedDocument;
+
+    [ObservableProperty]
     private string _errorMessage = string.Empty;
 
     [ObservableProperty]
     private bool _hasError;
+
+    public ObservableCollection<ProjectDocumentDto> Documents { get; } = new();
+    public ObservableCollection<string> DocumentTypeFilters { get; } = new()
+        { "All", "Boq", "Drawing", "Spec", "Contract", "Other" };
 
     private void ApplyFilters()
     {
@@ -134,11 +178,32 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
                 (p.Code?.ToLowerInvariant().Contains(query) == true) ||
                 (p.Name?.ToLowerInvariant().Contains(query) == true) ||
                 (p.ClientName?.ToLowerInvariant().Contains(query) == true) ||
+                (p.ContractorName?.ToLowerInvariant().Contains(query) == true) ||
                 (p.Status?.ToLowerInvariant().Contains(query) == true));
         }
 
         foreach (var p in filtered)
             Projects.Add(p);
+    }
+
+    partial void OnSelectedDocumentTypeFilterChanged(string value)
+    {
+        if (SelectedProject == null) return;
+        LoadDocuments();
+    }
+
+    private void LoadDocuments()
+    {
+        if (SelectedProject == null) return;
+        Documents.Clear();
+
+        var docs = SelectedProject.Documents ?? new List<ProjectDocumentDto>();
+
+        if (SelectedDocumentTypeFilter != "All")
+            docs = docs.Where(d => d.DocumentType == SelectedDocumentTypeFilter).ToList();
+
+        foreach (var d in docs)
+            Documents.Add(d);
     }
 
     [RelayCommand]
@@ -202,6 +267,7 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
             SelectedProject = await _projectService.GetByIdAsync(project.Id);
             IsEditing = false;
             IsCreating = false;
+            LoadDocuments();
 
             if (SelectedProject != null)
             {
@@ -209,6 +275,18 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
                     SelectedProject.Id,
                     SelectedProject.Code,
                     SelectedProject.Name));
+
+                if (SelectedProject.Latitude.HasValue && SelectedProject.Longitude.HasValue)
+                {
+                    GenerateMapHtml(SelectedProject.Latitude.Value, SelectedProject.Longitude.Value, SelectedProject.Name);
+                }
+                else
+                {
+                    MapHtmlPath = null;
+                }
+
+                QrCodePath = SelectedProject.QrCodePath;
+                LogoPreviewPath = SelectedProject.LogoPath;
             }
         }
         catch (Exception ex)
@@ -239,6 +317,13 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         EditContractorId = null;
         EditSubcontractorId = null;
         EditNotes = null;
+        EditLogoSourcePath = null;
+        EditDocumentsFolder = null;
+        EditLatitude = null;
+        EditLongitude = null;
+        LogoPreviewPath = null;
+        QrCodePath = null;
+        MapHtmlPath = null;
         ErrorMessage = string.Empty;
         HasError = false;
     }
@@ -261,6 +346,12 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         EditContractorId = SelectedProject.ContractorId;
         EditSubcontractorId = SelectedProject.SubcontractorId;
         EditNotes = SelectedProject.Notes;
+        EditLogoSourcePath = null;
+        EditDocumentsFolder = SelectedProject.DocumentsFolder;
+        EditLatitude = SelectedProject.Latitude;
+        EditLongitude = SelectedProject.Longitude;
+        LogoPreviewPath = SelectedProject.LogoPath;
+        QrCodePath = SelectedProject.QrCodePath;
         ErrorMessage = string.Empty;
         HasError = false;
     }
@@ -287,7 +378,8 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
                 var dto = new CreateProjectDto(
                     EditCode, EditName, EditDescription,
                     EditStartDate, EditFinishDate, EditCurrency,
-                    EditLocation, EditClientId, EditContractorId, EditSubcontractorId, EditNotes);
+                    EditLocation, EditClientId, EditContractorId, EditSubcontractorId, EditNotes,
+                    EditLogoSourcePath, EditDocumentsFolder, EditLatitude, EditLongitude);
 
                 SelectedProject = await _projectService.CreateAsync(dto);
             }
@@ -296,13 +388,15 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
                 var dto = new UpdateProjectDto(
                     EditCode, EditName, EditDescription,
                     EditStartDate, EditFinishDate, EditCurrency,
-                    EditLocation, EditClientId, EditContractorId, EditSubcontractorId, EditNotes);
+                    EditLocation, EditClientId, EditContractorId, EditSubcontractorId, EditNotes,
+                    EditLogoSourcePath, EditDocumentsFolder, EditLatitude, EditLongitude);
 
                 SelectedProject = await _projectService.UpdateAsync(SelectedProject.Id, dto);
             }
 
             IsEditing = false;
             IsCreating = false;
+            LoadDocuments();
             await LoadAsync();
         }
         catch (Exception ex)
@@ -360,5 +454,275 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         {
             IsLoading = false;
         }
+    }
+
+    [RelayCommand]
+    private void BrowseLogo()
+    {
+        var dialog = new OpenFileDialog
+        {
+            Filter = "Image files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp",
+            Title = "Select Project Logo"
+        };
+
+        if (dialog.ShowDialog() == true)
+        {
+            EditLogoSourcePath = dialog.FileName;
+            LogoPreviewPath = dialog.FileName;
+        }
+    }
+
+    [RelayCommand]
+    private void BrowseDocumentsFolder()
+    {
+        var dialog = new OpenFileDialog
+        {
+            ValidateNames = false,
+            CheckFileExists = false,
+            CheckPathExists = true,
+            FileName = "Select Folder"
+        };
+
+        if (dialog.ShowDialog() == true)
+        {
+            var folder = System.IO.Path.GetDirectoryName(dialog.FileName);
+            if (!string.IsNullOrEmpty(folder))
+                EditDocumentsFolder = folder;
+        }
+    }
+
+    [RelayCommand]
+    private async Task AddDocumentsAsync()
+    {
+        if (SelectedProject == null) return;
+
+        var dialog = new OpenFileDialog
+        {
+            Multiselect = true,
+            Filter = "Allowed documents (*.pdf;*.xlsx;*.xls;*.xlsm;*.dwg;*.dxf;*.doc;*.docx)|*.pdf;*.xlsx;*.xls;*.xlsm;*.dwg;*.dxf;*.doc;*.docx",
+            Title = "Select documents to add"
+        };
+
+        if (dialog.ShowDialog() == true)
+        {
+            IsLoading = true;
+            try
+            {
+                foreach (var filePath in dialog.FileNames)
+                {
+                    var docType = DetectDocumentType(filePath);
+                    var dto = new AddProjectDocumentDto(SelectedProject.Id, filePath, docType, null);
+                    await _projectDocumentService.AddAsync(dto);
+                }
+
+                SelectedProject = await _projectService.GetByIdAsync(SelectedProject.Id);
+                LoadDocuments();
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+                HasError = true;
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteDocumentAsync(ProjectDocumentDto? doc)
+    {
+        if (SelectedProject == null || doc == null) return;
+
+        if (_projectDocumentService.IsLockedDocumentType(doc.DocumentType))
+        {
+            ErrorMessage = $"'{doc.DocumentType}' documents are required by studios and cannot be deleted.";
+            HasError = true;
+            return;
+        }
+
+        try
+        {
+            await _projectDocumentService.DeleteAsync(doc.Id);
+            SelectedProject = await _projectService.GetByIdAsync(SelectedProject.Id);
+            LoadDocuments();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+            HasError = true;
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteAllDocumentsAsync()
+    {
+        if (SelectedProject == null) return;
+
+        try
+        {
+            await _projectDocumentService.DeleteByProjectAsync(SelectedProject.Id);
+            SelectedProject = await _projectService.GetByIdAsync(SelectedProject.Id);
+            LoadDocuments();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+            HasError = true;
+        }
+    }
+
+    [RelayCommand]
+    private void OpenDocument(ProjectDocumentDto? doc)
+    {
+        if (doc == null) return;
+        try
+        {
+            Process.Start(new ProcessStartInfo(doc.AbsolutePath) { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Cannot open file: {ex.Message}";
+            HasError = true;
+        }
+    }
+
+    [RelayCommand]
+    private async Task ScanFolderAsync()
+    {
+        if (SelectedProject == null || string.IsNullOrEmpty(EditDocumentsFolder)) return;
+
+        IsLoading = true;
+        try
+        {
+            var dto = new ScanFolderDto(SelectedProject.Id, EditDocumentsFolder);
+            await _projectDocumentService.ScanFolderAsync(dto);
+            SelectedProject = await _projectService.GetByIdAsync(SelectedProject.Id);
+            LoadDocuments();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+            HasError = true;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task SetLocationAsync()
+    {
+        if (SelectedProject == null || !EditLatitude.HasValue || !EditLongitude.HasValue) return;
+
+        IsLoading = true;
+        try
+        {
+            var qrPath = _qrCodeService.GenerateLocationQr(SelectedProject.Id, EditLatitude.Value, EditLongitude.Value);
+            QrCodePath = qrPath;
+
+            GenerateMapHtml(EditLatitude.Value, EditLongitude.Value, SelectedProject.Name);
+
+            var dto = new UpdateProjectDto(
+                SelectedProject.Code, SelectedProject.Name, SelectedProject.Description,
+                SelectedProject.StartDate, SelectedProject.FinishDate, SelectedProject.Currency,
+                SelectedProject.Location, SelectedProject.ClientId, SelectedProject.ContractorId,
+                SelectedProject.SubcontractorId, SelectedProject.Notes,
+                null, SelectedProject.DocumentsFolder, EditLatitude, EditLongitude);
+
+            await _projectService.UpdateAsync(SelectedProject.Id, dto);
+            SelectedProject = await _projectService.GetByIdAsync(SelectedProject.Id);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+            HasError = true;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void GenerateMapHtml(double latitude, double longitude, string projectName)
+    {
+        var html = _mapHtmlService.GenerateMapHtml(latitude, longitude, projectName);
+        var tempDir = Path.Combine(Path.GetTempPath(), "Planova", "Maps");
+        Directory.CreateDirectory(tempDir);
+        var tempFile = Path.Combine(tempDir, $"map_{Guid.NewGuid()}.html");
+        File.WriteAllText(tempFile, html);
+        MapHtmlPath = tempFile;
+    }
+
+    [RelayCommand]
+    private void CopyQrCodePath()
+    {
+        if (!string.IsNullOrEmpty(QrCodePath))
+        {
+            try
+            {
+                System.Windows.Clipboard.SetText(QrCodePath);
+            }
+            catch { }
+        }
+    }
+
+    public event Action<string?, string?>? CoordinatesFromMapClicked;
+
+    [RelayCommand]
+    private void OpenInGoogleMaps()
+    {
+        var lat = EditLatitude ?? SelectedProject?.Latitude;
+        var lng = EditLongitude ?? SelectedProject?.Longitude;
+        if (lat.HasValue && lng.HasValue)
+        {
+            var url = $"https://www.google.com/maps?q={lat.Value},{lng.Value}";
+            try
+            {
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Cannot open browser: {ex.Message}";
+                HasError = true;
+            }
+        }
+        else
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo("https://www.google.com/maps") { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Cannot open browser: {ex.Message}";
+                HasError = true;
+            }
+        }
+    }
+
+    [RelayCommand]
+    private void GetCoordinatesFromMap()
+    {
+        CoordinatesFromMapClicked?.Invoke(null, null);
+    }
+
+    private static string DetectDocumentType(string filePath)
+    {
+        var fileName = Path.GetFileNameWithoutExtension(filePath);
+        var lower = fileName.ToLowerInvariant();
+
+        if (lower.Contains("boq") || lower.Contains("bill") || lower.Contains("quantity"))
+            return "Boq";
+        if (lower.Contains("spec"))
+            return "Spec";
+        if (lower.Contains("contract") || lower.Contains("agreement"))
+            return "Contract";
+        if (lower.Contains("draw") || lower.Contains("dwg"))
+            return "Drawing";
+
+        return "Other";
     }
 }

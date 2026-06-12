@@ -83,15 +83,19 @@ public class BoqImportService : IBoqImportService
             item.BoqId = created.Id;
         }
 
+        var deduplicated = new List<BoqItem>();
         if (items.Count > 0)
         {
-            created.Items = items.ToList();
-            await _itemRepository.AddRangeAsync(items, ct);
+            (deduplicated, var duplicatesSkipped) = DeduplicateItems(items);
+            totalSkipped += duplicatesSkipped;
+
+            created.Items = deduplicated;
+            await _itemRepository.AddRangeAsync(deduplicated, ct);
         }
 
         progress?.Report(80);
 
-        created.TotalAmount = items.Sum(i => i.Amount);
+        created.TotalAmount = deduplicated.Sum(i => i.Amount);
         await _boqRepository.UpdateAsync(created, ct);
 
         progress?.Report(100);
@@ -135,15 +139,18 @@ public class BoqImportService : IBoqImportService
             item.BoqId = created.Id;
         }
 
+        var deduplicated = new List<BoqItem>();
+        var totalSkipped = 0;
         if (items.Count > 0)
         {
-            created.Items = items.ToList();
-            await _itemRepository.AddRangeAsync(items, ct);
+            (deduplicated, totalSkipped) = DeduplicateItems(items);
+            created.Items = deduplicated;
+            await _itemRepository.AddRangeAsync(deduplicated, ct);
         }
 
         progress?.Report(100);
 
-        return new BoqImportResult(created.Id, items.Count, 0, 0, [], TimeSpan.Zero);
+        return new BoqImportResult(created.Id, deduplicated.Count, 0, totalSkipped, [], TimeSpan.Zero);
     }
 
     public async Task<BoqImportPreview> PreviewImportAsync(
@@ -151,5 +158,27 @@ public class BoqImportService : IBoqImportService
     {
         var tree = _treeBuilder.BuildTree(rows, strategy);
         return new BoqImportPreview(tree, [], tree.Count);
+    }
+
+    private static (List<BoqItem> Deduplicated, int Skipped) DeduplicateItems(IEnumerable<BoqItem> items)
+    {
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var result = new List<BoqItem>();
+        var skipped = 0;
+
+        foreach (var item in items)
+        {
+            var key = item.Code ?? string.Empty;
+            if (seen.Add(key))
+            {
+                result.Add(item);
+            }
+            else
+            {
+                skipped++;
+            }
+        }
+
+        return (result, skipped);
     }
 }

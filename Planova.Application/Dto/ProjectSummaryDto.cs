@@ -8,5 +8,8 @@ public record ProjectSummaryDto(
     string? ClientName,
     DateTime? StartDate,
     DateTime? FinishDate,
-    DateTime UpdatedAt
+    DateTime UpdatedAt,
+    string? ContractorName = null,
+    int DocumentCount = 0,
+    string? LogoPath = null
 );

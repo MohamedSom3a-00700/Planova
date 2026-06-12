@@ -134,6 +134,8 @@ public partial class App : System.Windows.Application
         services.AddSingleton<IThemeService, Services.ThemeService>();
         services.AddSingleton<ILocalizationService, LocalizationService>();
         services.AddSingleton<ICurrentProjectService, CurrentProjectService>();
+        services.AddSingleton<QrCodeService>();
+        services.AddSingleton<MapHtmlService>();
         services.AddScoped<IDatabaseService, DatabaseService>();
         services.AddScoped<ISettingsService, SettingsService>();
 
@@ -160,6 +162,8 @@ public partial class App : System.Windows.Application
         services.AddTransient<ShellView>();
         services.AddTransient<ProjectsWorkspaceViewModel>();
         services.AddTransient<ProjectsWorkspaceView>();
+        services.AddTransient<ViewModels.Shared.DocumentValidationBannerViewModel>();
+        services.AddTransient<Views.Shared.DocumentValidationBannerView>();
         services.AddTransient<ClientsWorkspaceViewModel>();
         services.AddTransient<ClientsWorkspaceView>();
         services.AddTransient<ContractsWorkspaceViewModel>();

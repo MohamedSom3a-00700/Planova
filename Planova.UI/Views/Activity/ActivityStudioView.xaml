@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:Planova.UI.ViewModels.Activity"
+             xmlns:shared="clr-namespace:Planova.UI.Views.Shared"
              d:DataContext="{d:DesignInstance vm:ActivityStudioViewModel}"
              Background="{DynamicResource WorkspaceBackgroundGradient}"
              FontFamily="{DynamicResource BrandFontFamily}"
@@ -17,6 +18,7 @@
         <StackPanel Grid.Row="0" Margin="12,12,12,0">
             <TextBlock Text="Activity Studio" FontSize="24" FontWeight="Bold"
                        Foreground="{DynamicResource ThemeForeground}"/>
+            <shared:DocumentValidationBannerView DataContext="{Binding DocumentValidationBanner}"/>
             <TextBlock TextWrapping="Wrap" Margin="0,4,0,0" Foreground="Gray" FontSize="13">
                 Create and manage project schedule activities, define logic relationships (FS/SS/FF/SF),
                 manage calendars, browse the Activity Bank, generate activities from WBS/BOQ, and export reports.
