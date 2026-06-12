@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Planova.Activity.Domain.Interfaces;
+using Planova.Application.Repositories;
+using Planova.Application.Services;
 using Planova.Boq.Domain.Interfaces;
 using Planova.Cost.Domain.Interfaces;
 using Planova.Persistence.Repositories;
@@ -51,6 +53,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICrewResourceRepository, CrewResourceRepository>();
         services.AddScoped<IResourceAssignmentRepository, ResourceAssignmentRepository>();
         services.AddScoped<IResourceUsageRepository, ResourceUsageRepository>();
+
+        // Project document services
+        services.AddScoped<IProjectDocumentRepository, ProjectDocumentRepository>();
+        services.AddScoped<IProjectDocumentService, ProjectDocumentService>();
 
         return services;
     }

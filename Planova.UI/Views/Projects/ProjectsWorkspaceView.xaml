@@ -13,13 +13,70 @@
     <UserControl.Resources>
         <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
         <conv:BoolToVisibilityConverter x:Key="InvertedBoolToVis" Invert="True"/>
+        <conv:LockedDocumentTypeConverter x:Key="LockedDocConverter"/>
+
+        <Style x:Key="StatusBadgeStyle" TargetType="Border">
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="6,2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#80FFFFFF"/>
+        </Style>
+        <Style x:Key="DocCountChipStyle" TargetType="Border">
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="8,2"/>
+            <Setter Property="Background" Value="{DynamicResource ThemeAccent}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style x:Key="ProjectCardListStyle" TargetType="ListBoxItem">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="CardBorder" Padding="0" Margin="0,0,0,4"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="6" BorderThickness="1"
+                                BorderBrush="{DynamicResource ThemeBorder}"
+                                SnapsToDevicePixels="True">
+                            <Grid>
+                                <Border x:Name="SelectedIndicator"
+                                        Width="3"
+                                        HorizontalAlignment="Left"
+                                        Background="{DynamicResource ThemeAccent}"
+                                        CornerRadius="3,0,0,3"
+                                        Visibility="Collapsed"/>
+                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="CardBorder" Property="Background" Value="{DynamicResource ThemeCard}"/>
+                                <Setter TargetName="CardBorder" Property="BorderBrush" Value="{DynamicResource ThemeBorder}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="CardBorder" Property="Background" Value="{DynamicResource ThemeCard}"/>
+                                <Setter TargetName="CardBorder" Property="BorderBrush" Value="{DynamicResource ThemeAccent}"/>
+                                <Setter TargetName="CardBorder" Property="BorderThickness" Value="2"/>
+                                <Setter TargetName="SelectedIndicator" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- Header -->
         <StackPanel Grid.Row="0" Margin="12">
             <TextBlock Text="Projects" FontSize="24" FontWeight="Bold"
                        Foreground="{DynamicResource ThemeForeground}"/>
@@ -44,99 +101,311 @@
                 <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
 
-            <ListView Grid.Column="0" ItemsSource="{Binding Projects}"
-                      SelectedItem="{Binding SelectedSummary, Mode=TwoWay}"
-                      Background="{DynamicResource ThemeSurface}" BorderThickness="1">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Code" DisplayMemberBinding="{Binding Code}" Width="80"/>
-                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
-                        <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status}" Width="90"/>
-                        <GridViewColumn Header="Client" DisplayMemberBinding="{Binding ClientName}" Width="120"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+            <!-- Left column: Project cards -->
+            <ListBox Grid.Column="0" ItemsSource="{Binding Projects}"
+                     SelectedItem="{Binding SelectedSummary, Mode=TwoWay}"
+                     Background="{DynamicResource ThemeSurface}"
+                     BorderThickness="1"
+                     ItemContainerStyle="{StaticResource ProjectCardListStyle}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Padding="8" Margin="0"
+                                Background="{DynamicResource ThemeSurface}"
+                                CornerRadius="6" BorderThickness="1"
+                                BorderBrush="{DynamicResource ThemeBorder}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Image Grid.Column="0" Width="64" Height="64"
+                                       Source="{Binding LogoPath}" Margin="0,0,12,0"
+                                       Stretch="Uniform">
+                                    <Image.Style>
+                                        <Style TargetType="Image">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="Source" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="14"
+                                               TextTrimming="CharacterEllipsis"/>
+                                    <WrapPanel Margin="0,2,0,0">
+                                        <Border Style="{StaticResource StatusBadgeStyle}">
+                                            <TextBlock Text="{Binding Code}" FontSize="11"/>
+                                        </Border>
+                                        <Border Style="{StaticResource StatusBadgeStyle}" Margin="4,0,0,0">
+                                            <TextBlock Text="{Binding Status}" FontSize="11"/>
+                                        </Border>
+                                    </WrapPanel>
+                                    <TextBlock Text="{Binding ClientName, StringFormat='Client: {0}'}"
+                                               FontSize="11" Margin="0,2,0,0"
+                                               TextTrimming="CharacterEllipsis"/>
+                                    <WrapPanel Margin="0,2,0,0">
+                                        <TextBlock Text="{Binding StartDate, StringFormat='{}{0:MMM dd, yyyy}'}"
+                                                   FontSize="10"/>
+                                        <TextBlock Text=" - " FontSize="10"
+                                                   Visibility="{Binding FinishDate, Converter={StaticResource BoolToVis}}"/>
+                                        <TextBlock Text="{Binding FinishDate, StringFormat='{}{0:MMM dd, yyyy}'}"
+                                                   FontSize="10"/>
+                                    </WrapPanel>
+                                    <Border Style="{StaticResource DocCountChipStyle}" Margin="0,4,0,0"
+                                            HorizontalAlignment="Left">
+                                        <TextBlock Text="{Binding DocumentCount, StringFormat='{}{0} docs'}"
+                                                   FontSize="10" Foreground="White"/>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
 
-            <ScrollViewer Grid.Column="1" Margin="12,0,0,0"
-                          Visibility="{Binding IsEditing, Converter={StaticResource BoolToVis}}">
-                <StackPanel>
-                    <TextBlock Text="{Binding SelectedProject.Name, TargetNullValue='New Project'}"
-                               FontSize="18" FontWeight="SemiBold"/>
-                    <Grid Margin="0,12,0,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100"/><ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+            <!-- Right column -->
+            <Grid Grid.Column="1" Margin="12,0,0,0">
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Code:" VerticalAlignment="Center"/>
-                        <ui:TextBox Grid.Row="0" Grid.Column="1" Text="{Binding EditCode}"
-                                    PlaceholderText="Enter project code" Height="28" Margin="4,2"/>
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Name:" VerticalAlignment="Center"/>
-                        <ui:TextBox Grid.Row="1" Grid.Column="1" Text="{Binding EditName}"
-                                    PlaceholderText="Enter project name" Height="28" Margin="4,2"/>
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Description:" VerticalAlignment="Top" Margin="0,8,0,0"/>
-                        <ui:TextBox Grid.Row="2" Grid.Column="1" Text="{Binding EditDescription}"
-                                    PlaceholderText="Enter description" AcceptsReturn="True" Height="50" Margin="4,2"/>
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Start Date:" VerticalAlignment="Center"/>
-                        <DatePicker Grid.Row="3" Grid.Column="1" SelectedDate="{Binding EditStartDate}" Height="28" Margin="4,2"/>
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Finish Date:" VerticalAlignment="Center"/>
-                        <DatePicker Grid.Row="4" Grid.Column="1" SelectedDate="{Binding EditFinishDate}" Height="28" Margin="4,2"/>
-                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Currency:" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Row="5" Grid.Column="1" ItemsSource="{Binding Currencies}" SelectedItem="{Binding EditCurrency}" Height="28" Margin="4,2" IsEditable="False"/>
-                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Client:" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Row="6" Grid.Column="1" ItemsSource="{Binding Clients}" DisplayMemberPath="Name"
-                                  SelectedValuePath="Id" SelectedValue="{Binding EditClientId}" Height="28" Margin="4,2"/>
-                        <TextBlock Grid.Row="7" Grid.Column="0" Text="Main Contractor:" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Row="7" Grid.Column="1" ItemsSource="{Binding Contractors}" DisplayMemberPath="Name"
-                                  SelectedValuePath="Id" SelectedValue="{Binding EditContractorId}" Height="28" Margin="4,2"/>
-                        <TextBlock Grid.Row="8" Grid.Column="0" Text="Subcontractor:" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Row="8" Grid.Column="1" ItemsSource="{Binding Subcontractors}" DisplayMemberPath="Name"
-                                  SelectedValuePath="Id" SelectedValue="{Binding EditSubcontractorId}" Height="28" Margin="4,2"/>
-                        <TextBlock Grid.Row="9" Grid.Column="0" Text="Notes:" VerticalAlignment="Top" Margin="0,8,0,0"/>
-                        <ui:TextBox Grid.Row="9" Grid.Column="1" Text="{Binding EditNotes}"
-                                    PlaceholderText="Enter notes" AcceptsReturn="True" Height="50" Margin="4,2"/>
-                        <StackPanel Grid.Row="10" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,8,0,0">
-                            <Button Content="Save" Command="{Binding SaveCommand}" Height="28" Width="80"/>
-                            <Button Content="Cancel" Command="{Binding CancelEditCommand}" Margin="8,0,0,0" Height="28" Width="80"/>
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
-            </ScrollViewer>
+                <!-- Edit mode -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              Visibility="{Binding IsEditing, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding SelectedProject.Name, TargetNullValue='New Project'}"
+                                   FontSize="18" FontWeight="SemiBold"/>
+                        <Grid Margin="0,12,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/><ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-            <ScrollViewer Grid.Column="1" Margin="12,0,0,0" VerticalScrollBarVisibility="Auto"
-                          Visibility="{Binding IsEditing, Converter={StaticResource InvertedBoolToVis}}">
-                <StackPanel Visibility="{Binding SelectedProject, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="{Binding SelectedProject.Name, StringFormat='Project: {0}'}"
-                               FontSize="18" FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding SelectedProject.Code, StringFormat='Code: {0}'}" Margin="0,4"/>
-                    <TextBlock Text="{Binding SelectedProject.Status, StringFormat='Status: {0}'}" Margin="0,4"/>
-                    <TextBlock Text="{Binding SelectedProject.ClientName, StringFormat='Client: {0}'}" Margin="0,4"/>
-                    <TextBlock Text="{Binding SelectedProject.Description}" TextWrapping="Wrap" Margin="0,8"/>
-                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                        <Button Content="Edit" Command="{Binding EditProjectCommand}" Height="28" Width="80"/>
-                        <Button Content="Delete" Command="{Binding DeleteCommand}" Margin="8,0,0,0" Height="28" Width="80"/>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Code:" VerticalAlignment="Center"/>
+                            <ui:TextBox Grid.Row="0" Grid.Column="1" Text="{Binding EditCode}"
+                                        PlaceholderText="Enter project code" Margin="4,2"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Name:" VerticalAlignment="Center"/>
+                            <ui:TextBox Grid.Row="1" Grid.Column="1" Text="{Binding EditName}"
+                                        PlaceholderText="Enter project name" Margin="4,2"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Description:" VerticalAlignment="Top" Margin="0,8,0,0"/>
+                            <ui:TextBox Grid.Row="2" Grid.Column="1" Text="{Binding EditDescription}"
+                                        PlaceholderText="Enter description" AcceptsReturn="True" MinHeight="72" Margin="4,2" TextWrapping="Wrap" VerticalAlignment="Stretch"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Start Date:" VerticalAlignment="Center"/>
+                            <DatePicker Grid.Row="3" Grid.Column="1" SelectedDate="{Binding EditStartDate}" Margin="4,2"/>
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Finish Date:" VerticalAlignment="Center"/>
+                            <DatePicker Grid.Row="4" Grid.Column="1" SelectedDate="{Binding EditFinishDate}" Margin="4,2"/>
+                            <TextBlock Grid.Row="5" Grid.Column="0" Text="Currency:" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="5" Grid.Column="1" ItemsSource="{Binding Currencies}" SelectedItem="{Binding EditCurrency}" Margin="4,2" IsEditable="False"/>
+                            <TextBlock Grid.Row="6" Grid.Column="0" Text="Client:" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="6" Grid.Column="1" ItemsSource="{Binding Clients}" DisplayMemberPath="Name"
+                                      SelectedValuePath="Id" SelectedValue="{Binding EditClientId}" Margin="4,2"/>
+                            <TextBlock Grid.Row="7" Grid.Column="0" Text="Main Contractor:" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="7" Grid.Column="1" ItemsSource="{Binding Contractors}" DisplayMemberPath="Name"
+                                      SelectedValuePath="Id" SelectedValue="{Binding EditContractorId}" Margin="4,2"/>
+                            <TextBlock Grid.Row="8" Grid.Column="0" Text="Subcontractor:" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="8" Grid.Column="1" ItemsSource="{Binding Subcontractors}" DisplayMemberPath="Name"
+                                      SelectedValuePath="Id" SelectedValue="{Binding EditSubcontractorId}" Margin="4,2"/>
+                            <TextBlock Grid.Row="9" Grid.Column="0" Text="Logo:" VerticalAlignment="Center"/>
+                            <StackPanel Grid.Row="9" Grid.Column="1" Orientation="Horizontal" Margin="4,2">
+                                <Image Source="{Binding LogoPreviewPath}" Width="80" Height="80"
+                                       Stretch="UniformToFill" Margin="0,0,10,0"/>
+                                <Button Content="Browse Logo" Command="{Binding BrowseLogoCommand}" VerticalAlignment="Center" MinHeight="32"/>
+                            </StackPanel>
+                            <TextBlock Grid.Row="10" Grid.Column="0" Text="Docs Folder:" VerticalAlignment="Center"/>
+                            <StackPanel Grid.Row="10" Grid.Column="1" Orientation="Horizontal" Margin="4,2">
+                                <ui:TextBox Text="{Binding EditDocumentsFolder, Mode=OneWay}" Width="200" IsReadOnly="True"/>
+                                <Button Content="Browse" Command="{Binding BrowseDocumentsFolderCommand}" Margin="4,0,0,0" MinHeight="32"/>
+                            </StackPanel>
+                            <TextBlock Grid.Row="11" Grid.Column="0" Text="Notes:" VerticalAlignment="Top" Margin="0,8,0,0"/>
+                            <ui:TextBox Grid.Row="11" Grid.Column="1" Text="{Binding EditNotes}"
+                                        PlaceholderText="Enter notes" AcceptsReturn="True" MinHeight="72" Margin="4,2" TextWrapping="Wrap" VerticalAlignment="Stretch"/>
+                            <StackPanel Grid.Row="12" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,8,0,0">
+                                <Button Content="Save" Command="{Binding SaveCommand}" MinHeight="32" Width="100"/>
+                                <Button Content="Cancel" Command="{Binding CancelEditCommand}" Margin="8,0,0,0" MinHeight="32" Width="100"/>
+                            </StackPanel>
+                        </Grid>
                     </StackPanel>
-                    <TextBlock Text="Status Transitions" FontSize="14" FontWeight="SemiBold" Margin="0,16,0,4"/>
-                    <ItemsControl ItemsSource="{Binding SelectedProject.AllowedNextStatuses}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Button Content="{Binding}" Margin="0,0,4,4" Height="26"
-                                        Command="{Binding DataContext.ChangeStatusCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                        CommandParameter="{Binding}"/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
-            </ScrollViewer>
+                </ScrollViewer>
+
+                <!-- View mode with tabs -->
+                <Grid Visibility="{Binding IsEditing, Converter={StaticResource InvertedBoolToVis}}">
+                    <TabControl Visibility="{Binding SelectedProject, Converter={StaticResource BoolToVis}}"
+                                SelectedIndex="0">
+                        <TabItem Header="Info">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <StackPanel Margin="8">
+                                    <TextBlock Text="{Binding SelectedProject.Name, StringFormat='Project: {0}'}"
+                                               FontSize="18" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding SelectedProject.Code, StringFormat='Code: {0}'}" Margin="0,4"/>
+                                    <TextBlock Text="{Binding SelectedProject.Status, StringFormat='Status: {0}'}" Margin="0,4"/>
+                                    <TextBlock Text="{Binding SelectedProject.ClientName, StringFormat='Client: {0}'}" Margin="0,4"/>
+                                    <TextBlock Text="{Binding SelectedProject.ContractorName, StringFormat='Contractor: {0}'}" Margin="0,4"/>
+                                    <TextBlock Text="{Binding SelectedProject.Description}" TextWrapping="Wrap" Margin="0,8"/>
+                                    <TextBlock Text="{Binding SelectedProject.DocumentsFolder, StringFormat='Documents Folder: {0}'}" Margin="0,4"/>
+                                    <Image Source="{Binding SelectedProject.LogoPath}" Width="80" Height="80" Stretch="UniformToFill" Margin="0,4"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                                        <Button Content="Edit" Command="{Binding EditProjectCommand}" Height="32" Width="100"/>
+                                        <Button Content="Delete" Command="{Binding DeleteCommand}" Margin="8,0,0,0" Height="32" Width="100"/>
+                                    </StackPanel>
+                                    <TextBlock Text="Status Transitions" FontSize="14" FontWeight="SemiBold" Margin="0,16,0,4"/>
+                                    <ItemsControl ItemsSource="{Binding SelectedProject.AllowedNextStatuses}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Button Content="{Binding}" Margin="0,0,4,4" Height="26"
+                                                        Command="{Binding DataContext.ChangeStatusCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"/>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+
+                        <TabItem Header="Documents">
+                            <Grid Margin="8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Filter and action buttons -->
+                                <WrapPanel Grid.Row="0" Margin="0,0,0,8">
+                                    <ComboBox ItemsSource="{Binding DocumentTypeFilters}"
+                                              SelectedItem="{Binding SelectedDocumentTypeFilter}"
+                                              Width="120" Height="32"/>
+                                    <Button Content="+ Add Files" Command="{Binding AddDocumentsCommand}"
+                                            Margin="8,0,0,0" Height="32" MinWidth="90"/>
+                                    <Button Content="Scan Folder" Command="{Binding ScanFolderCommand}"
+                                            Margin="8,0,0,0" Height="32" MinWidth="90"/>
+                                    <Button Content="Delete All" Command="{Binding DeleteAllDocumentsCommand}"
+                                            Margin="8,0,0,0" Height="32" MinWidth="90"/>
+                                </WrapPanel>
+
+                                <!-- Scan folder path -->
+                                <WrapPanel Grid.Row="1" Margin="0,0,0,8">
+                                    <TextBox Text="{Binding EditDocumentsFolder, Mode=OneWay}"
+                                             Width="300" Height="32" IsReadOnly="True"/>
+                                    <Button Content="Browse" Command="{Binding BrowseDocumentsFolderCommand}"
+                                            Margin="4,0,0,0" Height="32"/>
+                                    <TextBlock Text="(Folder to scan)" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="11"/>
+                                </WrapPanel>
+
+                                <!-- Validation summary -->
+                                <TextBlock Grid.Row="2" Margin="0,0,0,4" FontSize="11" Foreground="Red"
+                                           Text="Missing documents required for studio use"
+                                           Visibility="Collapsed"/>
+
+                                <!-- Document list -->
+                                <ListView Grid.Row="3" ItemsSource="{Binding Documents}"
+                                          SelectedItem="{Binding SelectedDocument, Mode=TwoWay}"
+                                          Background="{DynamicResource ThemeSurface}">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="File Name" Width="200">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="🔒 " FontSize="11"
+                                                                       Visibility="{Binding DocumentType, Converter={StaticResource LockedDocConverter}}"/>
+                                                            <TextBlock Text="{Binding FileName}" TextTrimming="CharacterEllipsis"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="Type" DisplayMemberBinding="{Binding DocumentType}" Width="80"/>
+                                            <GridViewColumn Header="Ext" DisplayMemberBinding="{Binding FileExtension}" Width="50"/>
+                                            <GridViewColumn Header="Size (KB)" Width="80">
+                                                <GridViewColumn.DisplayMemberBinding>
+                                                    <Binding Path="FileSizeBytes" StringFormat='{}{0:N0}'/>
+                                                </GridViewColumn.DisplayMemberBinding>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="Date" DisplayMemberBinding="{Binding UploadedAt, StringFormat='{}{0:MMM dd, yyyy}'}" Width="100"/>
+                                            <GridViewColumn Header="Notes" DisplayMemberBinding="{Binding Notes}" Width="120"/>
+                                            <GridViewColumn Header="" Width="150">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Button Content="Open" Margin="0,0,4,0" Height="26"
+                                                                    Command="{Binding DataContext.OpenDocumentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                    CommandParameter="{Binding}"/>
+                                                             <Button Content="Delete" Height="26"
+                                                                     Command="{Binding DataContext.DeleteDocumentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                     CommandParameter="{Binding}"
+                                                                     IsEnabled="{Binding DocumentType, Converter={StaticResource LockedDocConverter}, ConverterParameter=invert}"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
+                        </TabItem>
+
+                        <TabItem Header="Location">
+                            <Grid Margin="8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Lat/Lon inputs -->
+                                <WrapPanel Grid.Row="0" Margin="0,0,0,8">
+                                    <TextBlock Text="Latitude:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                    <ui:TextBox Text="{Binding EditLatitude, TargetNullValue=''}" Width="120" Height="32" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Longitude:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                    <ui:TextBox Text="{Binding EditLongitude, TargetNullValue=''}" Width="120" Height="32" Margin="0,0,8,0"/>
+                                    <Button Content="Open in Google Maps"
+                                            Command="{Binding OpenInGoogleMapsCommand}" Height="32" Margin="0,0,8,0"/>
+                                    <Button Content="Get from Map Click"
+                                            Command="{Binding GetCoordinatesFromMapCommand}" Height="32" Margin="0,0,8,0"/>
+                                    <Button Content="Set Location &amp; Generate QR"
+                                            Command="{Binding SetLocationCommand}" Height="32"/>
+                                </WrapPanel>
+
+                                <!-- Map WebBrowser -->
+                                <ContentControl Grid.Row="1" Margin="0,0,0,8">
+                                    <WebBrowser x:Name="MapBrowser"/>
+                                </ContentControl>
+
+                                <!-- QR Code -->
+                                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,8">
+                                    <Image Source="{Binding QrCodePath}" Width="128" Height="128"
+                                           Stretch="UniformToFill" Margin="0,0,8,0">
+                                        <Image.Style>
+                                            <Style TargetType="Image">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="Source" Value="{x:Null}">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Image.Style>
+                                    </Image>
+                                    <Button Content="Copy path" Height="28" VerticalAlignment="Center"
+                                            Command="{Binding CopyQrCodePathCommand}"/>
+                                </StackPanel>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>

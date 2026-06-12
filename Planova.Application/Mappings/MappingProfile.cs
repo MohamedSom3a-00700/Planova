@@ -1,3 +1,4 @@
+using System.IO;
 using Planova.Application.Dto;
 using Planova.Domain.Entities;
 using Planova.Domain.ValueObjects;
@@ -16,7 +17,10 @@ public static class MappingProfile
             project.Client?.Name,
             project.StartDate,
             project.FinishDate,
-            project.UpdatedAt
+            project.UpdatedAt,
+            project.Contractor?.Name,
+            project.Documents?.Count ?? 0,
+            project.LogoPath
         );
     }
 
@@ -43,7 +47,13 @@ public static class MappingProfile
             project.Contracts?.Select(c => c.ToSummaryDto()).ToList() ?? new(),
             project.CreatedAt,
             project.UpdatedAt,
-            status?.AllowedNext().Select(s => s.Value).ToArray() ?? Array.Empty<string>()
+            status?.AllowedNext().Select(s => s.Value).ToArray() ?? Array.Empty<string>(),
+            project.LogoPath,
+            project.DocumentsFolder,
+            project.Latitude,
+            project.Longitude,
+            project.QrCodePath,
+            project.Documents?.Select(d => d.ToDto()).ToList() ?? new()
         );
     }
 
@@ -172,6 +182,28 @@ public static class MappingProfile
             contract.Client?.Name ?? string.Empty,
             contract.CreatedAt,
             contract.UpdatedAt
+        );
+    }
+
+    public static ProjectDocumentDto ToDto(this ProjectDocument document, string? documentsFolder = null)
+    {
+        var absolutePath = string.IsNullOrEmpty(documentsFolder)
+            ? Path.GetFullPath(Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "Planova", "Projects", document.ProjectId.ToString(), document.RelativePath))
+            : Path.GetFullPath(Path.Combine(documentsFolder, document.RelativePath));
+
+        return new ProjectDocumentDto(
+            document.Id,
+            document.ProjectId,
+            document.FileName,
+            document.RelativePath,
+            document.DocumentType,
+            document.FileExtension,
+            document.FileSizeBytes,
+            document.Notes,
+            document.UploadedAt,
+            absolutePath
         );
     }
 }

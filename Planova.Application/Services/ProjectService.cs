@@ -1,3 +1,4 @@
+using System.IO;
 using Planova.Application.Dto;
 using Planova.Application.Exceptions;
 using Planova.Application.Mappings;
@@ -59,7 +60,22 @@ public class ProjectService : IProjectService
             ContractorId = dto.ContractorId,
             SubcontractorId = dto.SubcontractorId,
             Notes = dto.Notes,
+            DocumentsFolder = dto.DocumentsFolder,
+            Latitude = dto.Latitude,
+            Longitude = dto.Longitude,
         };
+
+        if (!string.IsNullOrEmpty(dto.LogoSourcePath))
+        {
+            var logoFolder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "Planova", "Projects");
+            Directory.CreateDirectory(logoFolder);
+            var ext = Path.GetExtension(dto.LogoSourcePath);
+            var logoDest = Path.Combine(logoFolder, $"logo_{Guid.NewGuid()}{ext}");
+            File.Copy(dto.LogoSourcePath, logoDest, overwrite: false);
+            project.LogoPath = logoDest;
+        }
 
         ValidateProjectDates(project);
         await ValidateClientExists(dto.ClientId, ct);
@@ -88,7 +104,22 @@ public class ProjectService : IProjectService
         project.ContractorId = dto.ContractorId;
         project.SubcontractorId = dto.SubcontractorId;
         project.Notes = dto.Notes;
+        project.DocumentsFolder = dto.DocumentsFolder;
+        project.Latitude = dto.Latitude;
+        project.Longitude = dto.Longitude;
         project.UpdatedAt = DateTime.UtcNow;
+
+        if (!string.IsNullOrEmpty(dto.LogoSourcePath))
+        {
+            var logoFolder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "Planova", "Projects");
+            Directory.CreateDirectory(logoFolder);
+            var ext = Path.GetExtension(dto.LogoSourcePath);
+            var logoDest = Path.Combine(logoFolder, $"logo_{Guid.NewGuid()}{ext}");
+            File.Copy(dto.LogoSourcePath, logoDest, overwrite: false);
+            project.LogoPath = logoDest;
+        }
 
         ValidateProjectDates(project);
         await ValidateClientExists(dto.ClientId, ct);

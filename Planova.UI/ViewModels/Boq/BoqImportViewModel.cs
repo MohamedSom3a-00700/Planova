@@ -1,11 +1,15 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Planova.Application.Dto;
+using Planova.Application.Services;
 using Planova.Boq.Application.Dto;
 using Planova.Boq.Domain.Interfaces;
+using Planova.Shared.Abstractions;
 using System.IO;
 using Planova.Boq.Application.Services;
 using Planova.Boq.CsvReader;
+using Planova.Excel.Readers;
 
 namespace Planova.UI.ViewModels.Boq;
 
@@ -14,15 +18,47 @@ public partial class BoqImportViewModel : ObservableObject
     private readonly IBoqImportService _importService;
     private readonly IBoqCsvReader _csvReader;
     private readonly IExcelRowReader _excelReader;
+    private readonly IWorkbookReader _workbookReader;
     private readonly IBoqSession _session;
+    private readonly IProjectDocumentService _projectDocumentService;
+    private readonly ICurrentProjectService _currentProjectService;
 
     public BoqImportViewModel(IBoqImportService importService, IBoqCsvReader csvReader,
-        IExcelRowReader excelReader, IBoqSession session)
+        IExcelRowReader excelReader, IWorkbookReader workbookReader, IBoqSession session,
+        IProjectDocumentService projectDocumentService,
+        ICurrentProjectService currentProjectService)
     {
         _importService = importService;
         _csvReader = csvReader;
         _excelReader = excelReader;
+        _workbookReader = workbookReader;
         _session = session;
+        _projectDocumentService = projectDocumentService;
+        _currentProjectService = currentProjectService;
+        _currentProjectService.CurrentProjectChanged += OnCurrentProjectChanged;
+        DetectedColumns.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasDetectedColumns));
+
+        if (_currentProjectService.CurrentProject is not null)
+        {
+            CurrentProjectId = GuidFromInt(_currentProjectService.CurrentProject.Id);
+            _ = LoadBoqDocumentsAsync(CancellationToken.None);
+        }
+    }
+
+    private async void OnCurrentProjectChanged(object? sender, ProjectContext? context)
+    {
+        if (context != null)
+        {
+            CurrentProjectId = GuidFromInt(context.Id);
+            await LoadBoqDocumentsCommand.ExecuteAsync(null);
+        }
+    }
+
+    private static Guid GuidFromInt(int value)
+    {
+        var bytes = new byte[16];
+        BitConverter.GetBytes(value).CopyTo(bytes, 0);
+        return new Guid(bytes);
     }
 
     [ObservableProperty]
@@ -32,6 +68,12 @@ public partial class BoqImportViewModel : ObservableObject
     private Guid _currentProjectId;
 
     [ObservableProperty]
+    private ProjectDocumentDto? _selectedProjectDocument;
+
+    [ObservableProperty]
+    private ProjectDocumentDto? _selectedBoqDocument;
+
+    [ObservableProperty]
     private string _selectedFilePath = string.Empty;
 
     [ObservableProperty]
@@ -39,9 +81,6 @@ public partial class BoqImportViewModel : ObservableObject
 
     [ObservableProperty]
     private int _progressValue;
-
-    [ObservableProperty]
-    private int _currentStep;
 
     [ObservableProperty]
     private CsvImportOptions? _importOptions;
@@ -91,15 +130,87 @@ public partial class BoqImportViewModel : ObservableObject
     [ObservableProperty]
     private string _selectedWorksheet = string.Empty;
 
+    [ObservableProperty]
+    private bool _createNewBoq = true;
+
+    public bool HasProjectDocuments => BoqDocuments.Count > 0;
+    public bool HasFileSelected => !string.IsNullOrEmpty(SelectedFilePath) && CreateNewBoq;
+    public bool HasDocumentSelected => !string.IsNullOrEmpty(SelectedFilePath) && !CreateNewBoq;
+    public bool HasDetectedColumns => DetectedColumns.Count > 0;
+
     public ObservableCollection<string> DetectedColumns { get; } = new();
     public ObservableCollection<string> AvailableWorksheets { get; } = new();
     public ObservableCollection<ValidationIssue> ValidationErrors { get; } = new();
     public ObservableCollection<ValidationIssue> ValidationWarnings { get; } = new();
+    public ObservableCollection<ProjectDocumentDto> BoqDocuments { get; } = new();
 
     private static readonly string[] CsiDivisionKeywords =
         ["division", "div", "csi", "masterformat", "master format", "section"];
     private static readonly string[] ClassificationKeywords =
         ["classification", "class", "category", "type", "group", "trade"];
+
+    partial void OnCreateNewBoqChanged(bool value)
+    {
+        ClearSource();
+        if (!value)
+            _ = LoadBoqDocumentsAsync(default);
+        OnPropertyChanged(nameof(HasFileSelected));
+        OnPropertyChanged(nameof(HasDocumentSelected));
+    }
+
+    partial void OnSelectedWorksheetChanged(string value)
+    {
+        if (IsExcel && !string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(SelectedFilePath))
+            _ = DetectExcelHeadersAsync(default);
+    }
+
+    partial void OnMergeAllSheetsChanged(bool value)
+    {
+        if (IsExcel && value && AvailableWorksheets.Count > 0)
+            _ = DetectExcelHeadersAsync(default);
+    }
+
+    [RelayCommand]
+    private async Task LoadBoqDocumentsAsync(CancellationToken ct)
+    {
+        var projectId = _currentProjectService.CurrentProject?.Id;
+        if (projectId == null) return;
+
+        try
+        {
+            var docs = (await _projectDocumentService.GetByTypeAsync(projectId.Value, "Boq", ct)).ToList();
+            BoqDocuments.Clear();
+            foreach (var doc in docs.OrderBy(d => d.FileName))
+                BoqDocuments.Add(doc);
+            OnPropertyChanged(nameof(HasProjectDocuments));
+        }
+        catch { }
+    }
+
+    private void ClearSource()
+    {
+        SelectedFilePath = string.Empty;
+        SelectedProjectDocument = null;
+        IsExcel = false;
+        HasMultipleSheets = false;
+        MergeAllSheets = false;
+        SelectedWorksheet = string.Empty;
+        DetectedColumns.Clear();
+        AvailableWorksheets.Clear();
+        StatusMessage = string.Empty;
+        Preview = null;
+        CanProceed = false;
+        OnPropertyChanged(nameof(HasFileSelected));
+        OnPropertyChanged(nameof(HasDocumentSelected));
+    }
+
+    [RelayCommand]
+    private async Task SelectBoqDocumentAsync()
+    {
+        if (SelectedBoqDocument == null || CreateNewBoq) return;
+        SelectedProjectDocument = SelectedBoqDocument;
+        await LoadFromDocumentAsync(SelectedBoqDocument, CancellationToken.None);
+    }
 
     [RelayCommand]
     private async Task SelectFileAsync(CancellationToken ct)
@@ -114,23 +225,19 @@ public partial class BoqImportViewModel : ObservableObject
 
             if (dialog.ShowDialog() == true)
             {
+                SelectedProjectDocument = null;
                 SelectedFilePath = dialog.FileName;
                 IsExcel = Path.GetExtension(SelectedFilePath).Equals(".xlsx", StringComparison.OrdinalIgnoreCase)
                        || Path.GetExtension(SelectedFilePath).Equals(".xls", StringComparison.OrdinalIgnoreCase)
                        || Path.GetExtension(SelectedFilePath).Equals(".xlsm", StringComparison.OrdinalIgnoreCase);
 
                 StatusMessage = $"Selected: {Path.GetFileName(SelectedFilePath)}";
+                OnPropertyChanged(nameof(HasFileSelected));
 
                 if (IsExcel)
-                {
                     await DetectExcelWorksheetsAsync(ct);
-                    CurrentStep = 2;
-                }
                 else
-                {
                     await DetectCsvHeadersAsync(ct);
-                    CurrentStep = 1;
-                }
 
                 CanProceed = true;
             }
@@ -141,23 +248,38 @@ public partial class BoqImportViewModel : ObservableObject
         }
     }
 
-    private async Task DetectExcelWorksheetsAsync(CancellationToken ct)
+    private async Task LoadFromDocumentAsync(ProjectDocumentDto doc, CancellationToken ct)
     {
         try
         {
             IsLoading = true;
-            var sheets = await _excelReader.GetWorksheetsAsync(SelectedFilePath, ct);
-            AvailableWorksheets.Clear();
-            foreach (var sheet in sheets)
-                AvailableWorksheets.Add(sheet);
+            SelectedFilePath = doc.AbsolutePath;
 
-            HasMultipleSheets = sheets.Count > 1;
-            SelectedWorksheet = sheets.FirstOrDefault() ?? string.Empty;
-            MergeAllSheets = HasMultipleSheets;
+            if (!File.Exists(SelectedFilePath))
+            {
+                StatusMessage = $"File not found at: {SelectedFilePath}";
+                ClearSource();
+                return;
+            }
 
-            StatusMessage = HasMultipleSheets
-                ? $"{sheets.Count} sheets detected — set to merge all or pick one"
-                : $"Sheet: {SelectedWorksheet}";
+            IsExcel = doc.FileExtension.Equals(".xlsx", StringComparison.OrdinalIgnoreCase)
+                   || doc.FileExtension.Equals(".xls", StringComparison.OrdinalIgnoreCase)
+                   || doc.FileExtension.Equals(".xlsm", StringComparison.OrdinalIgnoreCase);
+
+            StatusMessage = $"Selected: {doc.FileName}";
+            OnPropertyChanged(nameof(HasDocumentSelected));
+
+            if (IsExcel)
+                await DetectExcelWorksheetsAsync(ct);
+            else
+                await DetectCsvHeadersAsync(ct);
+
+            CanProceed = true;
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Error loading document: {ex.Message}";
+            ClearSource();
         }
         finally
         {
@@ -165,22 +287,84 @@ public partial class BoqImportViewModel : ObservableObject
         }
     }
 
-    private async Task DetectCsvHeadersAsync(CancellationToken ct)
+    private async Task DetectExcelWorksheetsAsync(CancellationToken ct)
     {
+        IsLoading = true;
         try
         {
-            IsLoading = true;
-            var headers = await _csvReader.DetectHeadersAsync(SelectedFilePath, Delimiter, ct);
-            DetectedColumns.Clear();
-            foreach (var header in headers)
+            var sheets = await _excelReader.GetWorksheetsAsync(SelectedFilePath, ct);
+            AvailableWorksheets.Clear();
+            foreach (var sheet in sheets)
+                AvailableWorksheets.Add(sheet);
+
+            HasMultipleSheets = sheets.Count > 1;
+            if (sheets.Count > 0)
             {
-                DetectedColumns.Add(header);
+                SelectedWorksheet = sheets[0];
+                MergeAllSheets = sheets.Count > 1;
             }
-            AutoDetectMappingColumns(headers);
+            else
+            {
+                SelectedWorksheet = string.Empty;
+                MergeAllSheets = false;
+            }
+
+            StatusMessage = sheets.Count > 1
+                ? $"{sheets.Count} sheets detected"
+                : sheets.Count == 1
+                    ? $"Sheet: {SelectedWorksheet}"
+                    : "No worksheets found. The file may be corrupt or in an unsupported format.";
+
+            if (sheets.Count > 0)
+                await DetectExcelHeadersAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Sheet detection failed: {ex.Message}";
+            if (ex.Message.Contains("formula notes", StringComparison.OrdinalIgnoreCase))
+            {
+                StatusMessage = "The Excel file contains formula notes that could not be parsed. " +
+                    "Try opening and resaving the file in Excel, or removing any formula comments.";
+            }
         }
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    private async Task DetectExcelHeadersAsync(CancellationToken ct)
+    {
+        try
+        {
+            var sheetName = MergeAllSheets ? AvailableWorksheets.FirstOrDefault() : SelectedWorksheet;
+            if (string.IsNullOrEmpty(sheetName)) return;
+
+            var sheetInfo = await _workbookReader.GetWorksheetInfoAsync(SelectedFilePath, sheetName, ct);
+            DetectedColumns.Clear();
+            foreach (var col in sheetInfo.Columns)
+                DetectedColumns.Add(col);
+
+            AutoDetectMappingColumns([.. sheetInfo.Columns]);
+        }
+        catch
+        {
+        }
+    }
+
+    private async Task DetectCsvHeadersAsync(CancellationToken ct)
+    {
+        try
+        {
+            var headers = await _csvReader.DetectHeadersAsync(SelectedFilePath, Delimiter, ct);
+            DetectedColumns.Clear();
+            foreach (var header in headers)
+                DetectedColumns.Add(header);
+            AutoDetectMappingColumns(headers);
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"CSV header detection failed: {ex.Message}";
         }
     }
 
@@ -252,6 +436,7 @@ public partial class BoqImportViewModel : ObservableObject
             ProgressValue = 0;
 
             var isCsv = Path.GetExtension(SelectedFilePath).Equals(".csv", StringComparison.OrdinalIgnoreCase);
+            var sheetName = MergeAllSheets ? null : SelectedWorksheet;
 
             if (isCsv)
             {
@@ -281,11 +466,22 @@ public partial class BoqImportViewModel : ObservableObject
 
                 Preview = await _importService.PreviewImportAsync(rows, strategy, ct);
             }
+            else
+            {
+                var rows = await _excelReader.ReadAsync(SelectedFilePath, sheetName, ct);
+                var strategy = TreeBuildStrategy.LevelColumn;
+                if (!rows.Any(r => r.Level.HasValue))
+                {
+                    strategy = rows.Any(r => !string.IsNullOrEmpty(r.ParentId))
+                        ? TreeBuildStrategy.ParentIdColumn
+                        : TreeBuildStrategy.CodePrefix;
+                }
+                Preview = await _importService.PreviewImportAsync(rows, strategy, ct);
+            }
 
             if (Preview != null)
             {
                 StatusMessage = $"Preview loaded: {Preview.TotalItems} items detected";
-                CurrentStep = 2;
                 CanProceed = true;
             }
         }
@@ -301,7 +497,7 @@ public partial class BoqImportViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task CommitImportAsync(Guid projectId, CancellationToken ct)
+    private async Task CommitImportAsync(CancellationToken ct)
     {
         try
         {
@@ -310,12 +506,14 @@ public partial class BoqImportViewModel : ObservableObject
             IsLoading = true;
             StatusMessage = "Importing...";
 
+            var projectId = CurrentProjectId;
             var progress = new Progress<int>(value =>
             {
                 ProgressValue = value;
             });
 
             var isCsv = Path.GetExtension(SelectedFilePath).Equals(".csv", StringComparison.OrdinalIgnoreCase);
+            var sheetName = MergeAllSheets ? null : SelectedWorksheet;
 
             BoqImportResult? result;
             if (isCsv)
@@ -338,12 +536,10 @@ public partial class BoqImportViewModel : ObservableObject
             }
             else
             {
-                var sheetName = MergeAllSheets ? null : SelectedWorksheet;
                 result = await _importService.ImportFromExcelAsync(projectId, SelectedFilePath, sheetName, null, progress, ct);
             }
 
             StatusMessage = $"Import complete: {result.ItemsImported} imported, {result.ItemsSkipped} skipped";
-            CurrentStep = 3;
             _session.SelectBoq(result.BoqId, projectId);
         }
         catch (Exception ex)
@@ -359,19 +555,6 @@ public partial class BoqImportViewModel : ObservableObject
     [RelayCommand]
     private void Reset()
     {
-        SelectedFilePath = string.Empty;
-        StatusMessage = string.Empty;
-        ProgressValue = 0;
-        CurrentStep = 0;
-        Preview = null;
-        CanProceed = false;
-        IsExcel = false;
-        HasMultipleSheets = false;
-        MergeAllSheets = false;
-        SelectedWorksheet = string.Empty;
-        DetectedColumns.Clear();
-        AvailableWorksheets.Clear();
-        ValidationErrors.Clear();
-        ValidationWarnings.Clear();
+        ClearSource();
     }
 }

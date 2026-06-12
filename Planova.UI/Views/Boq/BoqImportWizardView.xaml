@@ -3,41 +3,98 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:conv="clr-namespace:Planova.UI.Converters"
              mc:Ignorable="d"
-             d:DesignHeight="600" d:DesignWidth="800">
+             d:DesignHeight="700" d:DesignWidth="900">
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:InverseBoolConverter x:Key="InvBool"/>
+    </UserControl.Resources>
     <Grid Margin="16">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Import BOQ" FontSize="20" FontWeight="Bold" Margin="0,0,0,16"/>
+        <TextBlock Grid.Row="0" Text="Import BOQ" FontSize="20" FontWeight="Bold" Margin="0,0,0,12"/>
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="0,0,0,8">
-                <TextBlock Text="{Binding StatusMessage}" Margin="0,0,0,8"/>
-                <Button Content="Select File" Command="{Binding SelectFileCommand}" Margin="0,0,0,8" MinWidth="120"/>
+            <StackPanel>
 
-                <GroupBox Header="Sheet Selection" Margin="0,0,0,8"
-                          Visibility="{Binding IsExcel, Converter={StaticResource BoolToVis}}">
+                <!-- Section 1: Import Target -->
+                <GroupBox Header="1. Import Target" Margin="0,0,0,8">
+                    <StackPanel>
+                        <RadioButton Content="Create new BOQ" IsChecked="{Binding CreateNewBoq}"
+                                     GroupName="BoqTarget" Margin="0,0,0,6"/>
+                        <StackPanel Margin="20,0,0,8" IsEnabled="{Binding CreateNewBoq}">
+                            <Button Content="Select File..." Command="{Binding SelectFileCommand}"
+                                    HorizontalAlignment="Left" MinWidth="120" Height="28"/>
+                            <TextBlock Text="{Binding StatusMessage}" Margin="0,4,0,0" FontSize="12"
+                                       Visibility="{Binding HasFileSelected, Converter={StaticResource BoolToVis}}"/>
+                        </StackPanel>
+
+                        <RadioButton Content="Import from project document"
+                                     IsChecked="{Binding CreateNewBoq, Converter={StaticResource InvBool}}"
+                                     GroupName="BoqTarget" Margin="0,0,0,6"/>
+                        <StackPanel Margin="20,0,0,0" IsEnabled="{Binding CreateNewBoq, Converter={StaticResource InvBool}}">
+                            <ComboBox ItemsSource="{Binding BoqDocuments}"
+                                      SelectedItem="{Binding SelectedBoqDocument}"
+                                      DisplayMemberPath="FileName"
+                                      MinWidth="250" Margin="0,0,0,4"/>
+                            <Button Content="Use Selected" Command="{Binding SelectBoqDocumentCommand}"
+                                    HorizontalAlignment="Left" MinWidth="100" Height="26"/>
+                            <TextBlock Text="No BOQ documents found" FontSize="12" Foreground="Gray"
+                                       Visibility="{Binding HasProjectDocuments, Converter={StaticResource InverseBoolToVis}}"/>
+                            <TextBlock Text="{Binding StatusMessage}" Margin="0,4,0,0" FontSize="12"
+                                       Visibility="{Binding HasDocumentSelected, Converter={StaticResource BoolToVis}}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Section 2: Sheet Options -->
+                <GroupBox Header="2. Sheet Options" Margin="0,0,0,8">
+                    <GroupBox.Style>
+                        <Style TargetType="GroupBox">
+                            <Setter Property="Opacity" Value="0.4"/>
+                            <Setter Property="IsEnabled" Value="False"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsExcel}" Value="True">
+                                    <Setter Property="Opacity" Value="1"/>
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </GroupBox.Style>
                     <StackPanel>
                         <CheckBox Content="Merge all sheets" IsChecked="{Binding MergeAllSheets}"
                                   Margin="0,0,0,4"/>
-                        <Grid IsEnabled="{Binding MergeAllSheets, Converter={StaticResource InverseBoolToVis}}">
+                        <Grid IsEnabled="{Binding MergeAllSheets, Converter={StaticResource InvBool}}">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="Sheet:" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="0" Text="Worksheet:" VerticalAlignment="Center"/>
                             <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableWorksheets}"
-                                      SelectedItem="{Binding SelectedWorksheet}"/>
+                                      SelectedItem="{Binding SelectedWorksheet}" MinWidth="200"/>
                         </Grid>
                     </StackPanel>
                 </GroupBox>
 
-                <GroupBox Header="Column Mapping" Margin="0,8,0,8">
+                <!-- Section 3: Column Mapping -->
+                <GroupBox Header="3. Column Mapping" Margin="0,0,0,8">
+                    <GroupBox.Style>
+                        <Style TargetType="GroupBox">
+                            <Setter Property="Opacity" Value="0.4"/>
+                            <Setter Property="IsEnabled" Value="False"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasDetectedColumns}" Value="True">
+                                    <Setter Property="Opacity" Value="1"/>
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </GroupBox.Style>
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -49,47 +106,50 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="110"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="Code:" VerticalAlignment="Center"/>
                         <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
-                                  Text="{Binding CodeColumn}" IsEditable="True" Margin="0,0,0,3"/>
+                                  Text="{Binding CodeColumn}" IsEditable="True" Margin="0,0,0,2"/>
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Description:" VerticalAlignment="Center"/>
                         <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
-                                  Text="{Binding DescriptionColumn}" IsEditable="True" Margin="0,0,0,3"/>
+                                  Text="{Binding DescriptionColumn}" IsEditable="True" Margin="0,0,0,2"/>
 
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Unit:" VerticalAlignment="Center"/>
                         <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
-                                  Text="{Binding UnitColumn}" IsEditable="True" Margin="0,0,0,3"/>
+                                  Text="{Binding UnitColumn}" IsEditable="True" Margin="0,0,0,2"/>
 
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="Quantity:" VerticalAlignment="Center"/>
                         <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
-                                  Text="{Binding QuantityColumn}" IsEditable="True" Margin="0,0,0,3"/>
+                                  Text="{Binding QuantityColumn}" IsEditable="True" Margin="0,0,0,2"/>
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="Rate:" VerticalAlignment="Center"/>
                         <ComboBox Grid.Row="4" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
-                                  Text="{Binding RateColumn}" IsEditable="True" Margin="0,0,0,3"/>
+                                  Text="{Binding RateColumn}" IsEditable="True" Margin="0,0,0,2"/>
 
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="Classification:" VerticalAlignment="Center"/>
                         <ComboBox Grid.Row="5" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
-                                  Text="{Binding ClassificationColumn}" IsEditable="True" Margin="0,0,0,3"/>
+                                  Text="{Binding ClassificationColumn}" IsEditable="True" Margin="0,0,0,2"/>
 
                         <TextBlock Grid.Row="6" Grid.Column="0" Text="CSI Division:" VerticalAlignment="Center"/>
                         <ComboBox Grid.Row="6" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
-                                  Text="{Binding DivisionColumn}" IsEditable="True" Margin="0,0,0,3"/>
+                                  Text="{Binding DivisionColumn}" IsEditable="True" Margin="0,0,0,2"/>
                     </Grid>
                 </GroupBox>
 
-                <StackPanel Orientation="Horizontal">
-                    <Button Content="Preview" Command="{Binding PreviewImportCommand}" Margin="0,0,8,0" MinWidth="80"/>
-                    <Button Content="Import" Command="{Binding CommitImportCommand}" CommandParameter="{Binding CurrentProjectId}" MinWidth="80"/>
+                <!-- Section 4: Actions -->
+                <StackPanel Orientation="Horizontal" Margin="0,4,0,12">
+                    <Button Content="Preview Import" Command="{Binding PreviewImportCommand}"
+                            Margin="0,0,8,0" MinWidth="100" Height="30"/>
+                    <Button Content="Commit Import" Command="{Binding CommitImportCommand}"
+                            MinWidth="100" Height="30"/>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
 
-        <ProgressBar Grid.Row="3" Height="4" Value="{Binding ProgressValue}" Margin="0,8,0,0"/>
+        <ProgressBar Grid.Row="2" Height="4" Value="{Binding ProgressValue}" Margin="0,4,0,0"/>
     </Grid>
 </UserControl>

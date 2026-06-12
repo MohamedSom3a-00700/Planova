@@ -15,6 +15,11 @@ public class Project
     public string? Currency { get; set; }
     public string? Location { get; set; }
     public string? Notes { get; set; }
+    public string? LogoPath { get; set; }
+    public string? DocumentsFolder { get; set; }
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
+    public string? QrCodePath { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
@@ -22,4 +27,5 @@ public class Project
     public Contractor? Contractor { get; set; }
     public Subcontractor? Subcontractor { get; set; }
     public ICollection<Contract> Contracts { get; set; } = new List<Contract>();
+    public ICollection<ProjectDocument> Documents { get; set; } = new List<ProjectDocument>();
 }

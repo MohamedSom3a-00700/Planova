@@ -36,6 +36,15 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.Property(e => e.Notes)
             .HasMaxLength(4000);
 
+        builder.Property(e => e.LogoPath)
+            .HasMaxLength(1000);
+
+        builder.Property(e => e.DocumentsFolder)
+            .HasMaxLength(1000);
+
+        builder.Property(e => e.QrCodePath)
+            .HasMaxLength(1000);
+
         builder.Property(e => e.CreatedAt)
             .HasDefaultValueSql("datetime('now')");
 
@@ -80,5 +89,10 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .WithOne(c => c.Project)
             .HasForeignKey(c => c.ProjectId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasMany(e => e.Documents)
+            .WithOne(d => d.Project)
+            .HasForeignKey(d => d.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

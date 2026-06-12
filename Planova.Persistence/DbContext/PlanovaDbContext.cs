@@ -42,6 +42,7 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<Planova.Cost.Domain.Entities.CostBaselineRow> CostBaselineRows => Set<Planova.Cost.Domain.Entities.CostBaselineRow>();
     public DbSet<Planova.Cost.Domain.Entities.ActualCost> ActualCosts => Set<Planova.Cost.Domain.Entities.ActualCost>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<ProjectDocument> ProjectDocuments => Set<ProjectDocument>();
 
     public PlanovaDbContext(DbContextOptions<PlanovaDbContext> options) : base(options)
     {
@@ -86,5 +87,6 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.ApplyConfiguration(new CostBaselineRowConfiguration());
         modelBuilder.ApplyConfiguration(new ActualCostConfiguration());
         modelBuilder.ApplyConfiguration(new AuditLogConfiguration());
+        modelBuilder.ApplyConfiguration(new ProjectDocumentConfiguration());
     }
 }

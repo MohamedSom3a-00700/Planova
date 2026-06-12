@@ -1,5 +1,8 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Planova.Application.Services;
+using Planova.Shared.Abstractions;
+using Planova.UI.ViewModels.Shared;
 
 namespace Planova.UI.ViewModels.Activity;
 
@@ -20,8 +23,18 @@ public partial class ActivityStudioTab : ObservableObject
 
 public partial class ActivityStudioViewModel : ObservableObject
 {
+    public DocumentValidationBannerViewModel DocumentValidationBanner { get; }
+
     [ObservableProperty]
     private ActivityStudioTab? _selectedTab;
 
     public ObservableCollection<ActivityStudioTab> Tabs { get; } = new();
+
+    public ActivityStudioViewModel(IProjectDocumentService projectDocumentService, ICurrentProjectService currentProjectService)
+    {
+        DocumentValidationBanner = new DocumentValidationBannerViewModel(projectDocumentService, currentProjectService)
+        {
+            RequiredTypes = new[] { "Boq", "Spec" }
+        };
+    }
 }

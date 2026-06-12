@@ -220,7 +220,7 @@ public class ImportWorkflowTests : IDisposable
             ColumnMappings = new() { ["Code"] = "Code" }
         };
 
-        await Assert.ThrowsAnyAsync<ArgumentException>(() =>
+        await Assert.ThrowsAnyAsync<InvalidOperationException>(() =>
             _sut.ImportAsync(request, null, CancellationToken.None));
     }
 

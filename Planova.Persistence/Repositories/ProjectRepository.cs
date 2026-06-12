@@ -30,6 +30,7 @@ public class ProjectRepository : IProjectRepository
             .Include(p => p.Client)
             .Include(p => p.Contractor)
             .Include(p => p.Subcontractor)
+            .Include(p => p.Documents)
             .FirstOrDefaultAsync(p => p.Id == id, ct);
 
         if (project != null)
