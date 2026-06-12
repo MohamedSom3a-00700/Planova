@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 
 namespace Planova.UI.Converters;
@@ -12,6 +13,6 @@ public class InverseBoolConverter : IValueConverter
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        return value is bool b ? !b : true;
+        return value is bool b ? !b : DependencyProperty.UnsetValue;
     }
 }

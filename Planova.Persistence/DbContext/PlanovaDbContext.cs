@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Planova.Domain.Entities;
 using Planova.Persistence.EntityConfigurations;
+using Planova.Reporting.Domain.Entities;
 
 namespace Planova.Persistence.DbContext;
 
@@ -43,6 +44,14 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<Planova.Cost.Domain.Entities.ActualCost> ActualCosts => Set<Planova.Cost.Domain.Entities.ActualCost>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<ProjectDocument> ProjectDocuments => Set<ProjectDocument>();
+
+    public DbSet<ReportTemplate> ReportTemplates => Set<ReportTemplate>();
+    public DbSet<ReportInstance> ReportInstances => Set<ReportInstance>();
+    public DbSet<ReportSection> ReportSections => Set<ReportSection>();
+    public DbSet<ReportSchedule> ReportSchedules => Set<ReportSchedule>();
+    public DbSet<ReportExport> ReportExports => Set<ReportExport>();
+    public DbSet<ReportSettings> ReportSettings => Set<ReportSettings>();
+    public DbSet<ProjectParty> ProjectParties => Set<ProjectParty>();
 
     public PlanovaDbContext(DbContextOptions<PlanovaDbContext> options) : base(options)
     {
@@ -88,5 +97,13 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.ApplyConfiguration(new ActualCostConfiguration());
         modelBuilder.ApplyConfiguration(new AuditLogConfiguration());
         modelBuilder.ApplyConfiguration(new ProjectDocumentConfiguration());
+
+        modelBuilder.ApplyConfiguration(new ReportTemplateConfiguration());
+        modelBuilder.ApplyConfiguration(new ReportInstanceConfiguration());
+        modelBuilder.ApplyConfiguration(new ReportSectionConfiguration());
+        modelBuilder.ApplyConfiguration(new ReportScheduleConfiguration());
+        modelBuilder.ApplyConfiguration(new ReportExportConfiguration());
+        modelBuilder.ApplyConfiguration(new ReportSettingsConfiguration());
+        modelBuilder.ApplyConfiguration(new ProjectPartyConfiguration());
     }
 }

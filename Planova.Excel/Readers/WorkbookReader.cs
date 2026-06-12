@@ -247,7 +247,7 @@ public class WorkbookReader : IWorkbookReader
                 var tempPath = RepairWorkbook(filePath);
                 try
                 {
-                    return new XLWorkbook(tempPath);
+                    return new XLWorkbook(tempPath, new ClosedXML.Excel.LoadOptions { RecalculateAllFormulas = false });
                 }
                 finally
                 {

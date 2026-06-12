@@ -1,0 +1,11 @@
+namespace Planova.Reporting.Application.Dto;
+
+public record UpdateScheduleRequest(
+    string? Frequency,
+    int? DayOfWeek,
+    int? DayOfMonth,
+    string? TimeOfDay,
+    string? TimeZoneId,
+    string? ExportFormats,
+    int? MaxRetries
+);

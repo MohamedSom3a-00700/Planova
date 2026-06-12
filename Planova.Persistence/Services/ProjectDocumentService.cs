@@ -55,6 +55,10 @@ public class ProjectDocumentService : IProjectDocumentService
         if (!IsExtensionAllowed(extension))
             throw new ValidationException($"File extension '{extension}' is not allowed.");
 
+        var project = await _projectRepository.GetByIdAsync(dto.ProjectId, ct);
+        if (project == null)
+            throw new EntityNotFoundException("Project", dto.ProjectId);
+
         var projectFolder = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "Planova", "Projects", dto.ProjectId.ToString());

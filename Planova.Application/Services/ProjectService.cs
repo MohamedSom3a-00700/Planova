@@ -65,8 +65,13 @@ public class ProjectService : IProjectService
             Longitude = dto.Longitude,
         };
 
-        if (!string.IsNullOrEmpty(dto.LogoSourcePath))
+        ValidateCoordinates(dto.Latitude, dto.Longitude);
+
+        if (!string.IsNullOrWhiteSpace(dto.LogoSourcePath))
         {
+            if (!File.Exists(dto.LogoSourcePath))
+                throw new ValidationException($"Logo file not found: {dto.LogoSourcePath}");
+
             var logoFolder = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "Planova", "Projects");
@@ -107,10 +112,16 @@ public class ProjectService : IProjectService
         project.DocumentsFolder = dto.DocumentsFolder;
         project.Latitude = dto.Latitude;
         project.Longitude = dto.Longitude;
+        project.QrCodePath = dto.QrCodePath ?? project.QrCodePath;
         project.UpdatedAt = DateTime.UtcNow;
 
-        if (!string.IsNullOrEmpty(dto.LogoSourcePath))
+        ValidateCoordinates(dto.Latitude, dto.Longitude);
+
+        if (!string.IsNullOrWhiteSpace(dto.LogoSourcePath))
         {
+            if (!File.Exists(dto.LogoSourcePath))
+                throw new ValidationException($"Logo file not found: {dto.LogoSourcePath}");
+
             var logoFolder = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "Planova", "Projects");
@@ -202,6 +213,15 @@ public class ProjectService : IProjectService
             new Dictionary<string, int>(),
             recent
         );
+    }
+
+    private static void ValidateCoordinates(double? latitude, double? longitude)
+    {
+        if (latitude.HasValue && (latitude < -90 || latitude > 90))
+            throw new ValidationException("Latitude must be between -90 and 90.");
+
+        if (longitude.HasValue && (longitude < -180 || longitude > 180))
+            throw new ValidationException("Longitude must be between -180 and 180.");
     }
 
     private static void ValidateProjectDates(Domain.Entities.Project project)

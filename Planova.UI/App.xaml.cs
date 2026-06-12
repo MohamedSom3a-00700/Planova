@@ -35,8 +35,11 @@ using Planova.UI.Views.Dashboard;
 using Planova.UI.Views.Excel;
 using Planova.UI.Views.Profile;
 using Planova.UI.Views.Reports;
+using Planova.Reporting.Extensions;
 using Planova.UI.ViewModels.Activity;
 using Planova.UI.Views.Activity;
+using Planova.UI.ViewModels.Reporting;
+using Planova.UI.Views.Reporting;
 using Planova.Activity.Extensions;
 using Planova.Resource.Extensions;
 using Planova.Cost.Extensions;
@@ -228,8 +231,6 @@ public partial class App : System.Windows.Application
         services.AddTransient<WbsAiGenerationView>();
         services.AddTransient<WbsReportViewModel>();
         services.AddTransient<WbsReportView>();
-        services.AddTransient<ReportViewModel>();
-        services.AddTransient<ReportView>();
         services.AddTransient<WbsStudioViewModel>();
         services.AddTransient<WbsStudioView>();
         services.AddTransient<WbsSettingsViewModel>();
@@ -305,6 +306,27 @@ public partial class App : System.Windows.Application
         services.AddTransient<EvmView>();
         services.AddTransient<CostAiView>();
         services.AddTransient<CostReportView>();
+
+        // Reporting Center
+        services.AddTransient<ReportingHubViewModel>();
+        services.AddTransient<DailyReportViewModel>();
+        services.AddTransient<DailyReportView>();
+        services.AddTransient<WeeklyReportViewModel>();
+        services.AddTransient<WeeklyReportView>();
+        services.AddTransient<MonthlyReportViewModel>();
+        services.AddTransient<MonthlyReportView>();
+        services.AddTransient<ExecutiveReportViewModel>();
+        services.AddTransient<ExecutiveReportView>();
+        services.AddTransient<ReportScheduleViewModel>();
+        services.AddTransient<ReportScheduleView>();
+        services.AddTransient<ReportHistoryViewModel>();
+        services.AddTransient<ReportHistoryView>();
+        services.AddTransient<ReportTemplateEditorViewModel>();
+        services.AddTransient<ReportTemplateEditorView>();
+        services.AddTransient<ReportSettingsViewModel>();
+        services.AddTransient<ReportSettingsView>();
+        services.AddTransient<ReportingHubView>();
+        services.AddPlanovaReporting();
     }
 
     private static string GetDatabasePath()

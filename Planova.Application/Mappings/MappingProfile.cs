@@ -53,7 +53,7 @@ public static class MappingProfile
             project.Latitude,
             project.Longitude,
             project.QrCodePath,
-            project.Documents?.Select(d => d.ToDto()).ToList() ?? new()
+            project.Documents?.Select(d => d.ToDto(project.DocumentsFolder)).ToList() ?? new()
         );
     }
 

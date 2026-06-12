@@ -70,7 +70,21 @@ public partial class BoqTreeViewModel : ObservableObject
     {
         if (context is not null)
         {
-            await LoadAvailableBoqsAsync(CancellationToken.None);
+            try
+            {
+                await LoadAvailableBoqsAsync(CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Error loading BOQs: {ex.Message}";
+            }
+        }
+        else
+        {
+            ResetState();
+            AvailableBoqs.Clear();
+            OnPropertyChanged(nameof(HasNoBoqs));
+            StatusMessage = string.Empty;
         }
     }
 
@@ -82,7 +96,14 @@ public partial class BoqTreeViewModel : ObservableObject
         {
             projectId = GuidFromInt(_currentProjectService.CurrentProject.Id);
         }
-        if (projectId is null) return;
+        if (projectId is null)
+        {
+            ResetState();
+            AvailableBoqs.Clear();
+            OnPropertyChanged(nameof(HasNoBoqs));
+            StatusMessage = string.Empty;
+            return;
+        }
 
         try
         {
@@ -102,6 +123,7 @@ public partial class BoqTreeViewModel : ObservableObject
             }
             else if (boqs.Count == 0)
             {
+                ResetState();
                 var projectIntId = _currentProjectService.CurrentProject?.Id;
                 if (projectIntId.HasValue)
                 {
@@ -125,6 +147,15 @@ public partial class BoqTreeViewModel : ObservableObject
         {
             IsLoading = false;
         }
+    }
+
+    private void ResetState()
+    {
+        SelectedBoq = null;
+        CurrentBoqId = Guid.Empty;
+        FlatItems.Clear();
+        BoqName = string.Empty;
+        GrandTotal = 0;
     }
 
     private static Guid GuidFromInt(int value)
@@ -178,16 +209,23 @@ public partial class BoqTreeViewModel : ObservableObject
 
     private async void OnBoqChanged(object? sender, Guid boqId)
     {
-        await LoadAvailableBoqsAsync(CancellationToken.None);
+        try
+        {
+            await LoadAvailableBoqsAsync(CancellationToken.None);
 
-        var summary = AvailableBoqs.FirstOrDefault(b => b.Id == boqId);
-        if (summary is not null)
-        {
-            SelectedBoq = summary;
+            var summary = AvailableBoqs.FirstOrDefault(b => b.Id == boqId);
+            if (summary is not null)
+            {
+                SelectedBoq = summary;
+            }
+            else
+            {
+                await LoadTreeAsync(boqId, CancellationToken.None);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            await LoadTreeAsync(boqId, CancellationToken.None);
+            StatusMessage = $"Error loading BOQ: {ex.Message}";
         }
     }
 

@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Globalization;
 using System.Windows.Controls;
 using Planova.UI.ViewModels;
 
@@ -32,6 +33,10 @@ public partial class ProjectsWorkspaceView : UserControl
         {
             MapBrowser.Navigate(new Uri(_viewModel.MapHtmlPath));
         }
+        else
+        {
+            MapBrowser.Navigate(new Uri("about:blank"));
+        }
     }
 
     private void OnCoordinatesFromMapClicked(object? sender, string? e)
@@ -43,8 +48,8 @@ public partial class ProjectsWorkspaceView : UserControl
             {
                 var parts = result.ToString()?.Split(',');
                 if (parts != null && parts.Length == 2 &&
-                    double.TryParse(parts[0], out var lat) &&
-                    double.TryParse(parts[1], out var lng))
+                    double.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out var lat) &&
+                    double.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out var lng))
                 {
                     _viewModel.EditLatitude = lat;
                     _viewModel.EditLongitude = lng;

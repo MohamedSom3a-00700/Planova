@@ -1,11 +1,14 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
 using Planova.Application.Dto;
 using Planova.Application.Services;
+using Planova.Reporting.Application.Dto;
+using Planova.Reporting.Domain.Interfaces;
 using Planova.Shared.Abstractions;
 using Planova.UI.Services;
 
@@ -19,6 +22,7 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
     private readonly ISubcontractorService _subcontractorService;
     private readonly ICurrentProjectService _currentProjectService;
     private readonly IProjectDocumentService _projectDocumentService;
+    private readonly IProjectPartyService _projectPartyService;
     private readonly QrCodeService _qrCodeService;
     private readonly MapHtmlService _mapHtmlService;
     private List<ProjectSummaryDto> _allProjects = new();
@@ -30,6 +34,7 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         ISubcontractorService subcontractorService,
         ICurrentProjectService currentProjectService,
         IProjectDocumentService projectDocumentService,
+        IProjectPartyService projectPartyService,
         QrCodeService qrCodeService,
         MapHtmlService mapHtmlService)
     {
@@ -39,6 +44,7 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         _subcontractorService = subcontractorService;
         _currentProjectService = currentProjectService;
         _projectDocumentService = projectDocumentService;
+        _projectPartyService = projectPartyService;
         _qrCodeService = qrCodeService;
         _mapHtmlService = mapHtmlService;
     }
@@ -54,6 +60,11 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
     public ObservableCollection<string> StatusFilters { get; } = new()
     {
         "All", "Draft", "Under Review", "Approved", "In Progress", "On Hold", "Completed", "Cancelled"
+    };
+    public ObservableCollection<ProjectPartyDto> ProjectParties { get; } = new();
+    public ObservableCollection<string> PartyRoles { get; } = new()
+    {
+        "Client", "MainContractor", "SubContractor"
     };
 
     [ObservableProperty]
@@ -131,6 +142,30 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
 
     [ObservableProperty]
     private string? _editDocumentsFolder;
+
+    [ObservableProperty]
+    private ProjectPartyDto? _selectedParty;
+
+    [ObservableProperty]
+    private string _editPartyName = string.Empty;
+
+    [ObservableProperty]
+    private string _editPartyRole = "Client";
+
+    [ObservableProperty]
+    private string? _editPartyAddress;
+
+    [ObservableProperty]
+    private string? _editPartyContactPerson;
+
+    [ObservableProperty]
+    private string? _editPartyContactEmail;
+
+    [ObservableProperty]
+    private string? _editPartyContactPhone;
+
+    [ObservableProperty]
+    private int _editPartyDisplayOrder;
 
     [ObservableProperty]
     private double? _editLatitude;
@@ -268,26 +303,30 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
             IsEditing = false;
             IsCreating = false;
             LoadDocuments();
+            await LoadPartiesAsync();
 
-            if (SelectedProject != null)
+        if (SelectedProject != null)
+        {
+            _currentProjectService.SetProject(new ProjectContext(
+                SelectedProject.Id,
+                SelectedProject.Code,
+                SelectedProject.Name));
+
+            EditLatitude = SelectedProject.Latitude;
+            EditLongitude = SelectedProject.Longitude;
+
+            if (SelectedProject.Latitude.HasValue && SelectedProject.Longitude.HasValue)
             {
-                _currentProjectService.SetProject(new ProjectContext(
-                    SelectedProject.Id,
-                    SelectedProject.Code,
-                    SelectedProject.Name));
-
-                if (SelectedProject.Latitude.HasValue && SelectedProject.Longitude.HasValue)
-                {
-                    GenerateMapHtml(SelectedProject.Latitude.Value, SelectedProject.Longitude.Value, SelectedProject.Name);
-                }
-                else
-                {
-                    MapHtmlPath = null;
-                }
-
-                QrCodePath = SelectedProject.QrCodePath;
-                LogoPreviewPath = SelectedProject.LogoPath;
+                GenerateMapHtml(SelectedProject.Latitude.Value, SelectedProject.Longitude.Value, SelectedProject.Name);
             }
+            else
+            {
+                MapHtmlPath = null;
+            }
+
+            QrCodePath = SelectedProject.QrCodePath;
+            LogoPreviewPath = SelectedProject.LogoPath;
+        }
         }
         catch (Exception ex)
         {
@@ -389,7 +428,7 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
                     EditCode, EditName, EditDescription,
                     EditStartDate, EditFinishDate, EditCurrency,
                     EditLocation, EditClientId, EditContractorId, EditSubcontractorId, EditNotes,
-                    EditLogoSourcePath, EditDocumentsFolder, EditLatitude, EditLongitude);
+                    EditLogoSourcePath, EditDocumentsFolder, EditLatitude, EditLongitude, QrCodePath);
 
                 SelectedProject = await _projectService.UpdateAsync(SelectedProject.Id, dto);
             }
@@ -562,6 +601,19 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
 
         try
         {
+            var lockedDocs = SelectedProject.Documents?
+                .Where(d => _projectDocumentService.IsLockedDocumentType(d.DocumentType))
+                .Select(d => d.DocumentType)
+                .Distinct()
+                .ToList();
+
+            if (lockedDocs is { Count: > 0 })
+            {
+                ErrorMessage = $"Cannot delete all: locked document types ({string.Join(", ", lockedDocs)}) are required by studios.";
+                HasError = true;
+                return;
+            }
+
             await _projectDocumentService.DeleteByProjectAsync(SelectedProject.Id);
             SelectedProject = await _projectService.GetByIdAsync(SelectedProject.Id);
             LoadDocuments();
@@ -630,7 +682,7 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
                 SelectedProject.StartDate, SelectedProject.FinishDate, SelectedProject.Currency,
                 SelectedProject.Location, SelectedProject.ClientId, SelectedProject.ContractorId,
                 SelectedProject.SubcontractorId, SelectedProject.Notes,
-                null, SelectedProject.DocumentsFolder, EditLatitude, EditLongitude);
+                null, SelectedProject.DocumentsFolder, EditLatitude, EditLongitude, QrCodePath);
 
             await _projectService.UpdateAsync(SelectedProject.Id, dto);
             SelectedProject = await _projectService.GetByIdAsync(SelectedProject.Id);
@@ -678,7 +730,7 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         var lng = EditLongitude ?? SelectedProject?.Longitude;
         if (lat.HasValue && lng.HasValue)
         {
-            var url = $"https://www.google.com/maps?q={lat.Value},{lng.Value}";
+            var url = $"https://www.google.com/maps?q={lat.Value.ToString(CultureInfo.InvariantCulture)},{lng.Value.ToString(CultureInfo.InvariantCulture)}";
             try
             {
                 Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
@@ -724,5 +776,143 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
             return "Drawing";
 
         return "Other";
+    }
+
+    [RelayCommand]
+    private async Task LoadPartiesAsync()
+    {
+        if (SelectedProject == null) return;
+        try
+        {
+            var parties = await _projectPartyService.GetPartiesAsync(SelectedProject.Id);
+            ProjectParties.Clear();
+            foreach (var p in parties)
+                ProjectParties.Add(p);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+            HasError = true;
+        }
+    }
+
+    [RelayCommand]
+    private async Task SyncPartiesFromProjectAsync()
+    {
+        if (SelectedProject == null) return;
+        IsLoading = true;
+        try
+        {
+            var ct = CancellationToken.None;
+            var project = SelectedProject;
+
+            if (!string.IsNullOrEmpty(project.ClientName))
+                await _projectPartyService.SavePartyAsync(project.Id,
+                    new SavePartyRequest(null, "Client", project.ClientName, null, null, null, null, 0), ct);
+
+            if (!string.IsNullOrEmpty(project.ContractorName))
+                await _projectPartyService.SavePartyAsync(project.Id,
+                    new SavePartyRequest(null, "MainContractor", project.ContractorName, null, null, null, null, 1), ct);
+
+            if (!string.IsNullOrEmpty(project.SubcontractorName))
+                await _projectPartyService.SavePartyAsync(project.Id,
+                    new SavePartyRequest(null, "SubContractor", project.SubcontractorName, null, null, null, null, 2), ct);
+
+            await LoadPartiesAsync();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+            HasError = true;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task SavePartyAsync()
+    {
+        if (SelectedProject == null) return;
+        if (string.IsNullOrWhiteSpace(EditPartyName)) return;
+
+        IsLoading = true;
+        try
+        {
+            Guid? existingId = SelectedParty?.Id;
+            var request = new SavePartyRequest(
+                existingId,
+                EditPartyRole,
+                EditPartyName.Trim(),
+                EditPartyAddress,
+                EditPartyContactPerson,
+                EditPartyContactEmail,
+                EditPartyContactPhone,
+                EditPartyDisplayOrder);
+
+            await _projectPartyService.SavePartyAsync(SelectedProject.Id, request);
+            await LoadPartiesAsync();
+
+            EditPartyName = string.Empty;
+            EditPartyAddress = null;
+            EditPartyContactPerson = null;
+            EditPartyContactEmail = null;
+            EditPartyContactPhone = null;
+            EditPartyDisplayOrder = 0;
+            SelectedParty = null;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+            HasError = true;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeletePartyAsync(ProjectPartyDto? party)
+    {
+        if (party == null) return;
+
+        try
+        {
+            await _projectPartyService.DeletePartyAsync(party.Id);
+            await LoadPartiesAsync();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+            HasError = true;
+        }
+    }
+
+    [RelayCommand]
+    private void EditParty(ProjectPartyDto? party)
+    {
+        if (party == null) return;
+        SelectedParty = party;
+        EditPartyName = party.Name;
+        EditPartyRole = party.Role;
+        EditPartyAddress = party.Address;
+        EditPartyContactPerson = party.ContactPerson;
+        EditPartyContactEmail = party.ContactEmail;
+        EditPartyContactPhone = party.ContactPhone;
+        EditPartyDisplayOrder = party.DisplayOrder;
+    }
+
+    [RelayCommand]
+    private void CancelPartyEdit()
+    {
+        EditPartyName = string.Empty;
+        EditPartyAddress = null;
+        EditPartyContactPerson = null;
+        EditPartyContactEmail = null;
+        EditPartyContactPhone = null;
+        EditPartyDisplayOrder = 0;
+        SelectedParty = null;
     }
 }

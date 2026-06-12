@@ -101,7 +101,7 @@ public class BoqImportService : IBoqImportService
         progress?.Report(100);
         stopwatch.Stop();
 
-        return new BoqImportResult(created.Id, items.Count, 0, totalSkipped, errors, stopwatch.Elapsed);
+        return new BoqImportResult(created.Id, deduplicated.Count, 0, totalSkipped, errors, stopwatch.Elapsed);
     }
 
     public async Task<BoqImportResult> ImportFromCsvAsync(
@@ -168,7 +168,9 @@ public class BoqImportService : IBoqImportService
 
         foreach (var item in items)
         {
-            var key = item.Code ?? string.Empty;
+            var key = string.IsNullOrWhiteSpace(item.Code)
+                ? Guid.NewGuid().ToString()
+                : item.Code.Trim();
             if (seen.Add(key))
             {
                 result.Add(item);

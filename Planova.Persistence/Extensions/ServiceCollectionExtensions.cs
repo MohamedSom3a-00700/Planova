@@ -7,6 +7,7 @@ using Planova.Cost.Domain.Interfaces;
 using Planova.Persistence.Repositories;
 using Planova.Persistence.Services;
 using Planova.Resource.Domain.Interfaces;
+using Planova.Reporting.Domain.Interfaces;
 using Planova.Shared.Abstractions;
 using Planova.Wbs.Domain.Interfaces;
 
@@ -57,6 +58,12 @@ public static class ServiceCollectionExtensions
         // Project document services
         services.AddScoped<IProjectDocumentRepository, ProjectDocumentRepository>();
         services.AddScoped<IProjectDocumentService, ProjectDocumentService>();
+
+        // Reporting repositories
+        services.AddScoped<IReportTemplateRepository, ReportTemplateRepository>();
+        services.AddScoped<IReportInstanceRepository, ReportInstanceRepository>();
+        services.AddScoped<IReportScheduleRepository, ReportScheduleRepository>();
+        services.AddScoped<IProjectPartyRepository, ProjectPartyRepository>();
 
         return services;
     }

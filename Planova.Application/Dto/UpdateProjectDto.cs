@@ -15,5 +15,6 @@ public record UpdateProjectDto(
     string? LogoSourcePath = null,
     string? DocumentsFolder = null,
     double? Latitude = null,
-    double? Longitude = null
+    double? Longitude = null,
+    string? QrCodePath = null
 );

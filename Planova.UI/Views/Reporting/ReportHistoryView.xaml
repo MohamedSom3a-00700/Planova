@@ -1,0 +1,115 @@
+<UserControl x:Class="Planova.UI.Views.Reporting.ReportHistoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Reporting"
+             xmlns:conv="clr-namespace:Planova.UI.Converters"
+             d:DataContext="{d:DesignInstance vm:ReportHistoryViewModel}"
+             Background="{DynamicResource WorkspaceBackgroundGradient}"
+             FontFamily="{DynamicResource BrandFontFamily}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:InverseBoolConverter x:Key="InverseBool"/>
+    </UserControl.Resources>
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Report History" FontSize="18" FontWeight="SemiBold"
+                   Foreground="{DynamicResource ThemeForeground}" Margin="0,0,0,8"/>
+
+        <!-- Filters -->
+        <WrapPanel Grid.Row="1" Margin="0,0,0,8">
+            <TextBlock Text="Type:" VerticalAlignment="Center" Margin="0,0,4,0"
+                       Foreground="{DynamicResource ThemeForeground}"/>
+            <ComboBox ItemsSource="{x:Static vm:ReportHistoryViewModel.ReportTypeFilters}"
+                      SelectedItem="{Binding FilterReportType, Mode=TwoWay}"
+                      Width="100" Margin="0,0,8,0" FontFamily="{DynamicResource BrandFontFamily}"/>
+            <TextBlock Text="Status:" VerticalAlignment="Center" Margin="0,0,4,0"
+                       Foreground="{DynamicResource ThemeForeground}"/>
+            <ComboBox ItemsSource="{x:Static vm:ReportHistoryViewModel.StatusFilters}"
+                      SelectedItem="{Binding FilterStatus, Mode=TwoWay}"
+                      Width="100" Margin="0,0,8,0" FontFamily="{DynamicResource BrandFontFamily}"/>
+            <TextBlock Text="From:" VerticalAlignment="Center" Margin="0,0,4,0"
+                       Foreground="{DynamicResource ThemeForeground}"/>
+            <DatePicker SelectedDate="{Binding FilterFrom, Mode=TwoWay}"
+                        Width="160" Margin="0,0,8,0" FontFamily="{DynamicResource BrandFontFamily}"/>
+            <TextBlock Text="To:" VerticalAlignment="Center" Margin="0,0,4,0"
+                       Foreground="{DynamicResource ThemeForeground}"/>
+            <DatePicker SelectedDate="{Binding FilterTo, Mode=TwoWay}"
+                        Width="160" Margin="0,0,8,0" FontFamily="{DynamicResource BrandFontFamily}"/>
+            <Button Content="Load" Command="{Binding LoadHistoryCommand}"
+                    IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBool}}"
+                    Margin="0,0,8,0" FontFamily="{DynamicResource BrandFontFamily}"/>
+             <Button Content="Select All" Command="{Binding SelectAllCommand}"
+                     Margin="0,0,8,0" FontFamily="{DynamicResource BrandFontFamily}"/>
+            <Button Content="Re-Export" Command="{Binding ReExportCommand}"
+                    IsEnabled="{Binding SelectedInstance, Converter={StaticResource BoolToVis}}"
+                    Margin="0,0,8,0" FontFamily="{DynamicResource BrandFontFamily}"/>
+            <Button Content="Delete Selected" Command="{Binding DeleteSelectedInstancesCommand}"
+                    FontFamily="{DynamicResource BrandFontFamily}"/>
+        </WrapPanel>
+
+        <!-- Error notification -->
+        <Border Grid.Row="2" Background="#FFF0E0" BorderBrush="#FFD080" BorderThickness="1" Padding="8"
+                Visibility="{Binding ErrorMessage, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="#CC6600"/>
+        </Border>
+
+        <Border Grid.Row="3" Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"
+                Background="#40FFFFFF">
+            <TextBlock Text="Loading..." FontSize="16" FontWeight="SemiBold"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Foreground="{DynamicResource ThemeForeground}"/>
+        </Border>
+
+        <Grid Grid.Row="3"
+              Visibility="{Binding IsLoading, Converter={StaticResource InverseBool}}">
+            <!-- Empty state -->
+            <Border Visibility="{Binding HasNoHistory, Converter={StaticResource BoolToVis}}"
+                    Background="{DynamicResource ThemeBackgroundMedium}"
+                    BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1"
+                    Padding="24" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="No Reports Found" FontSize="20" FontWeight="SemiBold"
+                               Foreground="{DynamicResource ThemeForeground}"
+                               HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                    <TextBlock Text="Generate a report from the Daily, Weekly, Monthly, or Executive tabs to see it here."
+                               FontSize="14" Foreground="{DynamicResource ThemeForeground}"
+                               HorizontalAlignment="Center" TextWrapping="Wrap"
+                               TextAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- History DataGrid -->
+            <Border Background="{DynamicResource ThemeBackgroundMedium}"
+                    BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" Padding="8"
+                    Visibility="{Binding HasNoHistory, Converter={StaticResource InverseBool}}">
+                <DataGrid x:Name="HistoryGrid" ItemsSource="{Binding Instances}"
+                          SelectedItem="{Binding SelectedInstance, Mode=TwoWay}"
+                          SelectionMode="Extended"
+                          SelectionChanged="HistoryGrid_SelectionChanged"
+                          AutoGenerateColumns="False" IsReadOnly="True"
+                          Background="Transparent" BorderThickness="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*"/>
+                        <DataGridTextColumn Header="File Exists" Binding="{Binding ExportExists}" Width="80"/>
+                        <DataGridTextColumn Header="Type" Binding="{Binding ReportType}" Width="80"/>
+                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="80"/>
+                        <DataGridTextColumn Header="Period Start" Binding="{Binding PeriodStart, StringFormat={}{0:d}}" Width="100"/>
+                        <DataGridTextColumn Header="Period End" Binding="{Binding PeriodEnd, StringFormat={}{0:d}}" Width="100"/>
+                        <DataGridTextColumn Header="Generated" Binding="{Binding GeneratedAt, StringFormat={}{0:g}}" Width="130"/>
+                        <DataGridTextColumn Header="Generated By" Binding="{Binding GeneratedBy}" Width="100"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

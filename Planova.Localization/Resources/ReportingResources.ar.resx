@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter</value></resheader>
+  <data name="ReportingCenter" xml:space="preserve"><value>مركز التقارير</value></data>
+  <data name="Daily" xml:space="preserve"><value>يومي</value></data>
+  <data name="Weekly" xml:space="preserve"><value>أسبوعي</value></data>
+  <data name="Monthly" xml:space="preserve"><value>شهري</value></data>
+  <data name="Executive" xml:space="preserve"><value>تنفيذي</value></data>
+  <data name="Schedule" xml:space="preserve"><value>جدولة</value></data>
+  <data name="History" xml:space="preserve"><value>السجل</value></data>
+  <data name="Templates" xml:space="preserve"><value>قوالب</value></data>
+  <data name="GenerateReport" xml:space="preserve"><value>إنشاء تقرير</value></data>
+  <data name="ExportToExcel" xml:space="preserve"><value>تصدير إلى Excel</value></data>
+  <data name="ExportToPdf" xml:space="preserve"><value>تصدير إلى PDF</value></data>
+  <data name="ExportToWord" xml:space="preserve"><value>تصدير إلى Word</value></data>
+  <data name="AiNarrative" xml:space="preserve"><value>السرد بالذكاء الاصطناعي</value></data>
+  <data name="GenerateAiNarrative" xml:space="preserve"><value>توليد السرد بالذكاء الاصطناعي</value></data>
+  <data name="Regenerate" xml:space="preserve"><value>إعادة التوليد</value></data>
+  <data name="NoData" xml:space="preserve"><value>لا توجد بيانات للفترة المحددة.</value></data>
+  <data name="SelectDate" xml:space="preserve"><value>اختر تاريخاً</value></data>
+  <data name="SelectWeek" xml:space="preserve"><value>اختر أسبوعاً</value></data>
+  <data name="SelectMonth" xml:space="preserve"><value>اختر شهراً</value></data>
+  <data name="SelectDateRange" xml:space="preserve"><value>اختر نطاقاً زمنياً</value></data>
+  <data name="Draft" xml:space="preserve"><value>مسودة</value></data>
+  <data name="Final" xml:space="preserve"><value>نهائي</value></data>
+  <data name="Archived" xml:space="preserve"><value>مؤرشف</value></data>
+  <data name="AiUnavailable" xml:space="preserve"><value>موفر الذكاء الاصطناعي غير مهيأ. تم تعطيل ميزات الذكاء الاصطناعي.</value></data>
+</root>

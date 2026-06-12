@@ -4,7 +4,7 @@ namespace Planova.Application.Services;
 
 public static class DocumentTypeRegistry
 {
-    private static readonly HashSet<string> StudioRequiredTypes = new()
+    private static readonly HashSet<string> StudioRequiredTypes = new(StringComparer.OrdinalIgnoreCase)
     {
         "Boq",
         "Spec",

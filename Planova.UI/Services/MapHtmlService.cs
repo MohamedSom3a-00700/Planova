@@ -1,10 +1,15 @@
+using System.Globalization;
+using System.Text.Json;
+
 namespace Planova.UI.Services;
 
 public class MapHtmlService
 {
     public string GenerateMapHtml(double latitude, double longitude, string projectName)
     {
-        var escapedName = projectName.Replace("'", "\\'");
+        var safeName = JsonSerializer.Serialize(projectName);
+        var lat = latitude.ToString(CultureInfo.InvariantCulture);
+        var lng = longitude.ToString(CultureInfo.InvariantCulture);
         return $@"<!DOCTYPE html>
 <html>
 <head>
@@ -18,14 +23,14 @@ public class MapHtmlService
 </head>
 <body>
     <div id='map'></div>
-    <div id='coords' data-lat='{latitude}' data-lng='{longitude}'></div>
+    <div id='coords' data-lat='{lat}' data-lng='{lng}'></div>
     <script>
-        var map = L.map('map').setView([{latitude}, {longitude}], 15);
+        var map = L.map('map').setView([{lat}, {lng}], 15);
         L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{
             attribution: '&copy; OpenStreetMap contributors'
         }}).addTo(map);
-        var marker = L.marker([{latitude}, {longitude}]).addTo(map)
-            .bindPopup('{escapedName}')
+        var marker = L.marker([{lat}, {lng}]).addTo(map)
+            .bindPopup({safeName})
             .openPopup();
 
         map.on('click', function(e) {{
