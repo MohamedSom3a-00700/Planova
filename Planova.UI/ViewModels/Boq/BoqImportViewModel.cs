@@ -176,15 +176,21 @@ public partial class BoqImportViewModel : ObservableObject
         var projectId = _currentProjectService.CurrentProject?.Id;
         if (projectId == null) return;
 
+        BoqDocuments.Clear();
+        SelectedBoqDocument = null;
+        OnPropertyChanged(nameof(HasProjectDocuments));
+
         try
         {
             var docs = (await _projectDocumentService.GetByTypeAsync(projectId.Value, "Boq", ct)).ToList();
-            BoqDocuments.Clear();
             foreach (var doc in docs.OrderBy(d => d.FileName))
                 BoqDocuments.Add(doc);
             OnPropertyChanged(nameof(HasProjectDocuments));
         }
-        catch { }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Failed to load BOQ documents: {ex.Message}";
+        }
     }
 
     private void ClearSource()
@@ -253,12 +259,12 @@ public partial class BoqImportViewModel : ObservableObject
         try
         {
             IsLoading = true;
+            ClearSource();
             SelectedFilePath = doc.AbsolutePath;
 
             if (!File.Exists(SelectedFilePath))
             {
                 StatusMessage = $"File not found at: {SelectedFilePath}";
-                ClearSource();
                 return;
             }
 
@@ -278,8 +284,8 @@ public partial class BoqImportViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Error loading document: {ex.Message}";
             ClearSource();
+            StatusMessage = $"Error loading document: {ex.Message}";
         }
         finally
         {

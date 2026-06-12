@@ -1,0 +1,309 @@
+<UserControl x:Class="Planova.UI.Views.Reporting.ReportSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Reporting"
+             xmlns:conv="clr-namespace:Planova.UI.Converters"
+             d:DataContext="{d:DesignInstance vm:ReportSettingsViewModel}"
+             Background="{DynamicResource WorkspaceBackgroundGradient}"
+             FontFamily="{DynamicResource BrandFontFamily}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <conv:FilePathToImageConverter x:Key="FileToImage"/>
+    </UserControl.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Report Settings" FontSize="20" FontWeight="Bold" Margin="0,0,0,16"/>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- General Settings -->
+                <GroupBox Header="General" Margin="0,0,0,12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Default Export Format:" VerticalAlignment="Center" Margin="0,0,0,6"/>
+                        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding ExportFormatOptions}"
+                                  SelectedItem="{Binding DefaultExportFormat}" Margin="0,0,0,6" Width="160" HorizontalAlignment="Left"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Default Report Status:" VerticalAlignment="Center" Margin="0,0,0,6"/>
+                        <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding ReportStatusOptions}"
+                                  SelectedItem="{Binding DefaultReportStatus}" Margin="0,0,0,6" Width="160" HorizontalAlignment="Left"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Company Name:" VerticalAlignment="Center" Margin="0,0,0,6"/>
+                        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,6">
+                            <TextBox Text="{Binding CompanyName}" Width="300"/>
+                            <TextBlock Text="(Auto-loaded from project)" VerticalAlignment="Center" FontSize="11" Foreground="{DynamicResource ThemeForeground}" Margin="8,0,0,0"/>
+                        </StackPanel>
+
+                        <CheckBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                                  Content="Include AI Narrative in Exports" IsChecked="{Binding IncludeAiNarrative}" Margin="0,0,0,6"/>
+                    </Grid>
+                </GroupBox>
+
+                <!-- Report Header Settings (drag-reorderable) -->
+                <GroupBox Header="Report Header" Margin="0,0,0,12">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <Button Content="Reload from Project" Command="{Binding ReloadFromProjectCommand}" 
+                                    MinWidth="130"/>
+                            <TextBlock Text="Drag columns to reorder. Check which ones appear in exports."
+                                       FontSize="12" Foreground="{DynamicResource ThemeForeground}" 
+                                       VerticalAlignment="Center" Margin="12,0,0,0"/>
+                        </StackPanel>
+
+                        <!-- 4-column header grid with drag-drop -->
+                        <Grid x:Name="HeaderGrid" AllowDrop="True"
+                              Drop="HeaderGrid_Drop" DragOver="HeaderGrid_DragOver"
+                              PreviewMouseLeftButtonDown="HeaderGrid_PreviewMouseLeftButtonDown">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- ── Client column ── -->
+                            <Border Grid.Column="0" x:Name="ClientColumn" Tag="Client"
+                                    BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" Padding="8" Margin="0,0,4,0"
+                                    Cursor="Hand" AllowDrop="True">
+                                <StackPanel>
+                                    <TextBlock Text="⠿" FontSize="14" Foreground="{DynamicResource ThemeForeground}"
+                                               HorizontalAlignment="Center" Margin="0,0,0,2" ToolTip="Drag to reorder"/>
+                                    <CheckBox Content="Client" IsChecked="{Binding ShowClientInReport}" 
+                                              FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6"/>
+                                    <TextBlock Text="Name:" FontSize="11" Foreground="{DynamicResource ThemeForeground}"/>
+                                    <ComboBox ItemsSource="{Binding HeaderClientOptions}"
+                                              SelectedItem="{Binding HeaderClientName, Mode=TwoWay}"
+                                              IsEditable="True" Margin="0,2,0,6" FontFamily="{DynamicResource BrandFontFamily}"/>
+                                    <TextBlock Text="Logo:" FontSize="11" Foreground="{DynamicResource ThemeForeground}"/>
+                                    <Border BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" 
+                                            Width="80" Height="60" Margin="0,2,0,4" HorizontalAlignment="Left">
+                                        <Image Source="{Binding HeaderClientLogoPath, Converter={StaticResource FileToImage}}" 
+                                               Width="76" Height="56" Stretch="Uniform"/>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- ── Main Contractor column ── -->
+                            <Border Grid.Column="1" x:Name="ContractorColumn" Tag="Contractor"
+                                    BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" Padding="8" Margin="2,0"
+                                    Cursor="Hand" AllowDrop="True">
+                                <StackPanel>
+                                    <TextBlock Text="⠿" FontSize="14" Foreground="{DynamicResource ThemeForeground}"
+                                               HorizontalAlignment="Center" Margin="0,0,0,2" ToolTip="Drag to reorder"/>
+                                    <CheckBox Content="Main Contractor" IsChecked="{Binding ShowContractorInReport}" 
+                                              FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6"/>
+                                    <TextBlock Text="Name:" FontSize="11" Foreground="{DynamicResource ThemeForeground}"/>
+                                    <ComboBox ItemsSource="{Binding HeaderContractorOptions}"
+                                              SelectedItem="{Binding HeaderContractorName, Mode=TwoWay}"
+                                              IsEditable="True" Margin="0,2,0,6" FontFamily="{DynamicResource BrandFontFamily}"/>
+                                    <TextBlock Text="Logo:" FontSize="11" Foreground="{DynamicResource ThemeForeground}"/>
+                                    <Border BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" 
+                                            Width="80" Height="60" Margin="0,2,0,4" HorizontalAlignment="Left">
+                                        <Image Source="{Binding HeaderContractorLogoPath, Converter={StaticResource FileToImage}}" 
+                                               Width="76" Height="56" Stretch="Uniform"/>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- ── Sub Contractor column ── -->
+                            <Border Grid.Column="2" x:Name="SubcontractorColumn" Tag="SubContractor"
+                                    BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" Padding="8" Margin="2,0"
+                                    Cursor="Hand" AllowDrop="True">
+                                <StackPanel>
+                                    <TextBlock Text="⠿" FontSize="14" Foreground="{DynamicResource ThemeForeground}"
+                                               HorizontalAlignment="Center" Margin="0,0,0,2" ToolTip="Drag to reorder"/>
+                                    <CheckBox Content="Sub Contractor" IsChecked="{Binding ShowSubcontractorInReport}" 
+                                              FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6"/>
+                                    <TextBlock Text="Name:" FontSize="11" Foreground="{DynamicResource ThemeForeground}"/>
+                                    <ComboBox ItemsSource="{Binding HeaderSubcontractorOptions}"
+                                              SelectedItem="{Binding HeaderSubcontractorName, Mode=TwoWay}"
+                                              IsEditable="True" Margin="0,2,0,6" FontFamily="{DynamicResource BrandFontFamily}"/>
+                                    <TextBlock Text="Logo:" FontSize="11" Foreground="{DynamicResource ThemeForeground}"/>
+                                    <Border BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" 
+                                            Width="80" Height="60" Margin="0,2,0,4" HorizontalAlignment="Left">
+                                        <Image Source="{Binding HeaderSubcontractorLogoPath, Converter={StaticResource FileToImage}}" 
+                                               Width="76" Height="56" Stretch="Uniform"/>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- ── Consultant column ── -->
+                            <Border Grid.Column="3" x:Name="ConsultantColumn" Tag="Consultant"
+                                    BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" Padding="8" Margin="4,0,0,0"
+                                    Cursor="Hand" AllowDrop="True">
+                                <StackPanel>
+                                    <TextBlock Text="⠿" FontSize="14" Foreground="{DynamicResource ThemeForeground}"
+                                               HorizontalAlignment="Center" Margin="0,0,0,2" ToolTip="Drag to reorder"/>
+                                    <CheckBox Content="Consultant" IsChecked="{Binding ShowConsultantInReport}" 
+                                              FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6"/>
+                                    <TextBlock Text="Name:" FontSize="11" Foreground="{DynamicResource ThemeForeground}"/>
+                                    <ComboBox ItemsSource="{Binding HeaderConsultantOptions}"
+                                              SelectedItem="{Binding HeaderConsultantName, Mode=TwoWay}"
+                                              IsEditable="True" Margin="0,2,0,6" FontFamily="{DynamicResource BrandFontFamily}"/>
+                                    <TextBlock Text="Logo:" FontSize="11" Foreground="{DynamicResource ThemeForeground}"/>
+                                    <Border BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" 
+                                            Width="80" Height="60" Margin="0,2,0,4" HorizontalAlignment="Left">
+                                        <Image Source="{Binding HeaderConsultantLogoPath, Converter={StaticResource FileToImage}}" 
+                                               Width="76" Height="56" Stretch="Uniform"/>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Export Settings -->
+                <GroupBox Header="Export" Margin="0,0,0,12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Reports Folder:" VerticalAlignment="Center" Margin="0,0,0,6"/>
+                        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,6">
+                            <TextBox Text="{Binding ReportsFolderPath}" Width="300" IsReadOnly="True"/>
+                            <Button Content="Browse..." Command="{Binding BrowseFolderCommand}"
+                                    Margin="6,0,0,0" MinWidth="80"/>
+                        </StackPanel>
+
+                        <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                  Content="Auto-save reports to folder" IsChecked="{Binding AutoSaveReports}"/>
+                    </Grid>
+                </GroupBox>
+
+                <!-- Report Footer Settings -->
+                <GroupBox Header="Report Footer" Margin="0,0,0,12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                  Content="Show Footer in Exports" IsChecked="{Binding ShowFooter}" Margin="0,0,0,6"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Footer Text:" VerticalAlignment="Center" Margin="0,0,0,4"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding FooterText}" Width="400" Margin="0,0,0,4" HorizontalAlignment="Left"/>
+
+                        <CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                  Content="Include Planova Watermark Logo" IsChecked="{Binding EnableWatermark}"
+                                  Margin="0,4,0,0"/>
+                    </Grid>
+                </GroupBox>
+
+                <!-- Preview -->
+                <GroupBox Header="Preview" Margin="0,0,0,12" Height="360">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="80"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="50"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Page shadow & border -->
+                        <Border Grid.RowSpan="3" Background="White" BorderBrush="#CCC" BorderThickness="1"
+                                CornerRadius="2" Margin="40,0">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="6" ShadowDepth="3" Opacity="0.25" Color="#333"/>
+                            </Border.Effect>
+                        </Border>
+
+                        <!-- Watermark overlay (semi-transparent across the page) -->
+                        <TextBlock Grid.RowSpan="3" Text="PLANOVA" FontSize="36" FontWeight="Bold"
+                                   Foreground="#00000015" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   RenderTransformOrigin="0.5,0.5" Margin="44,0,44,0">
+                            <TextBlock.RenderTransform>
+                                <RotateTransform Angle="-30"/>
+                            </TextBlock.RenderTransform>
+                            <TextBlock.Visibility>
+                                <Binding Path="EnableWatermark" Converter="{StaticResource BoolToVis}"/>
+                            </TextBlock.Visibility>
+                        </TextBlock>
+
+                        <!-- Header area with logos (ordered by HeaderOrder) -->
+                        <Border Grid.Row="0" Background="#F5F5F5" BorderBrush="#DDD" BorderThickness="0,0,0,1" Margin="44,2,44,0">
+                            <ItemsControl ItemsSource="{Binding HeaderPreviewItems}" Margin="4,0">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="4"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2,0"
+                                                    Visibility="{Binding ShowInReport, Converter={StaticResource BoolToVis}}">
+                                            <Image Source="{Binding LogoSource}"
+                                                   Width="24" Height="20" Stretch="Uniform" Margin="0,0,0,2"/>
+                                            <TextBlock Text="{Binding Name}" FontSize="9"
+                                                       HorizontalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                                       FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
+
+                        <!-- Body area -->
+                        <Border Grid.Row="1" Background="White" Margin="44,0">
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock Text="Report Content" FontSize="14" Foreground="#999" HorizontalAlignment="Center"/>
+                                <TextBlock Text="(page body placeholder)" FontSize="11" Foreground="#BBB" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Footer area -->
+                        <Border Grid.Row="2" Background="#F5F5F5" BorderBrush="#DDD" BorderThickness="0,1,0,0" Margin="44,0,44,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding FooterText}" FontSize="10"
+                                           Foreground="#666" VerticalAlignment="Center" Margin="8,0"
+                                           Visibility="{Binding ShowFooter, Converter={StaticResource BoolToVis}}"/>
+                                <Image Grid.Column="1" Source="{Binding FooterLogoPath, Converter={StaticResource FileToImage}}"
+                                       Width="28" Height="20" Stretch="Uniform"
+                                       Visibility="{Binding ShowFooter, Converter={StaticResource BoolToVis}}"
+                                       Margin="0,0,8,0"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </GroupBox>
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,12,0,0">
+            <Button Content="Save" Command="{Binding SaveCommand}" MinWidth="100" Margin="0,0,8,0"/>
+            <Button Content="Reset Defaults" Command="{Binding ResetDefaultsCommand}" MinWidth="100" Margin="0,0,16,0"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

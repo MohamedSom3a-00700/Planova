@@ -18,9 +18,11 @@ using Planova.UI.Views.Excel;
 using Planova.UI.Views.Profile;
 using Planova.UI.Views.Reports;
 using Planova.UI.Views.Wbs;
+using Planova.UI.Views.Reporting;
 using Planova.UI.Views.Activity;
 using Planova.UI.Views.Resource;
 using Planova.UI.Views.Cost;
+using Planova.UI.ViewModels.Reporting;
 using Planova.UI.Views;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
@@ -40,7 +42,8 @@ public partial class ShellViewModel : ObservableObject
     private readonly Dictionary<string, WorkspaceTabViewModel> _openTabs = new();
     private readonly List<string> _studioTargetIds = new()
     { "boq", "wbs", "activity", "resource", "cost", "excel-studio", "primavera",
-      "schedule-compare", "delay-analysis", "chronology", "knowledge-base", "integration-hub" };
+      "schedule-compare", "delay-analysis", "chronology", "knowledge-base", "integration-hub",
+      "reports" };
 
     public ShellViewModel(
         INavigationService navigationService,
@@ -311,8 +314,14 @@ public partial class ShellViewModel : ObservableObject
             view.InitializeTabs(_serviceProvider);
             return view;
         });
-        nav.RegisterTarget("reports", "Reports", "DocumentText24", false, false,
-            () => _serviceProvider.GetRequiredService<ReportView>());
+        nav.RegisterTarget("reports", "Reports", "DocumentText24", true, false, () =>
+        {
+            var view = _serviceProvider.GetRequiredService<ReportingHubView>();
+            var hubVm = (ReportingHubViewModel)view.DataContext;
+            hubVm.OnHubStatusMessage = msg => StatusText = msg;
+            view.InitializeTabs(_serviceProvider);
+            return view;
+        });
         nav.RegisterTarget("primavera", "Primavera Studio", "HardDrive24", true, true,
             () => CreateEmptyState("HardDrive24", "Primavera Studio", "Primavera integration module is coming soon."));
         nav.RegisterTarget("schedule-compare", "Schedule Compare", "ArrowSync24", true, true,

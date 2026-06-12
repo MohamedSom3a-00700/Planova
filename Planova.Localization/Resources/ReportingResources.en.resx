@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter</value></resheader>
+  <data name="ReportingCenter" xml:space="preserve"><value>Reporting Center</value></data>
+  <data name="Daily" xml:space="preserve"><value>Daily</value></data>
+  <data name="Weekly" xml:space="preserve"><value>Weekly</value></data>
+  <data name="Monthly" xml:space="preserve"><value>Monthly</value></data>
+  <data name="Executive" xml:space="preserve"><value>Executive</value></data>
+  <data name="Schedule" xml:space="preserve"><value>Schedule</value></data>
+  <data name="History" xml:space="preserve"><value>History</value></data>
+  <data name="Templates" xml:space="preserve"><value>Templates</value></data>
+  <data name="GenerateReport" xml:space="preserve"><value>Generate Report</value></data>
+  <data name="ExportToExcel" xml:space="preserve"><value>Export to Excel</value></data>
+  <data name="ExportToPdf" xml:space="preserve"><value>Export to PDF</value></data>
+  <data name="ExportToWord" xml:space="preserve"><value>Export to Word</value></data>
+  <data name="AiNarrative" xml:space="preserve"><value>AI Narrative</value></data>
+  <data name="GenerateAiNarrative" xml:space="preserve"><value>Generate AI Narrative</value></data>
+  <data name="Regenerate" xml:space="preserve"><value>Regenerate</value></data>
+  <data name="NoData" xml:space="preserve"><value>No data available for the selected period.</value></data>
+  <data name="SelectDate" xml:space="preserve"><value>Select a date</value></data>
+  <data name="SelectWeek" xml:space="preserve"><value>Select a week</value></data>
+  <data name="SelectMonth" xml:space="preserve"><value>Select a month</value></data>
+  <data name="SelectDateRange" xml:space="preserve"><value>Select a date range</value></data>
+  <data name="Draft" xml:space="preserve"><value>Draft</value></data>
+  <data name="Final" xml:space="preserve"><value>Final</value></data>
+  <data name="Archived" xml:space="preserve"><value>Archived</value></data>
+  <data name="AiUnavailable" xml:space="preserve"><value>AI provider is not configured. AI features are disabled.</value></data>
+</root>

@@ -10,6 +10,7 @@
     <Project Path="tests/Planova.Boq.Tests/Planova.Boq.Tests.csproj" />
     <Project Path="tests/Planova.Wbs.Tests/Planova.Wbs.Tests.csproj" />
     <Project Path="tests/Planova.Resource.Tests/Planova.Resource.Tests.csproj" />
+    <Project Path="tests/Planova.Reporting.Tests/Planova.Reporting.Tests.csproj" />
   </Folder>
   <Project Path="Planova.Resource/Planova.Resource.csproj" />
   <Project Path="Planova.Activity/Planova.Activity.csproj" />
@@ -24,4 +25,5 @@
   <Project Path="Planova.UI/Planova.UI.csproj" />
   <Project Path="Planova.Boq/Planova.Boq.csproj" />
   <Project Path="Planova.Wbs/Planova.Wbs.csproj" />
+  <Project Path="Planova.Reporting/Planova.Reporting.csproj" />
 </Solution>

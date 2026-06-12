@@ -82,7 +82,7 @@ public class BoqImportSmokeTests : IDisposable
     }
 
     [Fact]
-    public async Task OpenWorkbook_WithCorruptSheet_SkipsGracefully()
+    public async Task OpenWorkbook_ParsesAllValidWorksheets()
     {
         var filePath = Path.Combine(_testDir, "corrupt.xlsx");
         using (var workbook = new XLWorkbook())

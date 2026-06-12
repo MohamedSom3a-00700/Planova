@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IO;
 using QRCoder;
 
@@ -7,7 +8,7 @@ public class QrCodeService
 {
     public string GenerateLocationQr(int projectId, double latitude, double longitude)
     {
-        var geoUri = $"geo:{latitude},{longitude}";
+        var geoUri = $"geo:{latitude.ToString(CultureInfo.InvariantCulture)},{longitude.ToString(CultureInfo.InvariantCulture)}";
 
         using var generator = new QRCodeGenerator();
         using var qrData = generator.CreateQrCode(geoUri, QRCodeGenerator.ECCLevel.Q);

@@ -14,6 +14,7 @@
         <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
         <conv:BoolToVisibilityConverter x:Key="InvertedBoolToVis" Invert="True"/>
         <conv:LockedDocumentTypeConverter x:Key="LockedDocConverter"/>
+        <conv:BytesToKilobytesConverter x:Key="BytesToKilobytesConverter"/>
 
         <Style x:Key="StatusBadgeStyle" TargetType="Border">
             <Setter Property="CornerRadius" Value="4"/>
@@ -330,7 +331,7 @@
                                             <GridViewColumn Header="Ext" DisplayMemberBinding="{Binding FileExtension}" Width="50"/>
                                             <GridViewColumn Header="Size (KB)" Width="80">
                                                 <GridViewColumn.DisplayMemberBinding>
-                                                    <Binding Path="FileSizeBytes" StringFormat='{}{0:N0}'/>
+                                                    <Binding Path="FileSizeBytes" Converter="{StaticResource BytesToKilobytesConverter}" StringFormat='{}{0:N0}'/>
                                                 </GridViewColumn.DisplayMemberBinding>
                                             </GridViewColumn>
                                             <GridViewColumn Header="Date" DisplayMemberBinding="{Binding UploadedAt, StringFormat='{}{0:MMM dd, yyyy}'}" Width="100"/>
@@ -400,6 +401,91 @@
                                     </Image>
                                     <Button Content="Copy path" Height="28" VerticalAlignment="Center"
                                             Command="{Binding CopyQrCodePathCommand}"/>
+                                </StackPanel>
+                            </Grid>
+                        </TabItem>
+
+                        <TabItem Header="Parties">
+                            <Grid Margin="8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Party list -->
+                                <ListView Grid.Row="0" ItemsSource="{Binding ProjectParties}"
+                                          SelectedItem="{Binding SelectedParty, Mode=TwoWay}"
+                                          Background="{DynamicResource ThemeSurface}"
+                                          MaxHeight="200" Margin="0,0,0,8">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Role" DisplayMemberBinding="{Binding Role}" Width="100"/>
+                                            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                                            <GridViewColumn Header="Contact" DisplayMemberBinding="{Binding ContactPerson}" Width="120"/>
+                                            <GridViewColumn Header="Email" DisplayMemberBinding="{Binding ContactEmail}" Width="150"/>
+                                            <GridViewColumn Header="Phone" DisplayMemberBinding="{Binding ContactPhone}" Width="120"/>
+                                            <GridViewColumn Header="" Width="160">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Button Content="Edit" Margin="0,0,4,0" Height="26"
+                                                                    Command="{Binding DataContext.EditPartyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                    CommandParameter="{Binding}"/>
+                                                            <Button Content="Delete" Height="26"
+                                                                    Command="{Binding DataContext.DeletePartyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                    CommandParameter="{Binding}"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+
+                                <!-- Party editor -->
+                                <StackPanel Grid.Row="1" Margin="0,8,0,0">
+                                    <TextBlock Text="Add / Edit Party" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/><ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Role:" VerticalAlignment="Center"/>
+                                        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding PartyRoles}"
+                                                  SelectedItem="{Binding EditPartyRole}" Margin="4,2"/>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Name:" VerticalAlignment="Center"/>
+                                        <ui:TextBox Grid.Row="1" Grid.Column="1" Text="{Binding EditPartyName}"
+                                                    PlaceholderText="Party name" Margin="4,2"/>
+
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Address:" VerticalAlignment="Center"/>
+                                        <ui:TextBox Grid.Row="2" Grid.Column="1" Text="{Binding EditPartyAddress}"
+                                                    PlaceholderText="Address" Margin="4,2"/>
+
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Contact Person:" VerticalAlignment="Center"/>
+                                        <ui:TextBox Grid.Row="3" Grid.Column="1" Text="{Binding EditPartyContactPerson}"
+                                                    PlaceholderText="Contact person" Margin="4,2"/>
+
+                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Email:" VerticalAlignment="Center"/>
+                                        <ui:TextBox Grid.Row="4" Grid.Column="1" Text="{Binding EditPartyContactEmail}"
+                                                    PlaceholderText="Email" Margin="4,2"/>
+
+                                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Phone:" VerticalAlignment="Center"/>
+                                        <ui:TextBox Grid.Row="5" Grid.Column="1" Text="{Binding EditPartyContactPhone}"
+                                                    PlaceholderText="Phone" Margin="4,2"/>
+
+                                        <StackPanel Grid.Row="6" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,8,0,0">
+                                            <Button Content="Save Party" Command="{Binding SavePartyCommand}" MinHeight="32" Width="100"/>
+                                            <Button Content="Cancel" Command="{Binding CancelPartyEditCommand}" Margin="8,0,0,0" MinHeight="32" Width="100"/>
+                                            <Button Content="Sync from Project" Command="{Binding SyncPartiesFromProjectCommand}" Margin="8,0,0,0" MinHeight="32"/>
+                                        </StackPanel>
+                                    </Grid>
                                 </StackPanel>
                             </Grid>
                         </TabItem>

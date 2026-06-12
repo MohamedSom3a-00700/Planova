@@ -5,10 +5,11 @@ using Planova.Shared.Abstractions;
 
 namespace Planova.UI.ViewModels.Shared;
 
-public partial class DocumentValidationBannerViewModel : ObservableObject
+public partial class DocumentValidationBannerViewModel : ObservableObject, IDisposable
 {
     private readonly IProjectDocumentService _docService;
     private readonly ICurrentProjectService _currentProject;
+    private CancellationTokenSource? _cts;
 
     public DocumentValidationBannerViewModel(
         IProjectDocumentService docService,
@@ -30,9 +31,14 @@ public partial class DocumentValidationBannerViewModel : ObservableObject
     private async void OnCurrentProjectChanged(object? sender, ProjectContext? context)
     {
         if (context != null)
+        {
             await CheckAsync(RequiredTypes);
+        }
         else
+        {
+            _cts?.Cancel();
             HasWarning = false;
+        }
     }
 
     [RelayCommand]
@@ -45,10 +51,19 @@ public partial class DocumentValidationBannerViewModel : ObservableObject
     [RelayCommand]
     private void GoToProjectDocuments()
     {
+        var projectId = _currentProject.CurrentProject?.Id;
+        if (projectId.HasValue)
+        {
+            _currentProject.SetProject(_currentProject.CurrentProject);
+        }
     }
 
     public async Task CheckAsync(string[] requiredTypes, CancellationToken ct = default)
     {
+        _cts?.Cancel();
+        _cts = new CancellationTokenSource();
+        var combined = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
+
         var projectId = _currentProject.CurrentProject?.Id;
         if (projectId == null || requiredTypes.Length == 0)
         {
@@ -59,20 +74,32 @@ public partial class DocumentValidationBannerViewModel : ObservableObject
         var missing = new List<string>();
         foreach (var type in requiredTypes)
         {
-            var docs = await _docService.GetByTypeAsync(projectId.Value, type, ct);
+            if (combined.IsCancellationRequested) return;
+            var docs = await _docService.GetByTypeAsync(projectId.Value, type, combined);
             if (!docs.Any())
                 missing.Add(type);
         }
 
-        if (missing.Count > 0)
+        if (!combined.IsCancellationRequested)
         {
-            HasWarning = true;
-            WarningMessage = $"Missing required documents: {string.Join(", ", missing)}";
+            if (missing.Count > 0)
+            {
+                HasWarning = true;
+                WarningMessage = $"Missing required documents: {string.Join(", ", missing)}";
+            }
+            else
+            {
+                HasWarning = false;
+                WarningMessage = string.Empty;
+            }
         }
-        else
-        {
-            HasWarning = false;
-            WarningMessage = string.Empty;
-        }
+    }
+
+    public void Dispose()
+    {
+        _currentProject.CurrentProjectChanged -= OnCurrentProjectChanged;
+        _cts?.Cancel();
+        _cts?.Dispose();
+        GC.SuppressFinalize(this);
     }
 }
