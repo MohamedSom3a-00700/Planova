@@ -1,0 +1,18 @@
+{
+  "activities": [
+    { "provenanceId": "A1", "activityId": "ACT001", "name": "Foundation", "duration": 10.0, "start": "2026-01-01T08:00:00", "finish": "2026-01-10T17:00:00", "isCritical": true, "totalFloat": 0.0, "freeFloat": 0.0 },
+    { "provenanceId": "A2", "activityId": "ACT002", "name": "Walls", "duration": 15.0, "start": "2026-01-11T08:00:00", "finish": "2026-01-25T17:00:00", "isCritical": true, "totalFloat": 0.0, "freeFloat": 0.0, "calendar": "Standard" },
+    { "provenanceId": "A3", "activityId": "ACT003", "name": "Roof", "duration": 8.0, "start": "2026-01-26T08:00:00", "finish": "2026-02-02T17:00:00", "isCritical": false, "totalFloat": 5.0, "freeFloat": 2.0, "calendar": "Standard" }
+  ],
+  "relationships": [
+    { "predecessorProvenanceId": "A1", "successorProvenanceId": "A2", "relationshipType": "FS", "lag": 0.0 },
+    { "predecessorProvenanceId": "A2", "successorProvenanceId": "A3", "relationshipType": "FS", "lag": 1.0 }
+  ],
+  "resourceAssignments": [
+    { "activityMatchKey": "A1", "resourceId": "R001", "resourceName": "Concrete Crew", "units": 4.0, "cost": 5000.0 },
+    { "activityMatchKey": "A2", "resourceId": "R002", "resourceName": "Mason Crew", "units": 3.0, "cost": 7500.0 }
+  ],
+  "calendars": [
+    { "calendarId": "CAL01", "name": "Standard", "isDefault": true, "hoursPerDay": 8.0 }
+  ]
+}

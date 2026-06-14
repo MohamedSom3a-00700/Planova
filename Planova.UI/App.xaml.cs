@@ -37,6 +37,7 @@ using Planova.UI.Views.Excel;
 using Planova.UI.Views.Profile;
 using Planova.UI.Views.Reports;
 using Planova.Reporting.Extensions;
+using Planova.ScheduleComparison.Extensions;
 using Planova.UI.ViewModels.Activity;
 using Planova.UI.Views.Activity;
 using Planova.UI.ViewModels.Reporting;
@@ -45,7 +46,9 @@ using Planova.Activity.Extensions;
 using Planova.Resource.Extensions;
 using Planova.Cost.Extensions;
 using Planova.UI.ViewModels.Primavera;
+using Planova.UI.ViewModels.ScheduleComparison;
 using Planova.UI.Views.Primavera;
+using Planova.UI.Views.ScheduleComparison;
 using Planova.UI.ViewModels.Resource;
 using Planova.UI.ViewModels.Cost;
 using Planova.UI.Views.Resource;
@@ -330,6 +333,29 @@ public partial class App : System.Windows.Application
         services.AddTransient<ReportSettingsView>();
         services.AddTransient<ReportingHubView>();
         services.AddPlanovaReporting();
+
+        // Schedule Comparison Studio
+        services.AddPlanovaScheduleComparison();
+        services.AddTransient<ScheduleComparisonViewModel>();
+        services.AddTransient<ScheduleComparisonView>();
+        services.AddTransient<CompareViewModel>();
+        services.AddTransient<CompareView>();
+        services.AddTransient<ActivityDiffViewModel>();
+        services.AddTransient<ActivityDiffView>();
+        services.AddTransient<LogicDiffViewModel>();
+        services.AddTransient<LogicDiffView>();
+        services.AddTransient<ResourceDiffViewModel>();
+        services.AddTransient<ResourceDiffView>();
+        services.AddTransient<CriticalPathDiffViewModel>();
+        services.AddTransient<CriticalPathDiffView>();
+        services.AddTransient<FloatImpactViewModel>();
+        services.AddTransient<FloatImpactView>();
+        services.AddTransient<ComparisonHistoryViewModel>();
+        services.AddTransient<ComparisonHistoryView>();
+        services.AddTransient<ComparisonExportViewModel>();
+        services.AddTransient<ComparisonExportView>();
+        services.AddTransient<SnapshotViewModel>();
+        services.AddTransient<SnapshotView>();
 
         // Primavera Studio
         services.AddPlanovaPrimavera();

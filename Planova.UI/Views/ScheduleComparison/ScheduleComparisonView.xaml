@@ -1,0 +1,23 @@
+<UserControl x:Class="Planova.UI.Views.ScheduleComparison.ScheduleComparisonView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.ScheduleComparison"
+             d:DataContext="{d:DesignInstance vm:ScheduleComparisonViewModel}"
+             mc:Ignorable="d"
+             FlowDirection="{Binding FlowDirection, RelativeSource={RelativeSource Self}}">
+    <TabControl ItemsSource="{Binding Tabs}"
+                SelectedItem="{Binding SelectedTab}">
+        <TabControl.ItemTemplate>
+            <DataTemplate DataType="{x:Type vm:ScheduleComparisonTab}">
+                <TextBlock Text="{Binding Header}" />
+            </DataTemplate>
+        </TabControl.ItemTemplate>
+        <TabControl.ContentTemplate>
+            <DataTemplate DataType="{x:Type vm:ScheduleComparisonTab}">
+                <ContentControl Content="{Binding Content}" />
+            </DataTemplate>
+        </TabControl.ContentTemplate>
+    </TabControl>
+</UserControl>

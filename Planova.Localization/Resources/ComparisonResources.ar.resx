@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter</value></resheader>
+  <data name="ComparisonStudio_Title" xml:space="preserve"><value>استوديو مقارنة الجداول</value></data>
+  <data name="CompareTab" xml:space="preserve"><value>مقارنة</value></data>
+  <data name="ActivitiesTab" xml:space="preserve"><value>الأنشطة</value></data>
+  <data name="LogicTab" xml:space="preserve"><value>العلاقات</value></data>
+  <data name="ResourcesTab" xml:space="preserve"><value>الموارد</value></data>
+  <data name="CriticalPathTab" xml:space="preserve"><value>المسار الحرج</value></data>
+  <data name="FloatTab" xml:space="preserve"><value>الفائض</value></data>
+  <data name="HistoryTab" xml:space="preserve"><value>السجل</value></data>
+  <data name="ExportTab" xml:space="preserve"><value>تصدير</value></data>
+  <data name="RunComparison" xml:space="preserve"><value>تشغيل المقارنة</value></data>
+  <data name="SourceLabel" xml:space="preserve"><value>الجدول المصدر</value></data>
+  <data name="TargetLabel" xml:space="preserve"><value>الجدول الهدف</value></data>
+  <data name="CaptureSnapshot" xml:space="preserve"><value>التقاط لقطة</value></data>
+  <data name="SnapshotLabel" xml:space="preserve"><value>اسم اللقطة</value></data>
+  <data name="ExportToExcel" xml:space="preserve"><value>تصدير إلى إكسل</value></data>
+  <data name="ExportToPdf" xml:space="preserve"><value>تصدير إلى PDF</value></data>
+  <data name="ExportToJson" xml:space="preserve"><value>تصدير إلى JSON</value></data>
+  <data name="ComparisonRunning" xml:space="preserve"><value>جاري تشغيل المقارنة...</value></data>
+  <data name="ComparisonCompleted" xml:space="preserve"><value>اكتملت المقارنة بنجاح.</value></data>
+  <data name="ComparisonFailed" xml:space="preserve"><value>فشلت المقارنة: {0}</value></data>
+  <data name="ComparisonCancelled" xml:space="preserve"><value>تم إلغاء المقارنة.</value></data>
+  <data name="ChangesAdded" xml:space="preserve"><value>مضاف</value></data>
+  <data name="ChangesRemoved" xml:space="preserve"><value>محذوف</value></data>
+  <data name="ChangesModified" xml:space="preserve"><value>معدل</value></data>
+  <data name="ChangesUnchanged" xml:space="preserve"><value>دون تغيير</value></data>
+  <data name="ReOpenSession" xml:space="preserve"><value>إعادة فتح</value></data>
+  <data name="DeleteSession" xml:space="preserve"><value>حذف</value></data>
+  <data name="NoChanges" xml:space="preserve"><value>لا توجد تغييرات</value></data>
+</root>
