@@ -1,0 +1,547 @@
+ERMHDR|7.0|moderate_project|UTF-8|3.0|6.0|6.0|6.0
+%T|CALENDAR
+%F|calendar_id|clndr_type|day_hr_cnt|week_hr_cnt|month_hr_cnt|year_hr_cnt|default_flag|name|clndr_data|suncrt_shift_cnt
+%R|1|BASE|8.0|40.0|176.0|2112.0|Y|Standard 5-day|368:0:0:8:0:0:0:1:2:3:4:5:0:6:0:7|0
+%R|2|BASE|8.0|40.0|176.0|2112.0|N|Night Shift|368:1:2:3:4:5:0:6:0:7:8:0|0
+%R|3|BASE|8.0|40.0|176.0|2112.0|N|6-Day|368:0:0:8:0:0:0:1:2:3:4:5:6:0:7|0
+%T|PROJECT
+%F|proj_id|proj_short_name|proj_name|plan_start_date|plan_end_date|add_date|status_code
+%R|1|MOD|Moderate Test Project|01-Jan-2026|31-Dec-2027|01-Jan-2026|Planned
+%T|TASK
+%F|task_id|proj_id|clndr_id|task_name|task_type|status_code|duration|start_date|end_date|phys_complete|task_code
+%R|1|1|2|Activity 1|TT_Milestone|Status_In_Progress|2|02-Jan-2026|04-Jan-2026|1|M00001
+%R|2|1|3|Activity 2|TT_LevelOfEffort|Status_Completed|3|03-Jan-2026|06-Jan-2026|2|M00002
+%R|3|1|1|Activity 3|TT_WBS|Status_Not_Started|4|04-Jan-2026|08-Jan-2026|3|M00003
+%R|4|1|2|Activity 4|TT_Task|Status_In_Progress|5|05-Jan-2026|10-Jan-2026|4|M00004
+%R|5|1|3|Activity 5|TT_Milestone|Status_Completed|6|06-Jan-2026|12-Jan-2026|5|M00005
+%R|6|1|1|Activity 6|TT_LevelOfEffort|Status_Not_Started|7|07-Jan-2026|14-Jan-2026|6|M00006
+%R|7|1|2|Activity 7|TT_WBS|Status_In_Progress|8|08-Jan-2026|16-Jan-2026|7|M00007
+%R|8|1|3|Activity 8|TT_Task|Status_Completed|9|09-Jan-2026|18-Jan-2026|8|M00008
+%R|9|1|1|Activity 9|TT_Milestone|Status_Not_Started|10|10-Jan-2026|20-Jan-2026|9|M00009
+%R|10|1|2|Activity 10|TT_LevelOfEffort|Status_In_Progress|11|11-Jan-2026|22-Jan-2026|10|M00010
+%R|11|1|3|Activity 11|TT_WBS|Status_Completed|12|12-Jan-2026|24-Jan-2026|11|M00011
+%R|12|1|1|Activity 12|TT_Task|Status_Not_Started|13|13-Jan-2026|26-Jan-2026|12|M00012
+%R|13|1|2|Activity 13|TT_Milestone|Status_In_Progress|14|14-Jan-2026|28-Jan-2026|13|M00013
+%R|14|1|3|Activity 14|TT_LevelOfEffort|Status_Completed|15|15-Jan-2026|30-Jan-2026|14|M00014
+%R|15|1|1|Activity 15|TT_WBS|Status_Not_Started|16|16-Jan-2026|01-Feb-2026|15|M00015
+%R|16|1|2|Activity 16|TT_Task|Status_In_Progress|17|17-Jan-2026|03-Feb-2026|16|M00016
+%R|17|1|3|Activity 17|TT_Milestone|Status_Completed|18|18-Jan-2026|05-Feb-2026|17|M00017
+%R|18|1|1|Activity 18|TT_LevelOfEffort|Status_Not_Started|19|19-Jan-2026|07-Feb-2026|18|M00018
+%R|19|1|2|Activity 19|TT_WBS|Status_In_Progress|20|20-Jan-2026|09-Feb-2026|19|M00019
+%R|20|1|3|Activity 20|TT_Task|Status_Completed|21|21-Jan-2026|11-Feb-2026|20|M00020
+%R|21|1|1|Activity 21|TT_Milestone|Status_Not_Started|22|22-Jan-2026|13-Feb-2026|21|M00021
+%R|22|1|2|Activity 22|TT_LevelOfEffort|Status_In_Progress|23|23-Jan-2026|15-Feb-2026|22|M00022
+%R|23|1|3|Activity 23|TT_WBS|Status_Completed|24|24-Jan-2026|17-Feb-2026|23|M00023
+%R|24|1|1|Activity 24|TT_Task|Status_Not_Started|25|25-Jan-2026|19-Feb-2026|24|M00024
+%R|25|1|2|Activity 25|TT_Milestone|Status_In_Progress|26|26-Jan-2026|21-Feb-2026|25|M00025
+%R|26|1|3|Activity 26|TT_LevelOfEffort|Status_Completed|27|27-Jan-2026|23-Feb-2026|26|M00026
+%R|27|1|1|Activity 27|TT_WBS|Status_Not_Started|28|28-Jan-2026|25-Feb-2026|27|M00027
+%R|28|1|2|Activity 28|TT_Task|Status_In_Progress|29|29-Jan-2026|27-Feb-2026|28|M00028
+%R|29|1|3|Activity 29|TT_Milestone|Status_Completed|30|30-Jan-2026|01-Mar-2026|29|M00029
+%R|30|1|1|Activity 30|TT_LevelOfEffort|Status_Not_Started|31|31-Jan-2026|03-Mar-2026|30|M00030
+%R|31|1|2|Activity 31|TT_WBS|Status_In_Progress|32|01-Feb-2026|05-Mar-2026|31|M00031
+%R|32|1|3|Activity 32|TT_Task|Status_Completed|33|02-Feb-2026|07-Mar-2026|32|M00032
+%R|33|1|1|Activity 33|TT_Milestone|Status_Not_Started|34|03-Feb-2026|09-Mar-2026|33|M00033
+%R|34|1|2|Activity 34|TT_LevelOfEffort|Status_In_Progress|35|04-Feb-2026|11-Mar-2026|34|M00034
+%R|35|1|3|Activity 35|TT_WBS|Status_Completed|36|05-Feb-2026|13-Mar-2026|35|M00035
+%R|36|1|1|Activity 36|TT_Task|Status_Not_Started|37|06-Feb-2026|15-Mar-2026|36|M00036
+%R|37|1|2|Activity 37|TT_Milestone|Status_In_Progress|38|07-Feb-2026|17-Mar-2026|37|M00037
+%R|38|1|3|Activity 38|TT_LevelOfEffort|Status_Completed|39|08-Feb-2026|19-Mar-2026|38|M00038
+%R|39|1|1|Activity 39|TT_WBS|Status_Not_Started|40|09-Feb-2026|21-Mar-2026|39|M00039
+%R|40|1|2|Activity 40|TT_Task|Status_In_Progress|41|10-Feb-2026|23-Mar-2026|40|M00040
+%R|41|1|3|Activity 41|TT_Milestone|Status_Completed|42|11-Feb-2026|25-Mar-2026|41|M00041
+%R|42|1|1|Activity 42|TT_LevelOfEffort|Status_Not_Started|43|12-Feb-2026|27-Mar-2026|42|M00042
+%R|43|1|2|Activity 43|TT_WBS|Status_In_Progress|44|13-Feb-2026|29-Mar-2026|43|M00043
+%R|44|1|3|Activity 44|TT_Task|Status_Completed|45|14-Feb-2026|31-Mar-2026|44|M00044
+%R|45|1|1|Activity 45|TT_Milestone|Status_Not_Started|46|15-Feb-2026|02-Apr-2026|45|M00045
+%R|46|1|2|Activity 46|TT_LevelOfEffort|Status_In_Progress|47|16-Feb-2026|04-Apr-2026|46|M00046
+%R|47|1|3|Activity 47|TT_WBS|Status_Completed|48|17-Feb-2026|06-Apr-2026|47|M00047
+%R|48|1|1|Activity 48|TT_Task|Status_Not_Started|49|18-Feb-2026|08-Apr-2026|48|M00048
+%R|49|1|2|Activity 49|TT_Milestone|Status_In_Progress|50|19-Feb-2026|10-Apr-2026|49|M00049
+%R|50|1|3|Activity 50|TT_LevelOfEffort|Status_Completed|51|20-Feb-2026|12-Apr-2026|50|M00050
+%R|51|1|1|Activity 51|TT_WBS|Status_Not_Started|52|21-Feb-2026|14-Apr-2026|51|M00051
+%R|52|1|2|Activity 52|TT_Task|Status_In_Progress|53|22-Feb-2026|16-Apr-2026|52|M00052
+%R|53|1|3|Activity 53|TT_Milestone|Status_Completed|54|23-Feb-2026|18-Apr-2026|53|M00053
+%R|54|1|1|Activity 54|TT_LevelOfEffort|Status_Not_Started|55|24-Feb-2026|20-Apr-2026|54|M00054
+%R|55|1|2|Activity 55|TT_WBS|Status_In_Progress|56|25-Feb-2026|22-Apr-2026|55|M00055
+%R|56|1|3|Activity 56|TT_Task|Status_Completed|57|26-Feb-2026|24-Apr-2026|56|M00056
+%R|57|1|1|Activity 57|TT_Milestone|Status_Not_Started|58|27-Feb-2026|26-Apr-2026|57|M00057
+%R|58|1|2|Activity 58|TT_LevelOfEffort|Status_In_Progress|59|28-Feb-2026|28-Apr-2026|58|M00058
+%R|59|1|3|Activity 59|TT_WBS|Status_Completed|60|01-Mar-2026|30-Apr-2026|59|M00059
+%R|60|1|1|Activity 60|TT_Task|Status_Not_Started|61|02-Mar-2026|02-May-2026|60|M00060
+%R|61|1|2|Activity 61|TT_Milestone|Status_In_Progress|62|03-Mar-2026|04-May-2026|61|M00061
+%R|62|1|3|Activity 62|TT_LevelOfEffort|Status_Completed|63|04-Mar-2026|06-May-2026|62|M00062
+%R|63|1|1|Activity 63|TT_WBS|Status_Not_Started|64|05-Mar-2026|08-May-2026|63|M00063
+%R|64|1|2|Activity 64|TT_Task|Status_In_Progress|65|06-Mar-2026|10-May-2026|64|M00064
+%R|65|1|3|Activity 65|TT_Milestone|Status_Completed|66|07-Mar-2026|12-May-2026|65|M00065
+%R|66|1|1|Activity 66|TT_LevelOfEffort|Status_Not_Started|67|08-Mar-2026|14-May-2026|66|M00066
+%R|67|1|2|Activity 67|TT_WBS|Status_In_Progress|68|09-Mar-2026|16-May-2026|67|M00067
+%R|68|1|3|Activity 68|TT_Task|Status_Completed|69|10-Mar-2026|18-May-2026|68|M00068
+%R|69|1|1|Activity 69|TT_Milestone|Status_Not_Started|70|11-Mar-2026|20-May-2026|69|M00069
+%R|70|1|2|Activity 70|TT_LevelOfEffort|Status_In_Progress|71|12-Mar-2026|22-May-2026|70|M00070
+%R|71|1|3|Activity 71|TT_WBS|Status_Completed|72|13-Mar-2026|24-May-2026|71|M00071
+%R|72|1|1|Activity 72|TT_Task|Status_Not_Started|73|14-Mar-2026|26-May-2026|72|M00072
+%R|73|1|2|Activity 73|TT_Milestone|Status_In_Progress|74|15-Mar-2026|28-May-2026|73|M00073
+%R|74|1|3|Activity 74|TT_LevelOfEffort|Status_Completed|75|16-Mar-2026|30-May-2026|74|M00074
+%R|75|1|1|Activity 75|TT_WBS|Status_Not_Started|76|17-Mar-2026|01-Jun-2026|75|M00075
+%R|76|1|2|Activity 76|TT_Task|Status_In_Progress|77|18-Mar-2026|03-Jun-2026|76|M00076
+%R|77|1|3|Activity 77|TT_Milestone|Status_Completed|78|19-Mar-2026|05-Jun-2026|77|M00077
+%R|78|1|1|Activity 78|TT_LevelOfEffort|Status_Not_Started|79|20-Mar-2026|07-Jun-2026|78|M00078
+%R|79|1|2|Activity 79|TT_WBS|Status_In_Progress|80|21-Mar-2026|09-Jun-2026|79|M00079
+%R|80|1|3|Activity 80|TT_Task|Status_Completed|81|22-Mar-2026|11-Jun-2026|80|M00080
+%R|81|1|1|Activity 81|TT_Milestone|Status_Not_Started|82|23-Mar-2026|13-Jun-2026|81|M00081
+%R|82|1|2|Activity 82|TT_LevelOfEffort|Status_In_Progress|83|24-Mar-2026|15-Jun-2026|82|M00082
+%R|83|1|3|Activity 83|TT_WBS|Status_Completed|84|25-Mar-2026|17-Jun-2026|83|M00083
+%R|84|1|1|Activity 84|TT_Task|Status_Not_Started|85|26-Mar-2026|19-Jun-2026|84|M00084
+%R|85|1|2|Activity 85|TT_Milestone|Status_In_Progress|86|27-Mar-2026|21-Jun-2026|85|M00085
+%R|86|1|3|Activity 86|TT_LevelOfEffort|Status_Completed|87|28-Mar-2026|23-Jun-2026|86|M00086
+%R|87|1|1|Activity 87|TT_WBS|Status_Not_Started|88|29-Mar-2026|25-Jun-2026|87|M00087
+%R|88|1|2|Activity 88|TT_Task|Status_In_Progress|89|30-Mar-2026|27-Jun-2026|88|M00088
+%R|89|1|3|Activity 89|TT_Milestone|Status_Completed|90|31-Mar-2026|29-Jun-2026|89|M00089
+%R|90|1|1|Activity 90|TT_LevelOfEffort|Status_Not_Started|91|01-Apr-2026|01-Jul-2026|90|M00090
+%R|91|1|2|Activity 91|TT_WBS|Status_In_Progress|92|02-Apr-2026|03-Jul-2026|91|M00091
+%R|92|1|3|Activity 92|TT_Task|Status_Completed|93|03-Apr-2026|05-Jul-2026|92|M00092
+%R|93|1|1|Activity 93|TT_Milestone|Status_Not_Started|94|04-Apr-2026|07-Jul-2026|93|M00093
+%R|94|1|2|Activity 94|TT_LevelOfEffort|Status_In_Progress|95|05-Apr-2026|09-Jul-2026|94|M00094
+%R|95|1|3|Activity 95|TT_WBS|Status_Completed|96|06-Apr-2026|11-Jul-2026|95|M00095
+%R|96|1|1|Activity 96|TT_Task|Status_Not_Started|97|07-Apr-2026|13-Jul-2026|96|M00096
+%R|97|1|2|Activity 97|TT_Milestone|Status_In_Progress|98|08-Apr-2026|15-Jul-2026|97|M00097
+%R|98|1|3|Activity 98|TT_LevelOfEffort|Status_Completed|99|09-Apr-2026|17-Jul-2026|98|M00098
+%R|99|1|1|Activity 99|TT_WBS|Status_Not_Started|100|10-Apr-2026|19-Jul-2026|99|M00099
+%R|100|1|2|Activity 100|TT_Task|Status_In_Progress|1|11-Apr-2026|12-Apr-2026|0|M00100
+%R|101|1|3|Activity 101|TT_Milestone|Status_Completed|2|12-Apr-2026|14-Apr-2026|1|M00101
+%R|102|1|1|Activity 102|TT_LevelOfEffort|Status_Not_Started|3|13-Apr-2026|16-Apr-2026|2|M00102
+%R|103|1|2|Activity 103|TT_WBS|Status_In_Progress|4|14-Apr-2026|18-Apr-2026|3|M00103
+%R|104|1|3|Activity 104|TT_Task|Status_Completed|5|15-Apr-2026|20-Apr-2026|4|M00104
+%R|105|1|1|Activity 105|TT_Milestone|Status_Not_Started|6|16-Apr-2026|22-Apr-2026|5|M00105
+%R|106|1|2|Activity 106|TT_LevelOfEffort|Status_In_Progress|7|17-Apr-2026|24-Apr-2026|6|M00106
+%R|107|1|3|Activity 107|TT_WBS|Status_Completed|8|18-Apr-2026|26-Apr-2026|7|M00107
+%R|108|1|1|Activity 108|TT_Task|Status_Not_Started|9|19-Apr-2026|28-Apr-2026|8|M00108
+%R|109|1|2|Activity 109|TT_Milestone|Status_In_Progress|10|20-Apr-2026|30-Apr-2026|9|M00109
+%R|110|1|3|Activity 110|TT_LevelOfEffort|Status_Completed|11|21-Apr-2026|02-May-2026|10|M00110
+%R|111|1|1|Activity 111|TT_WBS|Status_Not_Started|12|22-Apr-2026|04-May-2026|11|M00111
+%R|112|1|2|Activity 112|TT_Task|Status_In_Progress|13|23-Apr-2026|06-May-2026|12|M00112
+%R|113|1|3|Activity 113|TT_Milestone|Status_Completed|14|24-Apr-2026|08-May-2026|13|M00113
+%R|114|1|1|Activity 114|TT_LevelOfEffort|Status_Not_Started|15|25-Apr-2026|10-May-2026|14|M00114
+%R|115|1|2|Activity 115|TT_WBS|Status_In_Progress|16|26-Apr-2026|12-May-2026|15|M00115
+%R|116|1|3|Activity 116|TT_Task|Status_Completed|17|27-Apr-2026|14-May-2026|16|M00116
+%R|117|1|1|Activity 117|TT_Milestone|Status_Not_Started|18|28-Apr-2026|16-May-2026|17|M00117
+%R|118|1|2|Activity 118|TT_LevelOfEffort|Status_In_Progress|19|29-Apr-2026|18-May-2026|18|M00118
+%R|119|1|3|Activity 119|TT_WBS|Status_Completed|20|30-Apr-2026|20-May-2026|19|M00119
+%R|120|1|1|Activity 120|TT_Task|Status_Not_Started|21|01-May-2026|22-May-2026|20|M00120
+%R|121|1|2|Activity 121|TT_Milestone|Status_In_Progress|22|02-May-2026|24-May-2026|21|M00121
+%R|122|1|3|Activity 122|TT_LevelOfEffort|Status_Completed|23|03-May-2026|26-May-2026|22|M00122
+%R|123|1|1|Activity 123|TT_WBS|Status_Not_Started|24|04-May-2026|28-May-2026|23|M00123
+%R|124|1|2|Activity 124|TT_Task|Status_In_Progress|25|05-May-2026|30-May-2026|24|M00124
+%R|125|1|3|Activity 125|TT_Milestone|Status_Completed|26|06-May-2026|01-Jun-2026|25|M00125
+%R|126|1|1|Activity 126|TT_LevelOfEffort|Status_Not_Started|27|07-May-2026|03-Jun-2026|26|M00126
+%R|127|1|2|Activity 127|TT_WBS|Status_In_Progress|28|08-May-2026|05-Jun-2026|27|M00127
+%R|128|1|3|Activity 128|TT_Task|Status_Completed|29|09-May-2026|07-Jun-2026|28|M00128
+%R|129|1|1|Activity 129|TT_Milestone|Status_Not_Started|30|10-May-2026|09-Jun-2026|29|M00129
+%R|130|1|2|Activity 130|TT_LevelOfEffort|Status_In_Progress|31|11-May-2026|11-Jun-2026|30|M00130
+%R|131|1|3|Activity 131|TT_WBS|Status_Completed|32|12-May-2026|13-Jun-2026|31|M00131
+%R|132|1|1|Activity 132|TT_Task|Status_Not_Started|33|13-May-2026|15-Jun-2026|32|M00132
+%R|133|1|2|Activity 133|TT_Milestone|Status_In_Progress|34|14-May-2026|17-Jun-2026|33|M00133
+%R|134|1|3|Activity 134|TT_LevelOfEffort|Status_Completed|35|15-May-2026|19-Jun-2026|34|M00134
+%R|135|1|1|Activity 135|TT_WBS|Status_Not_Started|36|16-May-2026|21-Jun-2026|35|M00135
+%R|136|1|2|Activity 136|TT_Task|Status_In_Progress|37|17-May-2026|23-Jun-2026|36|M00136
+%R|137|1|3|Activity 137|TT_Milestone|Status_Completed|38|18-May-2026|25-Jun-2026|37|M00137
+%R|138|1|1|Activity 138|TT_LevelOfEffort|Status_Not_Started|39|19-May-2026|27-Jun-2026|38|M00138
+%R|139|1|2|Activity 139|TT_WBS|Status_In_Progress|40|20-May-2026|29-Jun-2026|39|M00139
+%R|140|1|3|Activity 140|TT_Task|Status_Completed|41|21-May-2026|01-Jul-2026|40|M00140
+%R|141|1|1|Activity 141|TT_Milestone|Status_Not_Started|42|22-May-2026|03-Jul-2026|41|M00141
+%R|142|1|2|Activity 142|TT_LevelOfEffort|Status_In_Progress|43|23-May-2026|05-Jul-2026|42|M00142
+%R|143|1|3|Activity 143|TT_WBS|Status_Completed|44|24-May-2026|07-Jul-2026|43|M00143
+%R|144|1|1|Activity 144|TT_Task|Status_Not_Started|45|25-May-2026|09-Jul-2026|44|M00144
+%R|145|1|2|Activity 145|TT_Milestone|Status_In_Progress|46|26-May-2026|11-Jul-2026|45|M00145
+%R|146|1|3|Activity 146|TT_LevelOfEffort|Status_Completed|47|27-May-2026|13-Jul-2026|46|M00146
+%R|147|1|1|Activity 147|TT_WBS|Status_Not_Started|48|28-May-2026|15-Jul-2026|47|M00147
+%R|148|1|2|Activity 148|TT_Task|Status_In_Progress|49|29-May-2026|17-Jul-2026|48|M00148
+%R|149|1|3|Activity 149|TT_Milestone|Status_Completed|50|30-May-2026|19-Jul-2026|49|M00149
+%R|150|1|1|Activity 150|TT_LevelOfEffort|Status_Not_Started|51|31-May-2026|21-Jul-2026|50|M00150
+%R|151|1|2|Activity 151|TT_WBS|Status_In_Progress|52|01-Jun-2026|23-Jul-2026|51|M00151
+%R|152|1|3|Activity 152|TT_Task|Status_Completed|53|02-Jun-2026|25-Jul-2026|52|M00152
+%R|153|1|1|Activity 153|TT_Milestone|Status_Not_Started|54|03-Jun-2026|27-Jul-2026|53|M00153
+%R|154|1|2|Activity 154|TT_LevelOfEffort|Status_In_Progress|55|04-Jun-2026|29-Jul-2026|54|M00154
+%R|155|1|3|Activity 155|TT_WBS|Status_Completed|56|05-Jun-2026|31-Jul-2026|55|M00155
+%R|156|1|1|Activity 156|TT_Task|Status_Not_Started|57|06-Jun-2026|02-Aug-2026|56|M00156
+%R|157|1|2|Activity 157|TT_Milestone|Status_In_Progress|58|07-Jun-2026|04-Aug-2026|57|M00157
+%R|158|1|3|Activity 158|TT_LevelOfEffort|Status_Completed|59|08-Jun-2026|06-Aug-2026|58|M00158
+%R|159|1|1|Activity 159|TT_WBS|Status_Not_Started|60|09-Jun-2026|08-Aug-2026|59|M00159
+%R|160|1|2|Activity 160|TT_Task|Status_In_Progress|61|10-Jun-2026|10-Aug-2026|60|M00160
+%R|161|1|3|Activity 161|TT_Milestone|Status_Completed|62|11-Jun-2026|12-Aug-2026|61|M00161
+%R|162|1|1|Activity 162|TT_LevelOfEffort|Status_Not_Started|63|12-Jun-2026|14-Aug-2026|62|M00162
+%R|163|1|2|Activity 163|TT_WBS|Status_In_Progress|64|13-Jun-2026|16-Aug-2026|63|M00163
+%R|164|1|3|Activity 164|TT_Task|Status_Completed|65|14-Jun-2026|18-Aug-2026|64|M00164
+%R|165|1|1|Activity 165|TT_Milestone|Status_Not_Started|66|15-Jun-2026|20-Aug-2026|65|M00165
+%R|166|1|2|Activity 166|TT_LevelOfEffort|Status_In_Progress|67|16-Jun-2026|22-Aug-2026|66|M00166
+%R|167|1|3|Activity 167|TT_WBS|Status_Completed|68|17-Jun-2026|24-Aug-2026|67|M00167
+%R|168|1|1|Activity 168|TT_Task|Status_Not_Started|69|18-Jun-2026|26-Aug-2026|68|M00168
+%R|169|1|2|Activity 169|TT_Milestone|Status_In_Progress|70|19-Jun-2026|28-Aug-2026|69|M00169
+%R|170|1|3|Activity 170|TT_LevelOfEffort|Status_Completed|71|20-Jun-2026|30-Aug-2026|70|M00170
+%R|171|1|1|Activity 171|TT_WBS|Status_Not_Started|72|21-Jun-2026|01-Sep-2026|71|M00171
+%R|172|1|2|Activity 172|TT_Task|Status_In_Progress|73|22-Jun-2026|03-Sep-2026|72|M00172
+%R|173|1|3|Activity 173|TT_Milestone|Status_Completed|74|23-Jun-2026|05-Sep-2026|73|M00173
+%R|174|1|1|Activity 174|TT_LevelOfEffort|Status_Not_Started|75|24-Jun-2026|07-Sep-2026|74|M00174
+%R|175|1|2|Activity 175|TT_WBS|Status_In_Progress|76|25-Jun-2026|09-Sep-2026|75|M00175
+%R|176|1|3|Activity 176|TT_Task|Status_Completed|77|26-Jun-2026|11-Sep-2026|76|M00176
+%R|177|1|1|Activity 177|TT_Milestone|Status_Not_Started|78|27-Jun-2026|13-Sep-2026|77|M00177
+%R|178|1|2|Activity 178|TT_LevelOfEffort|Status_In_Progress|79|28-Jun-2026|15-Sep-2026|78|M00178
+%R|179|1|3|Activity 179|TT_WBS|Status_Completed|80|29-Jun-2026|17-Sep-2026|79|M00179
+%R|180|1|1|Activity 180|TT_Task|Status_Not_Started|81|30-Jun-2026|19-Sep-2026|80|M00180
+%R|181|1|2|Activity 181|TT_Milestone|Status_In_Progress|82|01-Jul-2026|21-Sep-2026|81|M00181
+%R|182|1|3|Activity 182|TT_LevelOfEffort|Status_Completed|83|02-Jul-2026|23-Sep-2026|82|M00182
+%R|183|1|1|Activity 183|TT_WBS|Status_Not_Started|84|03-Jul-2026|25-Sep-2026|83|M00183
+%R|184|1|2|Activity 184|TT_Task|Status_In_Progress|85|04-Jul-2026|27-Sep-2026|84|M00184
+%R|185|1|3|Activity 185|TT_Milestone|Status_Completed|86|05-Jul-2026|29-Sep-2026|85|M00185
+%R|186|1|1|Activity 186|TT_LevelOfEffort|Status_Not_Started|87|06-Jul-2026|01-Oct-2026|86|M00186
+%R|187|1|2|Activity 187|TT_WBS|Status_In_Progress|88|07-Jul-2026|03-Oct-2026|87|M00187
+%R|188|1|3|Activity 188|TT_Task|Status_Completed|89|08-Jul-2026|05-Oct-2026|88|M00188
+%R|189|1|1|Activity 189|TT_Milestone|Status_Not_Started|90|09-Jul-2026|07-Oct-2026|89|M00189
+%R|190|1|2|Activity 190|TT_LevelOfEffort|Status_In_Progress|91|10-Jul-2026|09-Oct-2026|90|M00190
+%R|191|1|3|Activity 191|TT_WBS|Status_Completed|92|11-Jul-2026|11-Oct-2026|91|M00191
+%R|192|1|1|Activity 192|TT_Task|Status_Not_Started|93|12-Jul-2026|13-Oct-2026|92|M00192
+%R|193|1|2|Activity 193|TT_Milestone|Status_In_Progress|94|13-Jul-2026|15-Oct-2026|93|M00193
+%R|194|1|3|Activity 194|TT_LevelOfEffort|Status_Completed|95|14-Jul-2026|17-Oct-2026|94|M00194
+%R|195|1|1|Activity 195|TT_WBS|Status_Not_Started|96|15-Jul-2026|19-Oct-2026|95|M00195
+%R|196|1|2|Activity 196|TT_Task|Status_In_Progress|97|16-Jul-2026|21-Oct-2026|96|M00196
+%R|197|1|3|Activity 197|TT_Milestone|Status_Completed|98|17-Jul-2026|23-Oct-2026|97|M00197
+%R|198|1|1|Activity 198|TT_LevelOfEffort|Status_Not_Started|99|18-Jul-2026|25-Oct-2026|98|M00198
+%R|199|1|2|Activity 199|TT_WBS|Status_In_Progress|100|19-Jul-2026|27-Oct-2026|99|M00199
+%R|200|1|3|Activity 200|TT_Task|Status_Completed|1|20-Jul-2026|21-Jul-2026|0|M00200
+%T|TASKPRED
+%F|task_pred_id|task_id|pred_task_id|pred_type|lag_hr_cnt
+%R|1|2|1|SS|8
+%R|2|3|2|FF|16
+%R|3|4|2|SF|24
+%R|4|5|2|FS|32
+%R|5|5|3|FS|0
+%R|6|6|5|FF|8
+%R|7|7|5|SF|16
+%R|8|8|5|FS|24
+%R|9|9|8|SS|32
+%R|10|10|8|FF|0
+%R|11|10|8|FS|0
+%R|12|11|8|FS|16
+%R|13|12|11|SS|24
+%R|14|13|11|FF|32
+%R|15|14|11|SF|0
+%R|16|15|14|FS|8
+%R|17|15|13|FS|0
+%R|18|16|14|FF|24
+%R|19|17|14|SF|32
+%R|20|18|17|FS|0
+%R|21|19|17|SS|8
+%R|22|20|17|FF|16
+%R|23|20|18|FS|0
+%R|24|21|20|FS|32
+%R|25|22|20|SS|0
+%R|26|23|20|FF|8
+%R|27|24|23|SF|16
+%R|28|25|23|FS|24
+%R|29|25|23|FS|0
+%R|30|26|23|FF|0
+%R|31|27|26|SF|8
+%R|32|28|26|FS|16
+%R|33|29|26|SS|24
+%R|34|30|29|FF|32
+%R|35|30|28|FS|0
+%R|36|31|29|FS|8
+%R|37|32|29|SS|16
+%R|38|33|32|FF|24
+%R|39|34|32|SF|32
+%R|40|35|32|FS|0
+%R|41|35|33|FS|0
+%R|42|36|35|FF|16
+%R|43|37|35|SF|24
+%R|44|38|35|FS|32
+%R|45|39|38|SS|0
+%R|46|40|38|FF|8
+%R|47|40|38|FS|0
+%R|48|41|38|FS|24
+%R|49|42|41|SS|32
+%R|50|43|41|FF|0
+%R|51|44|41|SF|8
+%R|52|45|44|FS|16
+%R|53|45|43|FS|0
+%R|54|46|44|FF|32
+%R|55|47|44|SF|0
+%R|56|48|47|FS|8
+%R|57|49|47|SS|16
+%R|58|50|47|FF|24
+%R|59|50|48|FS|0
+%R|60|51|50|FS|0
+%R|61|52|50|SS|8
+%R|62|53|50|FF|16
+%R|63|54|53|SF|24
+%R|64|55|53|FS|32
+%R|65|55|53|FS|0
+%R|66|56|53|FF|8
+%R|67|57|56|SF|16
+%R|68|58|56|FS|24
+%R|69|59|56|SS|32
+%R|70|60|59|FF|0
+%R|71|60|58|FS|0
+%R|72|61|59|FS|16
+%R|73|62|59|SS|24
+%R|74|63|62|FF|32
+%R|75|64|62|SF|0
+%R|76|65|62|FS|8
+%R|77|65|63|FS|0
+%R|78|66|65|FF|24
+%R|79|67|65|SF|32
+%R|80|68|65|FS|0
+%R|81|69|68|SS|8
+%R|82|70|68|FF|16
+%R|83|70|68|FS|0
+%R|84|71|68|FS|32
+%R|85|72|71|SS|0
+%R|86|73|71|FF|8
+%R|87|74|71|SF|16
+%R|88|75|74|FS|24
+%R|89|75|73|FS|0
+%R|90|76|74|FF|0
+%R|91|77|74|SF|8
+%R|92|78|77|FS|16
+%R|93|79|77|SS|24
+%R|94|80|77|FF|32
+%R|95|80|78|FS|0
+%R|96|81|80|FS|8
+%R|97|82|80|SS|16
+%R|98|83|80|FF|24
+%R|99|84|83|SF|32
+%R|100|85|83|FS|0
+%R|101|86|83|SS|8
+%R|102|87|86|FF|16
+%R|103|88|86|SF|24
+%R|104|89|86|FS|32
+%R|105|90|89|SS|0
+%R|106|91|89|FF|8
+%R|107|92|89|SF|16
+%R|108|93|92|FS|24
+%R|109|94|92|SS|32
+%R|110|95|92|FF|0
+%R|111|96|95|SF|8
+%R|112|97|95|FS|16
+%R|113|98|95|SS|24
+%R|114|99|98|FF|32
+%R|115|100|98|SF|0
+%R|116|101|98|FS|8
+%R|117|102|101|SS|16
+%R|118|103|101|FF|24
+%R|119|104|101|SF|32
+%R|120|105|104|FS|0
+%R|121|106|104|SS|8
+%R|122|107|104|FF|16
+%R|123|108|107|SF|24
+%R|124|109|107|FS|32
+%R|125|110|107|SS|0
+%R|126|111|110|FF|8
+%R|127|112|110|SF|16
+%R|128|113|110|FS|24
+%R|129|114|113|SS|32
+%R|130|115|113|FF|0
+%R|131|116|113|SF|8
+%R|132|117|116|FS|16
+%R|133|118|116|SS|24
+%R|134|119|116|FF|32
+%R|135|120|119|SF|0
+%R|136|121|119|FS|8
+%R|137|122|119|SS|16
+%R|138|123|122|FF|24
+%R|139|124|122|SF|32
+%R|140|125|122|FS|0
+%R|141|126|125|SS|8
+%R|142|127|125|FF|16
+%R|143|128|125|SF|24
+%R|144|129|128|FS|32
+%R|145|130|128|SS|0
+%R|146|131|128|FF|8
+%R|147|132|131|SF|16
+%R|148|133|131|FS|24
+%R|149|134|131|SS|32
+%R|150|135|134|FF|0
+%R|151|136|134|SF|8
+%R|152|137|134|FS|16
+%R|153|138|137|SS|24
+%R|154|139|137|FF|32
+%R|155|140|137|SF|0
+%R|156|141|140|FS|8
+%R|157|142|140|SS|16
+%R|158|143|140|FF|24
+%R|159|144|143|SF|32
+%R|160|145|143|FS|0
+%R|161|146|143|SS|8
+%R|162|147|146|FF|16
+%R|163|148|146|SF|24
+%R|164|149|146|FS|32
+%R|165|150|149|SS|0
+%R|166|151|149|FF|8
+%R|167|152|149|SF|16
+%R|168|153|152|FS|24
+%R|169|154|152|SS|32
+%R|170|155|152|FF|0
+%R|171|156|155|SF|8
+%R|172|157|155|FS|16
+%R|173|158|155|SS|24
+%R|174|159|158|FF|32
+%R|175|160|158|SF|0
+%R|176|161|158|FS|8
+%R|177|162|161|SS|16
+%R|178|163|161|FF|24
+%R|179|164|161|SF|32
+%R|180|165|164|FS|0
+%R|181|166|164|SS|8
+%R|182|167|164|FF|16
+%R|183|168|167|SF|24
+%R|184|169|167|FS|32
+%R|185|170|167|SS|0
+%R|186|171|170|FF|8
+%R|187|172|170|SF|16
+%R|188|173|170|FS|24
+%R|189|174|173|SS|32
+%R|190|175|173|FF|0
+%R|191|176|173|SF|8
+%R|192|177|176|FS|16
+%R|193|178|176|SS|24
+%R|194|179|176|FF|32
+%R|195|180|179|SF|0
+%R|196|181|179|FS|8
+%R|197|182|179|SS|16
+%R|198|183|182|FF|24
+%R|199|184|182|SF|32
+%R|200|185|182|FS|0
+%R|201|186|185|SS|8
+%R|202|187|185|FF|16
+%R|203|188|185|SF|24
+%R|204|189|188|FS|32
+%R|205|190|188|SS|0
+%R|206|191|188|FF|8
+%R|207|192|191|SF|16
+%R|208|193|191|FS|24
+%R|209|194|191|SS|32
+%R|210|195|194|FF|0
+%R|211|196|194|SF|8
+%R|212|197|194|FS|16
+%R|213|198|197|SS|24
+%R|214|199|197|FF|32
+%R|215|200|197|SF|0
+%T|TASKRSRC
+%F|rsrc_id|task_id|proj_id|target_qty|remain_qty|cost_per_qty|target_cost|act_cost
+%R|2|2|1|11|11|16|176|0
+%R|3|3|1|12|12|17|204|0
+%R|4|4|1|13|13|18|234|0
+%R|5|5|1|14|14|19|266|0
+%R|6|6|1|15|15|20|300|0
+%R|7|7|1|16|16|21|336|0
+%R|8|8|1|17|17|22|374|0
+%R|9|9|1|18|18|23|414|0
+%R|10|10|1|19|19|24|456|0
+%R|1|11|1|20|20|25|500|0
+%R|2|12|1|21|21|26|546|0
+%R|3|13|1|22|22|27|594|0
+%R|4|14|1|23|23|28|644|0
+%R|5|15|1|24|24|29|696|0
+%R|6|16|1|25|25|30|750|0
+%R|7|17|1|26|26|31|806|0
+%R|8|18|1|27|27|32|864|0
+%R|9|19|1|28|28|33|924|0
+%R|10|20|1|29|29|34|986|0
+%R|1|21|1|30|30|35|1050|0
+%R|2|22|1|31|31|36|1116|0
+%R|3|23|1|32|32|37|1184|0
+%R|4|24|1|33|33|38|1254|0
+%R|5|25|1|34|34|39|1326|0
+%R|6|26|1|35|35|40|1400|0
+%R|7|27|1|36|36|41|1476|0
+%R|8|28|1|37|37|42|1554|0
+%R|9|29|1|38|38|43|1634|0
+%R|10|30|1|39|39|44|1716|0
+%R|1|31|1|40|40|45|1800|0
+%R|2|32|1|41|41|46|1886|0
+%R|3|33|1|42|42|47|1974|0
+%R|4|34|1|43|43|48|2064|0
+%R|5|35|1|44|44|49|2156|0
+%R|6|36|1|45|45|50|2250|0
+%R|7|37|1|46|46|51|2346|0
+%R|8|38|1|47|47|52|2444|0
+%R|9|39|1|48|48|53|2544|0
+%R|10|40|1|49|49|54|2646|0
+%R|1|41|1|50|50|55|2750|0
+%R|2|42|1|51|51|56|2856|0
+%R|3|43|1|52|52|57|2964|0
+%R|4|44|1|53|53|58|3074|0
+%R|5|45|1|54|54|59|3186|0
+%R|6|46|1|55|55|60|3300|0
+%R|7|47|1|56|56|61|3416|0
+%R|8|48|1|57|57|62|3534|0
+%R|9|49|1|58|58|63|3654|0
+%R|10|50|1|59|59|64|3776|0
+%R|1|51|1|60|60|65|3900|0
+%T|RSOURCE
+%F|rsrc_id|rsrc_name|rsrc_short_name|employee_code|rsrc_type_name|def_qty_per_hr|cost_qty_type
+%R|1|Engineer|ENG|E001|Labor|1.0|Ea
+%R|2|Laborer|LAB|E002|Labor|1.0|Ea
+%R|3|Foreman|FOR|E003|Labor|1.0|Ea
+%R|4|Manager|MAN|E004|Labor|1.0|Ea
+%R|5|Architect|ARC|E005|Labor|1.0|Ea
+%R|6|Planner|PLA|E006|Labor|1.0|Ea
+%R|7|Surveyor|SUR|E007|Labor|1.0|Ea
+%R|8|Inspector|INS|E008|Labor|1.0|Ea
+%R|9|Welder|WEL|E009|Labor|1.0|Ea
+%R|10|Electrician|ELE|E0010|Labor|1.0|Ea
+%T|UDFTYPE
+%F|udf_type_id|table_name|udf_type_name|udf_type_label|logical_data_type
+%R|1|TASK|Priority|Priority|TEXT
+%T|UDFVALUE
+%F|udf_type_id|fk_id|udf_value_text
+%R|1|2|1
+%R|1|3|2
+%R|1|4|3
+%R|1|5|4
+%R|1|6|1
+%R|1|7|1
+%R|1|8|2
+%R|1|9|3
+%R|1|10|4
+%R|1|11|1
+%R|1|12|1
+%R|1|13|2
+%R|1|14|3
+%R|1|15|4
+%R|1|16|1
+%R|1|17|1
+%R|1|18|2
+%R|1|19|3
+%R|1|20|4
+%R|1|21|1
+%R|1|22|1
+%R|1|23|2
+%R|1|24|3
+%R|1|25|4
+%R|1|26|1
+%R|1|27|1
+%R|1|28|2
+%R|1|29|3
+%R|1|30|4
+%R|1|31|1
+%R|1|32|1
+%R|1|33|2
+%R|1|34|3
+%R|1|35|4
+%R|1|36|1
+%R|1|37|1
+%R|1|38|2
+%R|1|39|3
+%R|1|40|4
+%R|1|41|1
+%R|1|42|1
+%R|1|43|2
+%R|1|44|3
+%R|1|45|4
+%R|1|46|1
+%R|1|47|1
+%R|1|48|2
+%R|1|49|3
+%R|1|50|4
+%R|1|51|1

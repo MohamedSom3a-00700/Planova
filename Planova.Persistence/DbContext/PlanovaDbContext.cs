@@ -53,6 +53,21 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<ReportSettings> ReportSettings => Set<ReportSettings>();
     public DbSet<ProjectParty> ProjectParties => Set<ProjectParty>();
 
+    public DbSet<Planova.Primavera.Domain.Entities.PrimaveraProject> PrimaveraProjects => Set<Planova.Primavera.Domain.Entities.PrimaveraProject>();
+    public DbSet<Planova.Primavera.Domain.Entities.XerImportSession> XerImportSessions => Set<Planova.Primavera.Domain.Entities.XerImportSession>();
+    public DbSet<Planova.Primavera.Domain.Entities.XerExportProfile> XerExportProfiles => Set<Planova.Primavera.Domain.Entities.XerExportProfile>();
+    public DbSet<Planova.Primavera.Domain.Entities.XerRawTable> XerRawTables => Set<Planova.Primavera.Domain.Entities.XerRawTable>();
+    public DbSet<Planova.Primavera.Domain.Entities.PrimaveraActivity> PrimaveraActivities => Set<Planova.Primavera.Domain.Entities.PrimaveraActivity>();
+    public DbSet<Planova.Primavera.Domain.Entities.PrimaveraRelationship> PrimaveraRelationships => Set<Planova.Primavera.Domain.Entities.PrimaveraRelationship>();
+    public DbSet<Planova.Primavera.Domain.Entities.PrimaveraResourceAssignment> PrimaveraResourceAssignments => Set<Planova.Primavera.Domain.Entities.PrimaveraResourceAssignment>();
+    public DbSet<Planova.Primavera.Domain.Entities.PrimaveraCalendar> PrimaveraCalendars => Set<Planova.Primavera.Domain.Entities.PrimaveraCalendar>();
+    public DbSet<Planova.Primavera.Domain.Entities.PrimaveraCode> PrimaveraCodes => Set<Planova.Primavera.Domain.Entities.PrimaveraCode>();
+    public DbSet<Planova.Primavera.Domain.Entities.PrimaveraBaseline> PrimaveraBaselines => Set<Planova.Primavera.Domain.Entities.PrimaveraBaseline>();
+    public DbSet<Planova.Primavera.Domain.Entities.PrimaveraUdf> PrimaveraUdfs => Set<Planova.Primavera.Domain.Entities.PrimaveraUdf>();
+    public DbSet<Planova.Primavera.Domain.Entities.PrimaveraValidationRule> PrimaveraValidationRules => Set<Planova.Primavera.Domain.Entities.PrimaveraValidationRule>();
+    public DbSet<Planova.Primavera.Domain.Entities.PrimaveraValidationIssue> PrimaveraValidationIssues => Set<Planova.Primavera.Domain.Entities.PrimaveraValidationIssue>();
+    public DbSet<Planova.Primavera.Domain.Entities.PrimaveraRepairAction> PrimaveraRepairActions => Set<Planova.Primavera.Domain.Entities.PrimaveraRepairAction>();
+
     public PlanovaDbContext(DbContextOptions<PlanovaDbContext> options) : base(options)
     {
     }
@@ -105,5 +120,20 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.ApplyConfiguration(new ReportExportConfiguration());
         modelBuilder.ApplyConfiguration(new ReportSettingsConfiguration());
         modelBuilder.ApplyConfiguration(new ProjectPartyConfiguration());
+
+        modelBuilder.ApplyConfiguration(new PrimaveraProjectConfiguration());
+        modelBuilder.ApplyConfiguration(new XerImportSessionConfiguration());
+        modelBuilder.ApplyConfiguration(new XerExportProfileConfiguration());
+        modelBuilder.ApplyConfiguration(new XerRawTableConfiguration());
+        modelBuilder.ApplyConfiguration(new PrimaveraActivityConfiguration());
+        modelBuilder.ApplyConfiguration(new PrimaveraRelationshipConfiguration());
+        modelBuilder.ApplyConfiguration(new PrimaveraResourceAssignmentConfiguration());
+        modelBuilder.ApplyConfiguration(new PrimaveraCalendarConfiguration());
+        modelBuilder.ApplyConfiguration(new PrimaveraCodeConfiguration());
+        modelBuilder.ApplyConfiguration(new PrimaveraBaselineConfiguration());
+        modelBuilder.ApplyConfiguration(new PrimaveraUdfConfiguration());
+        modelBuilder.ApplyConfiguration(new PrimaveraValidationRuleConfiguration());
+        modelBuilder.ApplyConfiguration(new PrimaveraValidationIssueConfiguration());
+        modelBuilder.ApplyConfiguration(new PrimaveraRepairActionConfiguration());
     }
 }

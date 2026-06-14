@@ -86,7 +86,7 @@
                         <Border Style="{DynamicResource CardSurfaceStyle}" Padding="12" Margin="0,0,0,12">
                             <StackPanel>
                                 <TextBlock Text="AI assistant"
-                                           Style="{DynamicResource SectionHeaderStyle}"
+                                           Style="{DynamicResource PlanovaSectionHeaderStyle}"
                                            Margin="0,0,0,4" />
                                 <TextBlock Text="Supportive planning, reporting, and workspace guidance will surface here."
                                            Style="{DynamicResource BodyTextStyle}"

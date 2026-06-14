@@ -24,6 +24,7 @@ using Planova.UI.Views.Resource;
 using Planova.UI.Views.Cost;
 using Planova.UI.ViewModels.Reporting;
 using Planova.UI.Views;
+using Planova.UI.Views.Primavera;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 
@@ -322,8 +323,12 @@ public partial class ShellViewModel : ObservableObject
             view.InitializeTabs(_serviceProvider);
             return view;
         });
-        nav.RegisterTarget("primavera", "Primavera Studio", "HardDrive24", true, true,
-            () => CreateEmptyState("HardDrive24", "Primavera Studio", "Primavera integration module is coming soon."));
+        nav.RegisterTarget("primavera", "Primavera Studio", "CalendarClock24", true, false, () =>
+        {
+            var view = _serviceProvider.GetRequiredService<PrimaveraStudioView>();
+            view.InitializeTabs(_serviceProvider);
+            return view;
+        });
         nav.RegisterTarget("schedule-compare", "Schedule Compare", "ArrowSync24", true, true,
             () => CreateEmptyState("ArrowSync24", "Schedule Compare", "Schedule comparison module is coming soon."));
         nav.RegisterTarget("delay-analysis", "Delay Analysis", "ChartMultiple24", true, true,
