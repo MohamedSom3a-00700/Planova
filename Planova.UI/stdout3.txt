@@ -1,0 +1,1 @@
+C:\Users\mohamedabdelsamea\source\repos\Planova\Planova\Planova.Persistence\Planova.Persistence.csproj : warning NU1903: Package 'Microsoft.Extensions.Caching.Memory' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-qj66-m88j-hmgj [C:\Users\mohamedabdelsamea\source\repos\Planova\Planova\Planova.UI\Planova.UI.csproj]

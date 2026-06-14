@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter</value></resheader>
+  <data name="PrimaveraStudio" xml:space="preserve"><value>Primavera Studio</value></data>
+  <data name="ImportXer" xml:space="preserve"><value>Import XER</value></data>
+  <data name="ExportXer" xml:space="preserve"><value>Export XER</value></data>
+  <data name="Validate" xml:space="preserve"><value>Validate</value></data>
+  <data name="Repair" xml:space="preserve"><value>Repair</value></data>
+  <data name="Activities" xml:space="preserve"><value>Activities</value></data>
+  <data name="Relationships" xml:space="preserve"><value>Relationships</value></data>
+  <data name="Resources" xml:space="preserve"><value>Resources</value></data>
+  <data name="Calendars" xml:space="preserve"><value>Calendars</value></data>
+  <data name="Codes" xml:space="preserve"><value>Codes</value></data>
+  <data name="Baselines" xml:space="preserve"><value>Baselines</value></data>
+  <data name="Udfs" xml:space="preserve"><value>User Defined Fields</value></data>
+  <data name="Preview" xml:space="preserve"><value>Preview</value></data>
+  <data name="Commit" xml:space="preserve"><value>Commit</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Browse" xml:space="preserve"><value>Browse</value></data>
+  <data name="ImportSuccessful" xml:space="preserve"><value>Import completed successfully.</value></data>
+  <data name="ImportFailed" xml:space="preserve"><value>Import failed: {0}</value></data>
+  <data name="ExportSuccessful" xml:space="preserve"><value>Export completed successfully.</value></data>
+  <data name="ValidationComplete" xml:space="preserve"><value>Validation complete. {0} issues found.</value></data>
+  <data name="NoIssuesFound" xml:space="preserve"><value>No validation issues found.</value></data>
+  <data name="RepairApplied" xml:space="preserve"><value>Repair applied successfully.</value></data>
+  <data name="ConfirmImport" xml:space="preserve"><value>Are you sure you want to import this XER file?</value></data>
+  <data name="ConfirmOverwrite" xml:space="preserve"><value>Overwrite existing data?</value></data>
+  <data name="ConfirmMerge" xml:space="preserve"><value>Merge with existing data?</value></data>
+  <data name="RowCounts" xml:space="preserve"><value>Row Counts</value></data>
+  <data name="Severity" xml:space="preserve"><value>Severity</value></data>
+  <data name="EntityType" xml:space="preserve"><value>Entity Type</value></data>
+  <data name="Description" xml:space="preserve"><value>Description</value></data>
+</root>

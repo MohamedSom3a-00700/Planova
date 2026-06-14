@@ -79,32 +79,32 @@
                 </Border>
             </WrapPanel>
 
-            <TextBlock Text="Status Distribution" Style="{StaticResource SectionHeaderStyle}"/>
+            <TextBlock Text="Status Distribution" Style="{StaticResource PlanovaSectionHeaderStyle}"/>
             <TextBlock Text="{Binding StatusDistributionSummary}"
                        Style="{StaticResource BodyTextStyle}"
                        TextWrapping="Wrap" Margin="0,0,0,8"/>
 
-            <TextBlock Text="BOQ Status" Style="{StaticResource SectionHeaderStyle}"/>
+            <TextBlock Text="BOQ Status" Style="{StaticResource PlanovaSectionHeaderStyle}"/>
             <TextBlock Text="{Binding BoqDistributionSummary}"
                        Style="{StaticResource BodyTextStyle}"
                        TextWrapping="Wrap" Margin="0,0,0,8"/>
 
-            <TextBlock Text="WBS Status" Style="{StaticResource SectionHeaderStyle}"/>
+            <TextBlock Text="WBS Status" Style="{StaticResource PlanovaSectionHeaderStyle}"/>
             <TextBlock Text="{Binding WbsDistributionSummary}"
                        Style="{StaticResource BodyTextStyle}"
                        TextWrapping="Wrap" Margin="0,0,0,8"/>
 
-            <TextBlock Text="Activity Status" Style="{StaticResource SectionHeaderStyle}"/>
+            <TextBlock Text="Activity Status" Style="{StaticResource PlanovaSectionHeaderStyle}"/>
             <TextBlock Text="{Binding ActivityDistributionSummary}"
                        Style="{StaticResource BodyTextStyle}"
                        TextWrapping="Wrap" Margin="0,0,0,8"/>
 
-            <TextBlock Text="Resource Types" Style="{StaticResource SectionHeaderStyle}"/>
+            <TextBlock Text="Resource Types" Style="{StaticResource PlanovaSectionHeaderStyle}"/>
             <TextBlock Text="{Binding ResourceTypeSummary}"
                        Style="{StaticResource BodyTextStyle}"
                        TextWrapping="Wrap" Margin="0,0,0,16"/>
 
-            <TextBlock Text="Quick Actions" Style="{StaticResource SectionHeaderStyle}"/>
+            <TextBlock Text="Quick Actions" Style="{StaticResource PlanovaSectionHeaderStyle}"/>
             <WrapPanel>
                 <Button Content="+ New Project" Command="{Binding NavigateToProjectsCommand}"
                         Style="{StaticResource ActionTileStyle}"/>
@@ -122,7 +122,7 @@
                         Style="{StaticResource ActionTileStyle}"/>
             </WrapPanel>
 
-            <TextBlock Text="Recent Activity" Style="{StaticResource SectionHeaderStyle}" Margin="0,24,0,8"/>
+            <TextBlock Text="Recent Activity" Style="{StaticResource PlanovaSectionHeaderStyle}" Margin="0,24,0,8"/>
             <Border Style="{StaticResource CardSurfaceStyle}" MaxHeight="300">
                 <ListView ItemsSource="{Binding RecentActivity}"
                           BorderThickness="0">

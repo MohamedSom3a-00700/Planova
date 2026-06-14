@@ -19,6 +19,7 @@ using Planova.Boq.Extensions;
 using Planova.Wbs.Extensions;
 using Planova.Excel.Extensions;
 using Planova.Excel.Services;
+using Planova.Primavera.Extensions;
 using Planova.UI.Services;
 using Planova.UI.ViewModels;
 using Planova.UI.ViewModels.Boq;
@@ -43,6 +44,8 @@ using Planova.UI.Views.Reporting;
 using Planova.Activity.Extensions;
 using Planova.Resource.Extensions;
 using Planova.Cost.Extensions;
+using Planova.UI.ViewModels.Primavera;
+using Planova.UI.Views.Primavera;
 using Planova.UI.ViewModels.Resource;
 using Planova.UI.ViewModels.Cost;
 using Planova.UI.Views.Resource;
@@ -327,6 +330,35 @@ public partial class App : System.Windows.Application
         services.AddTransient<ReportSettingsView>();
         services.AddTransient<ReportingHubView>();
         services.AddPlanovaReporting();
+
+        // Primavera Studio
+        services.AddPlanovaPrimavera();
+        services.AddTransient<PrimaveraStudioViewModel>();
+        services.AddTransient<PrimaveraStudioView>();
+        services.AddTransient<PrimaveraImportViewModel>();
+        services.AddTransient<PrimaveraImportView>();
+        services.AddTransient<PrimaveraWorkspaceViewModel>();
+        services.AddTransient<PrimaveraWorkspaceView>();
+        services.AddTransient<PrimaveraActivitiesViewModel>();
+        services.AddTransient<PrimaveraActivitiesView>();
+        services.AddTransient<PrimaveraRelationshipsViewModel>();
+        services.AddTransient<PrimaveraRelationshipsView>();
+        services.AddTransient<PrimaveraResourcesViewModel>();
+        services.AddTransient<PrimaveraResourcesView>();
+        services.AddTransient<PrimaveraCalendarsViewModel>();
+        services.AddTransient<PrimaveraCalendarsView>();
+        services.AddTransient<PrimaveraCodesViewModel>();
+        services.AddTransient<PrimaveraCodesView>();
+        services.AddTransient<PrimaveraBaselinesViewModel>();
+        services.AddTransient<PrimaveraBaselinesView>();
+        services.AddTransient<PrimaveraUdfsViewModel>();
+        services.AddTransient<PrimaveraUdfsView>();
+        services.AddTransient<PrimaveraValidationViewModel>();
+        services.AddTransient<PrimaveraValidationView>();
+        services.AddTransient<PrimaveraRepairViewModel>();
+        services.AddTransient<PrimaveraRepairView>();
+        services.AddTransient<PrimaveraExportViewModel>();
+        services.AddTransient<PrimaveraExportView>();
     }
 
     private static string GetDatabasePath()

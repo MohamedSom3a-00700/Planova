@@ -6,6 +6,7 @@ using Planova.Boq.Domain.Interfaces;
 using Planova.Cost.Domain.Interfaces;
 using Planova.Persistence.Repositories;
 using Planova.Persistence.Services;
+using Planova.Primavera.Domain.Interfaces;
 using Planova.Resource.Domain.Interfaces;
 using Planova.Reporting.Domain.Interfaces;
 using Planova.Shared.Abstractions;
@@ -58,6 +59,13 @@ public static class ServiceCollectionExtensions
         // Project document services
         services.AddScoped<IProjectDocumentRepository, ProjectDocumentRepository>();
         services.AddScoped<IProjectDocumentService, ProjectDocumentService>();
+
+        // Primavera repositories
+        services.AddScoped<IPrimaveraImportRepository, PrimaveraImportRepository>();
+        services.AddScoped<IPrimaveraWorkspaceRepository, PrimaveraWorkspaceRepository>();
+        services.AddScoped<IPrimaveraValidationRepository, PrimaveraValidationRepository>();
+        services.AddScoped<IPrimaveraRepairRepository, PrimaveraRepairRepository>();
+        services.AddScoped<IPrimaveraExportRepository, PrimaveraExportRepository>();
 
         // Reporting repositories
         services.AddScoped<IReportTemplateRepository, ReportTemplateRepository>();
