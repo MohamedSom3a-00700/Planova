@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="QuestPDF" Version="2026.5.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Planova.Domain\Planova.Domain.csproj" />
+    <ProjectReference Include="..\Planova.Shared\Planova.Shared.csproj" />
+    <ProjectReference Include="..\Planova.Primavera\Planova.Primavera.csproj" />
+    <ProjectReference Include="..\Planova.Activity\Planova.Activity.csproj" />
+    <ProjectReference Include="..\Planova.Resource\Planova.Resource.csproj" />
+  </ItemGroup>
+
+</Project>

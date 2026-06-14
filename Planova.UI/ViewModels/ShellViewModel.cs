@@ -25,6 +25,7 @@ using Planova.UI.Views.Cost;
 using Planova.UI.ViewModels.Reporting;
 using Planova.UI.Views;
 using Planova.UI.Views.Primavera;
+using Planova.UI.Views.ScheduleComparison;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 
@@ -329,8 +330,12 @@ public partial class ShellViewModel : ObservableObject
             view.InitializeTabs(_serviceProvider);
             return view;
         });
-        nav.RegisterTarget("schedule-compare", "Schedule Compare", "ArrowSync24", true, true,
-            () => CreateEmptyState("ArrowSync24", "Schedule Compare", "Schedule comparison module is coming soon."));
+        nav.RegisterTarget("schedule-compare", "Schedule Compare", "ArrowSync24", true, false, () =>
+        {
+            var view = _serviceProvider.GetRequiredService<ScheduleComparisonView>();
+            view.InitializeTabs(_serviceProvider);
+            return view;
+        });
         nav.RegisterTarget("delay-analysis", "Delay Analysis", "ChartMultiple24", true, true,
             () => CreateEmptyState("ChartMultiple24", "Delay Analysis", "Delay analysis module is coming soon."));
         nav.RegisterTarget("claims", "Claims", "DocumentEdit24", false, false,

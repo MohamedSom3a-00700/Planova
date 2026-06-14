@@ -30,6 +30,7 @@
     <ProjectReference Include="..\Planova.Cost\Planova.Cost.csproj" />
     <ProjectReference Include="..\Planova.Reporting\Planova.Reporting.csproj" />
     <ProjectReference Include="..\Planova.Primavera\Planova.Primavera.csproj" />
+    <ProjectReference Include="..\Planova.ScheduleComparison\Planova.ScheduleComparison.csproj" />
   </ItemGroup>
 
 </Project>

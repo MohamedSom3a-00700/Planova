@@ -2878,6 +2878,219 @@ namespace Planova.Persistence.Migrations
                     b.ToTable("ResourceUsages", (string)null);
                 });
 
+            modelBuilder.Entity("Planova.ScheduleComparison.Domain.Entities.ComparisonResult", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ChangeType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FieldName")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MatchConfidence")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MatchKey")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NewValue")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("OldValue")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("SessionId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Severity")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SessionId", "EntityType")
+                        .HasDatabaseName("IX_ComparisonResults_SessionId_EntityType");
+
+                    b.ToTable("ComparisonResults", (string)null);
+                });
+
+            modelBuilder.Entity("Planova.ScheduleComparison.Domain.Entities.ComparisonRule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("EnableFuzzyMatching")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("MatchingStrategyPreference")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("SeverityThresholdCritical")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("SeverityThresholdMajor")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("SeverityThresholdMinor")
+                        .HasColumnType("REAL");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId")
+                        .HasDatabaseName("IX_ComparisonRules_ProjectId");
+
+                    b.ToTable("ComparisonRules", (string)null);
+                });
+
+            modelBuilder.Entity("Planova.ScheduleComparison.Domain.Entities.ComparisonSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Error")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("IncludedScopes")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Mode")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ResultJson")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("SourceCapturedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SourceKind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SourceLabel")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("SourcePrimaveraProjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("SourceSnapshotId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("StartedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("TargetCapturedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TargetKind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TargetLabel")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("TargetPrimaveraProjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("TargetSnapshotId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId")
+                        .HasDatabaseName("IX_ComparisonSessions_ProjectId");
+
+                    b.ToTable("ComparisonSessions", (string)null);
+                });
+
+            modelBuilder.Entity("Planova.ScheduleComparison.Domain.Entities.ScheduleSnapshot", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ActivityCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("BaselineId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CapturedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("RelationshipCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SnapshotData")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId")
+                        .HasDatabaseName("IX_ScheduleSnapshots_ProjectId");
+
+                    b.ToTable("ScheduleSnapshots", (string)null);
+                });
+
             modelBuilder.Entity("Planova.Wbs.Domain.Entities.Wbs", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3456,6 +3669,17 @@ namespace Planova.Persistence.Migrations
                     b.Navigation("Resource");
                 });
 
+            modelBuilder.Entity("Planova.ScheduleComparison.Domain.Entities.ComparisonResult", b =>
+                {
+                    b.HasOne("Planova.ScheduleComparison.Domain.Entities.ComparisonSession", "Session")
+                        .WithMany("Results")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Session");
+                });
+
             modelBuilder.Entity("Planova.Wbs.Domain.Entities.WbsItem", b =>
                 {
                     b.HasOne("Planova.Wbs.Domain.Entities.WbsItem", "Parent")
@@ -3594,6 +3818,11 @@ namespace Planova.Persistence.Migrations
             modelBuilder.Entity("Planova.Resource.Domain.Entities.ResourceAssignment", b =>
                 {
                     b.Navigation("UsageRecords");
+                });
+
+            modelBuilder.Entity("Planova.ScheduleComparison.Domain.Entities.ComparisonSession", b =>
+                {
+                    b.Navigation("Results");
                 });
 
             modelBuilder.Entity("Planova.Wbs.Domain.Entities.Wbs", b =>
