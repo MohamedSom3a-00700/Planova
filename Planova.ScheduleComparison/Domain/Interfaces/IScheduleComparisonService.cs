@@ -15,6 +15,8 @@ public interface IScheduleComparisonService
         string targetLabel,
         List<ComparisonScope> scopes,
         Guid? ruleId = null,
+        Guid? sourceImportSessionId = null,
+        Guid? targetImportSessionId = null,
         CancellationToken ct = default);
 
     Task<ComparisonSession?> GetSessionAsync(Guid sessionId, CancellationToken ct = default);

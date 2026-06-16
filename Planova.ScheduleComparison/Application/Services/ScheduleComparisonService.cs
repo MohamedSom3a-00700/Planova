@@ -5,16 +5,45 @@ using Planova.ScheduleComparison.Application.Mappings;
 using Planova.ScheduleComparison.Application.Models;
 using Planova.ScheduleComparison.Domain.Entities;
 using Planova.ScheduleComparison.Domain.Enums;
+using Planova.Primavera.Application.Services;
 using Planova.Primavera.Domain.Interfaces;
 using Planova.ScheduleComparison.Domain.Interfaces;
 
 namespace Planova.ScheduleComparison.Application.Services;
+
+internal static class CompareTrace
+{
+    private static readonly string LogDir = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "Planova");
+    private static readonly string LogPath = Path.Combine(LogDir, "compare-trace.log");
+    private static readonly object Lock = new();
+    private static bool _dirCreated;
+    internal static void Write(string msg)
+    {
+        lock (Lock)
+        {
+            try
+            {
+                if (!_dirCreated) { Directory.CreateDirectory(LogDir); _dirCreated = true; }
+                System.IO.File.AppendAllText(LogPath, $"[{DateTime.UtcNow:HH:mm:ss.fff}] {msg}{Environment.NewLine}");
+            }
+            catch { }
+        }
+    }
+}
 
 public class ScheduleComparisonService : IScheduleComparisonService
 {
     private readonly IComparisonRepository _repository;
     private readonly IServiceProvider _serviceProvider;
     private readonly ScheduleSnapshotService _snapshotService;
+
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
+    };
 
     public ScheduleComparisonService(
         IComparisonRepository repository,
@@ -36,8 +65,15 @@ public class ScheduleComparisonService : IScheduleComparisonService
         string targetLabel,
         List<ComparisonScope> scopes,
         Guid? ruleId = null,
+        Guid? sourceImportSessionId = null,
+        Guid? targetImportSessionId = null,
         CancellationToken ct = default)
     {
+        CompareTrace.Write($"=== CompareAsync called ===");
+        CompareTrace.Write($"projectId={projectId} sourceKind={sourceKind} targetKind={targetKind}");
+        CompareTrace.Write($"sourceImportSessionId={sourceImportSessionId} targetImportSessionId={targetImportSessionId}");
+        CompareTrace.Write($"sourceSnapshotId={sourceSnapshotId} targetSnapshotId={targetSnapshotId}");
+
         var session = new ComparisonSession
         {
             Id = Guid.NewGuid(),
@@ -62,8 +98,13 @@ public class ScheduleComparisonService : IScheduleComparisonService
 
         try
         {
-            var sourceData = await ResolveScheduleDataAsync(projectId, sourceKind, sourceSnapshotId, ct);
-            var targetData = await ResolveScheduleDataAsync(projectId, targetKind, targetSnapshotId, ct);
+            CompareTrace.Write("Resolving source data...");
+            var sourceData = await ResolveScheduleDataAsync(projectId, sourceKind, sourceSnapshotId, sourceImportSessionId, ct);
+            CompareTrace.Write($"Source data resolved: Activities={sourceData?.Activities.Count ?? -1} Relationships={sourceData?.Relationships.Count ?? -1}");
+
+            CompareTrace.Write("Resolving target data...");
+            var targetData = await ResolveScheduleDataAsync(projectId, targetKind, targetSnapshotId, targetImportSessionId, ct);
+            CompareTrace.Write($"Target data resolved: Activities={targetData?.Activities.Count ?? -1} Relationships={targetData?.Relationships.Count ?? -1}");
 
             if (sourceData == null)
                 throw new InvalidOperationException("Source schedule data could not be resolved.");
@@ -82,18 +123,23 @@ public class ScheduleComparisonService : IScheduleComparisonService
                 {
                     case ComparisonScope.Activities:
                         activityDiffs = new ActivityComparer().Compare(sourceData, targetData);
+                        CompareTrace.Write($"ActivityComparer returned {activityDiffs.Count} diffs");
                         break;
                     case ComparisonScope.Logic:
                         logicDiffs = new LogicComparer().Compare(sourceData, targetData);
+                        CompareTrace.Write($"LogicComparer returned {logicDiffs.Count} diffs");
                         break;
                     case ComparisonScope.Resources:
                         resourceDiffs = new ResourceComparer().Compare(sourceData, targetData);
+                        CompareTrace.Write($"ResourceComparer returned {resourceDiffs.Count} diffs");
                         break;
                     case ComparisonScope.CriticalPath:
                         criticalPathDiff = new CriticalPathComparer().Compare(sourceData, targetData);
+                        CompareTrace.Write($"CriticalPathComparer returned {(criticalPathDiff != null ? $"durationChange={criticalPathDiff.DurationChange}" : "null")}");
                         break;
                     case ComparisonScope.Float:
                         floatReport = new FloatComparer().Compare(sourceData, targetData);
+                        CompareTrace.Write($"FloatComparer returned {(floatReport != null ? $"deltas={floatReport.ActivityFloatDeltas.Count}" : "null")}");
                         break;
                 }
             }
@@ -132,16 +178,19 @@ public class ScheduleComparisonService : IScheduleComparisonService
             };
 
             var resultRows = result.ToEntityRows(session.Id, activityDiffs, logicDiffs, resourceDiffs);
+            CompareTrace.Write($"Result rows to persist: {resultRows.Count}");
             if (resultRows.Count > 0)
             {
                 await _repository.AddResultsAsync(resultRows, ct);
             }
 
-            session.ResultJson = JsonSerializer.Serialize(result);
+            session.ResultJson = JsonSerializer.Serialize(result, JsonOptions);
+            CompareTrace.Write($"ResultJson length: {session.ResultJson.Length}");
             session.State = SessionState.Completed;
             session.CompletedAt = DateTime.UtcNow;
             await _repository.UpdateSessionAsync(session, ct);
 
+            CompareTrace.Write("=== CompareAsync completed successfully ===");
             return session;
         }
         catch (Exception ex)
@@ -172,9 +221,6 @@ public class ScheduleComparisonService : IScheduleComparisonService
 
         if (session.State != SessionState.Completed)
             throw new InvalidOperationException($"Session {sessionId} is not in a completed state.");
-
-        // Session data is loaded from ResultJson on the existing entity.
-        // No state change needed for re-open — the UI reads the stored data.
     }
 
     public async Task SoftDeleteSessionAsync(Guid sessionId, CancellationToken ct = default)
@@ -188,27 +234,144 @@ public class ScheduleComparisonService : IScheduleComparisonService
     }
 
     private async Task<ScheduleData?> ResolveScheduleDataAsync(
-        int projectId, string kind, Guid? snapshotId, CancellationToken ct)
+        int projectId, string kind, Guid? snapshotId, Guid? importSessionId, CancellationToken ct)
     {
-        if (snapshotId.HasValue)
+        CompareTrace.Write($"ResolveScheduleDataAsync: kind={kind} snapshotId={snapshotId} importSessionId={importSessionId}");
+
+        if (snapshotId.HasValue && kind == "Snapshot")
         {
+            CompareTrace.Write($"  -> PATH 1: Snapshot");
             var snapshot = await _repository.GetSnapshotByIdAsync(snapshotId.Value, ct);
             if (snapshot != null)
             {
-                return await _snapshotService.DeserializeSnapshotDataAsync(snapshot, ct);
+                var data = await _snapshotService.DeserializeSnapshotDataAsync(snapshot, ct);
+                CompareTrace.Write($"     Snapshot resolved: Activities={data?.Activities.Count ?? -1}");
+                return data;
             }
+            CompareTrace.Write($"     Snapshot not found by ID {snapshotId}");
+        }
+
+        if (kind == "XerImport" && importSessionId.HasValue)
+        {
+            CompareTrace.Write($"  -> PATH 2: XER Import (sessionId={importSessionId})");
+            return await ResolveXerImportDataAsync(importSessionId.Value, ct);
         }
 
         if (kind == "Primavera")
         {
+            CompareTrace.Write($"  -> PATH 3: Primavera");
             var primaveraService = ResolvePrimavera();
             if (primaveraService != null)
             {
                 return await MapPrimaveraSnapshotToScheduleDataAsync(projectId, ct);
             }
+            CompareTrace.Write($"     Primavera service not available");
         }
 
+        CompareTrace.Write($"  -> PATH 4 (fallback): BuildNativeScheduleDataAsync");
         return await BuildNativeScheduleDataAsync(projectId, ct);
+    }
+
+    private async Task<ScheduleData> ResolveXerImportDataAsync(Guid importSessionId, CancellationToken ct)
+    {
+        CompareTrace.Write($"ResolveXerImportDataAsync: looking for session {importSessionId}");
+
+        var importService = _serviceProvider.GetService<IPrimaveraImportService>();
+        if (importService == null)
+            throw new InvalidOperationException("XER import service is not available.");
+
+        var sessions = await importService.GetImportedSessionsAsync(ct);
+        CompareTrace.Write($"  Total import sessions available: {sessions.Count}");
+
+        var session = sessions.FirstOrDefault(s => s.Id == importSessionId);
+        if (session == null)
+        {
+            CompareTrace.Write($"  Session {importSessionId} NOT FOUND in imported sessions!");
+            throw new InvalidOperationException($"XER import session {importSessionId} not found.");
+        }
+        if (session.ParsedDataJson == null)
+        {
+            CompareTrace.Write($"  Session {importSessionId} found but ParsedDataJson is null!");
+            throw new InvalidOperationException($"XER import session {importSessionId} has no parsed data.");
+        }
+
+        CompareTrace.Write($"  Session found, ParsedDataJson length: {session.ParsedDataJson.Length}");
+
+        var storedData = JsonSerializer.Deserialize<XerStoredData>(session.ParsedDataJson, JsonOptions);
+        if (storedData == null)
+            throw new InvalidOperationException("Failed to deserialize XER import data.");
+
+        CompareTrace.Write($"  Deserialized: Activities={storedData.Activities?.Count ?? -1} Relationships={storedData.Relationships?.Count ?? -1} Assignments={storedData.ResourceAssignments?.Count ?? -1}");
+
+        var data = new ScheduleData();
+
+        var taskIdToCode = storedData.Activities?
+            .Where(a => !string.IsNullOrEmpty(a.TaskCode))
+            .ToDictionary(a => a.TaskId, a => a.TaskCode!, StringComparer.OrdinalIgnoreCase)
+            ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        if (storedData.Activities != null)
+        {
+            foreach (var a in storedData.Activities)
+            {
+                var stableId = taskIdToCode.GetValueOrDefault(a.TaskId, a.TaskId);
+                data.Activities.Add(new ScheduleActivity
+                {
+                    ActivityId = stableId,
+                    ActivityCode = a.TaskCode,
+                    WbsCode = a.WbsId,
+                    Name = a.Name,
+                    Status = a.Status,
+                    Start = a.StartDate,
+                    Finish = a.EndDate,
+                    Duration = a.Duration,
+                    OriginalDuration = a.OriginalDuration,
+                    RemainingDuration = a.RemainingDuration,
+                    PercentComplete = a.PercentComplete,
+                    ActualStart = a.ActualStartDate,
+                    ActualFinish = a.ActualEndDate,
+                    EarlyStart = a.EarlyStartDate,
+                    EarlyFinish = a.EarlyEndDate,
+                    LateStart = a.LateStartDate,
+                    LateFinish = a.LateEndDate,
+                    TotalFloat = a.TotalFloat,
+                    FreeFloat = a.FreeFloat,
+                    CalendarId = a.CalendarId
+                });
+            }
+        }
+
+        if (storedData.Relationships != null)
+        {
+            foreach (var r in storedData.Relationships)
+            {
+                data.Relationships.Add(new ScheduleRelationship
+                {
+                    PredecessorActivityId = taskIdToCode.GetValueOrDefault(r.PredTaskId, r.PredTaskId),
+                    SuccessorActivityId = taskIdToCode.GetValueOrDefault(r.SuccTaskId, r.SuccTaskId),
+                    RelationshipType = r.Type,
+                    Lag = r.LagDuration
+                });
+            }
+        }
+
+        if (storedData.ResourceAssignments != null)
+        {
+            foreach (var ra in storedData.ResourceAssignments)
+            {
+                var stableActivityId = taskIdToCode.GetValueOrDefault(ra.TaskId, ra.TaskId);
+                data.ResourceAssignments.Add(new ScheduleResourceAssignment
+                {
+                    ActivityProvenanceId = ra.TaskId,
+                    ActivityMatchKey = stableActivityId,
+                    ResourceId = ra.ResourceId,
+                    Units = ra.Units,
+                    Cost = ra.CostPerUnit
+                });
+            }
+        }
+
+        return data;
     }
 
     private IPrimaveraWorkspaceService? ResolvePrimavera()

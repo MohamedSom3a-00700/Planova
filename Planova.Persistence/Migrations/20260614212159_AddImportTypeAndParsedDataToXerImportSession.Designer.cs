@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Planova.Persistence.DbContext;
 
@@ -10,9 +11,11 @@ using Planova.Persistence.DbContext;
 namespace Planova.Persistence.Migrations
 {
     [DbContext(typeof(PlanovaDbContext))]
-    partial class PlanovaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260614212159_AddImportTypeAndParsedDataToXerImportSession")]
+    partial class AddImportTypeAndParsedDataToXerImportSession
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
@@ -1573,15 +1576,6 @@ namespace Planova.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ActivityCode")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("ActualEndDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("ActualStartDate")
-                        .HasColumnType("TEXT");
-
                     b.Property<Guid?>("BaselineId")
                         .HasColumnType("TEXT");
 
@@ -1597,34 +1591,16 @@ namespace Planova.Persistence.Migrations
                     b.Property<double>("Duration")
                         .HasColumnType("REAL");
 
-                    b.Property<DateTime?>("EarlyEndDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("EarlyStartDate")
-                        .HasColumnType("TEXT");
-
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<double>("FreeFloat")
-                        .HasColumnType("REAL");
-
                     b.Property<Guid>("ImportSessionId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("LateEndDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("LateStartDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("TEXT");
-
-                    b.Property<double>("OriginalDuration")
-                        .HasColumnType("REAL");
 
                     b.Property<double>("PercentComplete")
                         .HasColumnType("REAL");
@@ -1652,9 +1628,6 @@ namespace Planova.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
-
-                    b.Property<double>("TotalFloat")
-                        .HasColumnType("REAL");
 
                     b.Property<string>("UdfValues")
                         .HasColumnType("TEXT");
@@ -1806,9 +1779,6 @@ namespace Planova.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("AddDate")
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("ImportSessionId")
                         .HasColumnType("INTEGER");
 
@@ -1818,32 +1788,14 @@ namespace Planova.Persistence.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("LastRecalcDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("LastScheduleDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("LastTasksumDate")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("PlanEndDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("PlanStartDate")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("ProjectId")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("SchedEndDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SourceFileName")
@@ -2168,9 +2120,6 @@ namespace Planova.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("ProjectName")
                         .HasMaxLength(500)
                         .HasColumnType("TEXT");
@@ -2200,8 +2149,6 @@ namespace Planova.Persistence.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
 
                     b.HasIndex("SourceFileHash", "ImportedAt");
 

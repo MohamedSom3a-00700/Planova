@@ -7,10 +7,9 @@ namespace Planova.UI.Views.ScheduleComparison;
 
 public partial class CriticalPathDiffView : UserControl
 {
-    public CriticalPathDiffView(CriticalPathDiffViewModel viewModel)
+    public CriticalPathDiffView()
     {
         InitializeComponent();
-        DataContext = viewModel;
         SetFlowDirection();
     }
 

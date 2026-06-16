@@ -7,10 +7,9 @@ namespace Planova.UI.Views.ScheduleComparison;
 
 public partial class SnapshotView : UserControl
 {
-    public SnapshotView(SnapshotViewModel viewModel)
+    public SnapshotView()
     {
         InitializeComponent();
-        DataContext = viewModel;
         SetFlowDirection();
     }
 

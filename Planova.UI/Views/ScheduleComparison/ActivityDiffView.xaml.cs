@@ -7,10 +7,9 @@ namespace Planova.UI.Views.ScheduleComparison;
 
 public partial class ActivityDiffView : UserControl
 {
-    public ActivityDiffView(ActivityDiffViewModel viewModel)
+    public ActivityDiffView()
     {
         InitializeComponent();
-        DataContext = viewModel;
         SetFlowDirection();
     }
 

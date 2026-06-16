@@ -122,6 +122,18 @@ public partial class App : System.Windows.Application
             ApplyWindowBounds(shellView, settingsService);
 
             shellView.Show();
+
+            // Support auto-navigate via command-line argument: --navigate <targetId>
+            var navArgIndex = Array.IndexOf(e.Args, "--navigate");
+            if (navArgIndex >= 0 && navArgIndex + 1 < e.Args.Length)
+            {
+                var targetId = e.Args[navArgIndex + 1];
+                if (!string.IsNullOrEmpty(targetId))
+                {
+                    var navService = _host.Services.GetRequiredService<INavigationService>();
+                    navService.NavigateTo(targetId);
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -467,6 +479,10 @@ public partial class App : System.Windows.Application
         System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
     {
         Log.Error(e.Exception, "Unhandled dispatcher exception");
+        var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Planova", "logs");
+        Directory.CreateDirectory(dir);
+        File.WriteAllText(Path.Combine(dir, "fatal-error.txt"),
+            $"Message: {e.Exception.Message}\nType: {e.Exception.GetType()}\nStack: {e.Exception.StackTrace}\nInner: {e.Exception.InnerException?.Message}");
         MessageBox.Show(
             $"An unexpected error occurred: {e.Exception.Message}",
             "Error",

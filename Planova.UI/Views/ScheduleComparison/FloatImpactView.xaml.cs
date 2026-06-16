@@ -7,10 +7,9 @@ namespace Planova.UI.Views.ScheduleComparison;
 
 public partial class FloatImpactView : UserControl
 {
-    public FloatImpactView(FloatImpactViewModel viewModel)
+    public FloatImpactView()
     {
         InitializeComponent();
-        DataContext = viewModel;
         SetFlowDirection();
     }
 

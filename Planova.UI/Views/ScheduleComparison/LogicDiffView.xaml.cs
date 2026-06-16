@@ -7,10 +7,9 @@ namespace Planova.UI.Views.ScheduleComparison;
 
 public partial class LogicDiffView : UserControl
 {
-    public LogicDiffView(LogicDiffViewModel viewModel)
+    public LogicDiffView()
     {
         InitializeComponent();
-        DataContext = viewModel;
         SetFlowDirection();
     }
 

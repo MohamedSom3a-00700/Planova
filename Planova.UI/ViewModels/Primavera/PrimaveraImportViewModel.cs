@@ -3,7 +3,9 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Planova.Primavera.Application.Dto;
+using Planova.Primavera.Domain.Enums;
 using Planova.Primavera.Domain.Interfaces;
+using Planova.Shared.Abstractions;
 
 namespace Planova.UI.ViewModels.Primavera;
 
@@ -36,10 +38,12 @@ public partial class ImportLogEntry : ObservableObject
 public partial class PrimaveraImportViewModel : ObservableObject
 {
     private readonly IPrimaveraImportService _importService;
+    private readonly ICurrentProjectService _currentProjectService;
 
-    public PrimaveraImportViewModel(IPrimaveraImportService importService)
+    public PrimaveraImportViewModel(IPrimaveraImportService importService, ICurrentProjectService currentProjectService)
     {
         _importService = importService;
+        _currentProjectService = currentProjectService;
         _ = LoadImportedSessionsAsync();
     }
 
@@ -58,11 +62,16 @@ public partial class PrimaveraImportViewModel : ObservableObject
     [ObservableProperty]
     private XerImportPreviewDto? _preview;
 
+    [ObservableProperty]
+    private XerImportType _selectedImportType = XerImportType.Update;
+
     public ObservableCollection<PrimaveraValidationIssueDto> ValidationIssues { get; } = new();
 
     public ObservableCollection<ImportLogEntry> ImportLog { get; } = new();
 
     public ObservableCollection<XerImportSessionDto> ImportedSessions { get; } = new();
+
+    public Array ImportTypes => Enum.GetValues(typeof(XerImportType));
 
     [ObservableProperty]
     private XerImportSessionDto? _selectedImportedSession;
@@ -71,7 +80,8 @@ public partial class PrimaveraImportViewModel : ObservableObject
     {
         try
         {
-            var sessions = await _importService.GetImportedSessionsAsync();
+            var projectId = _currentProjectService.CurrentProject?.Id ?? 0;
+            var sessions = await _importService.GetImportedSessionsByProjectAsync(projectId);
             ImportedSessions.Clear();
             foreach (var s in sessions)
                 ImportedSessions.Add(s);
@@ -96,6 +106,7 @@ public partial class PrimaveraImportViewModel : ObservableObject
             SelectedFilePath = dialog.FileName;
             ImportLog.Clear();
             ImportLog.Add(new ImportLogEntry($"Selected file: {dialog.FileName}"));
+            SelectedImportType = XerImportType.Update;
             await PreviewFileAsync();
         }
     }
@@ -112,7 +123,8 @@ public partial class PrimaveraImportViewModel : ObservableObject
 
         try
         {
-            Preview = await _importService.PreviewAsync(SelectedFilePath);
+            var projectId = _currentProjectService.CurrentProject?.Id ?? 0;
+            Preview = await _importService.PreviewAsync(SelectedFilePath, projectId);
             IsPreviewVisible = true;
             ValidationIssues.Clear();
 
@@ -139,8 +151,8 @@ public partial class PrimaveraImportViewModel : ObservableObject
 
             if (Preview.CanCommit)
             {
-                StatusMessage = "Preview ready. Review and commit.";
-                ImportLog.Add(new ImportLogEntry("Preview ready. Review and commit."));
+                StatusMessage = "Preview ready. Select import type and commit.";
+                ImportLog.Add(new ImportLogEntry("Preview ready. Select import type and commit."));
             }
             else
             {
@@ -174,7 +186,7 @@ public partial class PrimaveraImportViewModel : ObservableObject
 
         try
         {
-            var result = await _importService.CommitAsync(Preview.SessionId, false);
+            var result = await _importService.CommitAsync(Preview.SessionId, SelectedImportType);
 
             if (result.Success)
             {
@@ -200,13 +212,35 @@ public partial class PrimaveraImportViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void CancelImport()
+    private async Task CancelImportAsync()
     {
-        SelectedFilePath = string.Empty;
-        IsPreviewVisible = false;
-        Preview = null;
-        ValidationIssues.Clear();
-        StatusMessage = string.Empty;
-        ImportLog.Add(new ImportLogEntry("Import cancelled."));
+        if (Preview == null) return;
+
+        IsImporting = true;
+        try
+        {
+            var result = await _importService.CancelImportAsync(Preview.SessionId);
+            if (result.Success)
+            {
+                ImportLog.Add(new ImportLogEntry("Import cancelled and rolled back."));
+            }
+            else
+            {
+                ImportLog.Add(new ImportLogEntry($"Cancel failed: {result.ErrorMessage}", ImportLogEntrySeverity.Error));
+            }
+        }
+        catch (Exception ex)
+        {
+            ImportLog.Add(new ImportLogEntry($"Error cancelling import: {ex.Message}", ImportLogEntrySeverity.Error));
+        }
+        finally
+        {
+            IsImporting = false;
+            SelectedFilePath = string.Empty;
+            IsPreviewVisible = false;
+            Preview = null;
+            ValidationIssues.Clear();
+            StatusMessage = string.Empty;
+        }
     }
 }

@@ -7,44 +7,117 @@
              d:DataContext="{d:DesignInstance vm:CompareViewModel}"
              mc:Ignorable="d"
              FlowDirection="{Binding FlowDirection, RelativeSource={RelativeSource Self}}">
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Schedule Comparison" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,20" />
+            <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Schedule Comparison" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,20" />
 
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="Source:" VerticalAlignment="Center" Margin="0,0,10,10" />
-        <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,0,10">
-            <CheckBox Content="Use Primavera Import (XER)"
-                      IsChecked="{Binding UsePrimaveraSource}"
-                      IsEnabled="{Binding IsPrimaveraAvailable}" />
-            <ComboBox ItemsSource="{Binding SourceSnapshots}" SelectedItem="{Binding SelectedSource}"
-                      DisplayMemberPath="Label" MinWidth="250" />
-        </StackPanel>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Source:" VerticalAlignment="Center" Margin="0,0,10,10" />
+            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding SourceItems}" SelectedItem="{Binding SelectedSource}"
+                      DisplayMemberPath="Label" MinWidth="350" Margin="0,0,0,10" HorizontalAlignment="Left" />
 
-        <TextBlock Grid.Row="2" Grid.Column="0" Text="Target:" VerticalAlignment="Center" Margin="0,0,10,10" />
-        <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,0,0,10">
-            <CheckBox Content="Use Primavera Import (XER)"
-                      IsChecked="{Binding UsePrimaveraTarget}"
-                      IsEnabled="{Binding IsPrimaveraAvailable}" />
-            <ComboBox ItemsSource="{Binding TargetSnapshots}" SelectedItem="{Binding SelectedTarget}"
-                      DisplayMemberPath="Label" MinWidth="250" />
-        </StackPanel>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Target:" VerticalAlignment="Center" Margin="0,0,10,10" />
+            <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding TargetItems}" SelectedItem="{Binding SelectedTarget}"
+                      DisplayMemberPath="Label" MinWidth="350" Margin="0,0,0,10" HorizontalAlignment="Left" />
 
-        <TextBlock Grid.Row="3" Grid.ColumnSpan="2" Text="{Binding StatusMessage}" Margin="0,0,0,10" />
+             <Border Grid.Row="3" Grid.ColumnSpan="2" x:Name="ValidationBorder"
+                        BorderBrush="#E81123" BorderThickness="2" CornerRadius="6"
+                        Padding="12,8" Margin="0,0,0,10"
+                        Visibility="{Binding HasValidationError, Converter={StaticResource BoolToVis}}">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasValidationError}" Value="True">
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                              From="1" To="0.4" Duration="0:0:0.6"
+                                                              AutoReverse="True" RepeatBehavior="Forever" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                              To="1" Duration="0:0:0.1" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="⚠ " FontSize="14" Foreground="#E81123" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBlock Text="{Binding ValidationErrorMessage}" Foreground="#E81123" FontWeight="SemiBold" VerticalAlignment="Center" />
+                </StackPanel>
+            </Border>
 
-        <Button Grid.Row="4" Grid.ColumnSpan="2" Content="Run Comparison" Command="{Binding RunComparisonCommand}"
-                HorizontalAlignment="Left" Margin="0,0,0,10" />
-    </Grid>
+            <TextBlock Grid.Row="4" Grid.ColumnSpan="2" Text="{Binding StatusMessage}" Margin="0,0,0,10" Visibility="{Binding HasValidationError, Converter={StaticResource InverseBoolToVis}}" />
+
+            <StackPanel Grid.Row="5" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,0,10">
+                <Button Content="Run Comparison" Command="{Binding RunComparisonCommand}"
+                        HorizontalAlignment="Left" MinWidth="140" Margin="0,0,10,0" />
+                <ProgressBar IsIndeterminate="True" Visibility="{Binding IsRunning, Converter={StaticResource BoolToVis}}"
+                             Height="20" Width="150" />
+            </StackPanel>
+
+            <Border Grid.Row="6" Grid.ColumnSpan="2" Height="1" Background="#CCC" Margin="0,0,0,10" />
+
+            <TextBlock Grid.Row="7" Grid.ColumnSpan="2" Text="History" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10" />
+
+            <DataGrid Grid.Row="8" Grid.ColumnSpan="2"
+                      ItemsSource="{Binding HistorySessions}"
+                      SelectedItem="{Binding SelectedHistorySession}"
+                      AutoGenerateColumns="False" IsReadOnly="True"
+                      HeadersVisibility="Column" MinHeight="120" MaxHeight="300"
+                      Margin="0,0,0,10">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header=" " Width="30">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Source" Binding="{Binding SourceLabel}" Width="150" />
+                    <DataGridTextColumn Header="Target" Binding="{Binding TargetLabel}" Width="150" />
+                    <DataGridTextColumn Header="Mode" Binding="{Binding Mode}" Width="100" />
+                    <DataGridTextColumn Header="State" Binding="{Binding State}" Width="80" />
+                    <DataGridTextColumn Header="Created" Binding="{Binding CreatedAt, StringFormat={}{0:g}}" Width="130" />
+                    <DataGridTextColumn Header="Completed" Binding="{Binding CompletedAt, StringFormat={}{0:g}}" Width="130" />
+                    <DataGridTextColumn Header="Error" Binding="{Binding Error}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <StackPanel Grid.Row="9" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,0,10">
+                <Button Content="Select All" Command="{Binding SelectAllHistoryCommand}" MinWidth="90" Margin="0,0,6,0" />
+                <Button Content="Deselect All" Command="{Binding DeselectAllHistoryCommand}" MinWidth="90" Margin="0,0,6,0" />
+                <Button Content="Load Selected" Command="{Binding LoadHistorySessionCommand}" MinWidth="110" Margin="0,0,6,0" />
+                <Button Content="Delete Selected" Command="{Binding DeleteSelectedHistoryCommand}" MinWidth="110" />
+            </StackPanel>
+
+        </Grid>
+    </ScrollViewer>
 </UserControl>

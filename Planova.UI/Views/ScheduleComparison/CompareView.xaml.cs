@@ -7,10 +7,9 @@ namespace Planova.UI.Views.ScheduleComparison;
 
 public partial class CompareView : UserControl
 {
-    public CompareView(CompareViewModel viewModel)
+    public CompareView()
     {
         InitializeComponent();
-        DataContext = viewModel;
         SetFlowDirection();
     }
 

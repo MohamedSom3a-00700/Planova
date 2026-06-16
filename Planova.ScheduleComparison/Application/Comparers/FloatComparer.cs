@@ -8,11 +8,8 @@ public class FloatComparer
 {
     public FloatImpactReport? Compare(ScheduleData source, ScheduleData target)
     {
-        var sourceByKey = source.Activities
-            .ToDictionary(a => ActivityComparer.ResolveMatchKey(a, source.Activities));
-
-        var targetByKey = target.Activities
-            .ToDictionary(a => ActivityComparer.ResolveMatchKey(a, target.Activities));
+        var sourceByKey = BuildFloatDictionary(source.Activities);
+        var targetByKey = BuildFloatDictionary(target.Activities);
 
         if (sourceByKey.Count == 0 && targetByKey.Count == 0)
             return null;
@@ -65,5 +62,19 @@ public class FloatComparer
             ActivitiesWithImprovedFloat = improvedKeys,
             ActivitiesWithWorsenedFloat = worsenedKeys
         };
+    }
+
+    private static Dictionary<string, ScheduleActivity> BuildFloatDictionary(List<ScheduleActivity> activities)
+    {
+        var dict = new Dictionary<string, ScheduleActivity>();
+
+        foreach (var a in activities)
+        {
+            var key = ActivityComparer.ResolveMatchKey(a, activities);
+            if (!string.IsNullOrEmpty(key) && !dict.ContainsKey(key))
+                dict[key] = a;
+        }
+
+        return dict;
     }
 }

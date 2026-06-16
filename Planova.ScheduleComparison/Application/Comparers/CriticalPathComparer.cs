@@ -7,13 +7,9 @@ public class CriticalPathComparer
 {
     public CriticalPathDiff? Compare(ScheduleData source, ScheduleData target)
     {
-        var sourceCritical = source.Activities
-            .Where(a => a.IsCritical)
-            .ToDictionary(a => ActivityComparer.ResolveMatchKey(a, source.Activities));
+        var sourceCritical = BuildCriticalDictionary(source.Activities);
 
-        var targetCritical = target.Activities
-            .Where(a => a.IsCritical)
-            .ToDictionary(a => ActivityComparer.ResolveMatchKey(a, target.Activities));
+        var targetCritical = BuildCriticalDictionary(target.Activities);
 
         if (sourceCritical.Count == 0 && targetCritical.Count == 0)
             return null;
@@ -59,5 +55,21 @@ public class CriticalPathComparer
             ExitedCriticalPath = exited,
             RemainedOnCriticalPath = remained
         };
+    }
+
+    private static Dictionary<string, ScheduleActivity> BuildCriticalDictionary(List<ScheduleActivity> activities)
+    {
+        var dict = new Dictionary<string, ScheduleActivity>();
+
+        foreach (var a in activities)
+        {
+            if (!a.IsCritical)
+                continue;
+            var key = ActivityComparer.ResolveMatchKey(a, activities);
+            if (!string.IsNullOrEmpty(key) && !dict.ContainsKey(key))
+                dict[key] = a;
+        }
+
+        return dict;
     }
 }

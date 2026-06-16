@@ -5,6 +5,7 @@ namespace Planova.Primavera.Domain.Entities;
 public class XerImportSession
 {
     public Guid Id { get; set; }
+    public int ProjectId { get; set; }
     public PrimaveraImportStatus Status { get; set; }
     public string SourceFileName { get; set; } = string.Empty;
     public string SourceFileHash { get; set; } = string.Empty;
@@ -16,4 +17,6 @@ public class XerImportSession
     public string? ProjectCode { get; set; }
     public string? ProjectName { get; set; }
     public string? TableNames { get; set; }
+    public XerImportType? ImportType { get; set; }
+    public string? ParsedDataJson { get; set; }
 }

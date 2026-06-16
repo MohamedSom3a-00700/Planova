@@ -9,6 +9,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IScheduleComparisonService, Application.Services.ScheduleComparisonService>();
         services.AddScoped<IScheduleSnapshotService, Application.Services.ScheduleSnapshotService>();
+        services.AddScoped<Application.Services.ScheduleSnapshotService>();
         services.AddScoped<IComparisonExportService, Application.Services.ComparisonExportService>();
 
         return services;
