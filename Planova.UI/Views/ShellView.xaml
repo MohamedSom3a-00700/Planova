@@ -40,7 +40,9 @@
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="{DynamicResource BrandRadiusSmall}"
                                 Padding="14,6">
-                            <ContentPresenter HorizontalAlignment="Center"
+                            <ContentPresenter Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              HorizontalAlignment="Center"
                                               VerticalAlignment="Center"
                                               RecognizesAccessKey="True" />
                         </Border>
@@ -100,28 +102,26 @@
 
             <ui:TitleBar.CenterContent>
                 <Border Background="Transparent" VerticalAlignment="Center">
-                    <ListBox x:Name="ShellTabs"
-                             ItemsSource="{Binding Tabs}"
-                             SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
-                             Background="Transparent"
-                             BorderThickness="0"
-                             ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                             ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                             ScrollViewer.CanContentScroll="True"
-                             ItemContainerStyle="{StaticResource ShellTabItemStyle}">
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" />
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding DisplayName}"
-                                           FontFamily="{DynamicResource BrandFontFamily}"
-                                           FontSize="{DynamicResource BrandBodySize}"
-                                           TextTrimming="CharacterEllipsis" />
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
+                     <ListBox x:Name="ShellTabs"
+                              ItemsSource="{Binding Tabs}"
+                              SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
+                              Background="Transparent"
+                              BorderThickness="0"
+                              ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                              ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                              ScrollViewer.CanContentScroll="True"
+                              ItemContainerStyle="{StaticResource ShellTabItemStyle}">
+                         <ListBox.ItemsPanel>
+                             <ItemsPanelTemplate>
+                                 <StackPanel Orientation="Horizontal" />
+                             </ItemsPanelTemplate>
+                         </ListBox.ItemsPanel>
+                         <ListBox.ItemTemplate>
+                             <DataTemplate>
+                                 <TextBlock Text="{Binding DisplayName}"
+                                            TextTrimming="CharacterEllipsis" />
+                             </DataTemplate>
+                         </ListBox.ItemTemplate>
                     </ListBox>
                 </Border>
             </ui:TitleBar.CenterContent>

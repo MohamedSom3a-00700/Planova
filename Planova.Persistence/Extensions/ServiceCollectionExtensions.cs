@@ -9,6 +9,7 @@ using Planova.Persistence.Services;
 using Planova.Primavera.Domain.Interfaces;
 using Planova.Resource.Domain.Interfaces;
 using Planova.Reporting.Domain.Interfaces;
+using Planova.ScheduleComparison.Domain.Interfaces;
 using Planova.Shared.Abstractions;
 using Planova.Wbs.Domain.Interfaces;
 
@@ -66,6 +67,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPrimaveraValidationRepository, PrimaveraValidationRepository>();
         services.AddScoped<IPrimaveraRepairRepository, PrimaveraRepairRepository>();
         services.AddScoped<IPrimaveraExportRepository, PrimaveraExportRepository>();
+
+        // Schedule Comparison repositories
+        services.AddScoped<IComparisonRepository, ComparisonRepository>();
 
         // Reporting repositories
         services.AddScoped<IReportTemplateRepository, ReportTemplateRepository>();

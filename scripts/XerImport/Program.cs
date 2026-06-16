@@ -1,10 +1,12 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Planova.Domain.Entities;
 using Planova.Persistence.DbContext;
 using Planova.Persistence.Extensions;
 using Planova.Primavera.Application.Parsers;
+using Planova.Primavera.Application.Services;
 using Planova.Primavera.Domain.Entities;
 using Planova.Primavera.Domain.Enums;
 using Planova.Primavera.Extensions;
@@ -12,12 +14,20 @@ using Planova.Primavera.Extensions;
 var cmdXerPath = "";
 var cmdCommit = false;
 var cmdProjectId = -1;
+var cmdClean = false;
 for (int i = 0; i < args.Length; i++)
 {
     if (args[i] == "--xer" && i + 1 < args.Length) cmdXerPath = args[++i];
     if (args[i] == "--commit") cmdCommit = true;
     if (args[i] == "--project" && i + 1 < args.Length) int.TryParse(args[++i], out cmdProjectId);
+    if (args[i] == "--clean") cmdClean = true;
 }
+
+var JsonOpts = new JsonSerializerOptions
+{
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    Converters = { new JsonStringEnumConverter() }
+};
 
 var dbPath = Path.Combine(
     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -42,6 +52,14 @@ var sp = services.BuildServiceProvider();
 using var scope = sp.CreateScope();
 var ctx = scope.ServiceProvider.GetRequiredService<PlanovaDbContext>();
 await ctx.Database.EnsureCreatedAsync();
+
+if (cmdClean)
+{
+    var existingSessions = await ctx.Set<XerImportSession>().ToListAsync();
+    ctx.Set<XerImportSession>().RemoveRange(existingSessions);
+    await ctx.SaveChangesAsync();
+    Console.WriteLine($"Cleaned {existingSessions.Count} existing import sessions.");
+}
 
 var projects = await ctx.Set<Project>().OrderBy(p => p.Name).ToListAsync();
 
@@ -160,6 +178,47 @@ if (!cmdCommit)
 }
 if (string.Equals(commit, "y", StringComparison.OrdinalIgnoreCase))
 {
+    var storedData = new XerStoredData
+    {
+        Activities = result.Activities.Select(a => new XerStoredActivity
+        {
+            TaskId = a.TaskId,
+            TaskCode = a.ActivityCode,
+            WbsId = a.WbsId,
+            Name = a.Name,
+            Status = a.Status,
+            StartDate = a.StartDate,
+            EndDate = a.EndDate,
+            Duration = a.Duration,
+            OriginalDuration = a.OriginalDuration,
+            RemainingDuration = a.RemainingDuration,
+            PercentComplete = a.PercentComplete,
+            ActualStartDate = a.ActualStartDate,
+            ActualEndDate = a.ActualEndDate,
+            EarlyStartDate = a.EarlyStartDate,
+            EarlyEndDate = a.EarlyEndDate,
+            LateStartDate = a.LateStartDate,
+            LateEndDate = a.LateEndDate,
+            TotalFloat = a.TotalFloat,
+            FreeFloat = a.FreeFloat,
+            CalendarId = a.CalendarId
+        }).ToList(),
+        Relationships = result.Relationships.Select(r => new XerStoredRelationship
+        {
+            PredTaskId = r.PredTaskId,
+            SuccTaskId = r.SuccTaskId,
+            Type = r.Type,
+            LagDuration = r.LagDuration
+        }).ToList(),
+        ResourceAssignments = result.ResourceAssignments.Select(ra => new XerStoredResourceAssignment
+        {
+            TaskId = ra.TaskId,
+            ResourceId = ra.ResourceId,
+            Units = ra.Units,
+            CostPerUnit = ra.CostPerUnit
+        }).ToList()
+    };
+
     var session = new XerImportSession
     {
         Id = Guid.NewGuid(),
@@ -170,7 +229,8 @@ if (string.Equals(commit, "y", StringComparison.OrdinalIgnoreCase))
         ).ToLowerInvariant(),
         ImportedAt = DateTime.UtcNow,
         ImportedBy = Environment.UserName,
-        RowCounts = JsonSerializer.Serialize(result.RowCounts)
+        RowCounts = JsonSerializer.Serialize(result.RowCounts),
+        ParsedDataJson = JsonSerializer.Serialize(storedData, JsonOpts)
     };
     ctx.Set<XerImportSession>().Add(session);
 

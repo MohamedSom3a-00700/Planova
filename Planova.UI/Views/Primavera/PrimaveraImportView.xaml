@@ -71,6 +71,11 @@
               <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Preview.FileSize, StringFormat='{}{0:N0} bytes'}" />
             </Grid>
 
+            <TextBlock Text="Import Type" FontWeight="SemiBold" FontSize="13" Margin="0,8,0,4" />
+            <ComboBox ItemsSource="{Binding ImportTypes}"
+                      SelectedItem="{Binding SelectedImportType}"
+                      MinWidth="180" Margin="0,0,0,8" />
+
             <TextBlock Text="Row Counts" FontWeight="SemiBold" FontSize="13" Margin="0,8,0,4" />
             <ItemsControl ItemsSource="{Binding Preview.RowCounts}" Margin="0,0,0,8">
               <ItemsControl.ItemTemplate>

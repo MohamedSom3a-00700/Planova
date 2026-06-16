@@ -9,4 +9,11 @@ public class PrimaveraProject
     public DateTime ImportedAt { get; set; }
     public bool IsActive { get; set; }
     public int ImportSessionId { get; set; }
+    public DateTime? LastRecalcDate { get; set; }
+    public DateTime? PlanStartDate { get; set; }
+    public DateTime? PlanEndDate { get; set; }
+    public DateTime? SchedEndDate { get; set; }
+    public DateTime? AddDate { get; set; }
+    public DateTime? LastTasksumDate { get; set; }
+    public DateTime? LastScheduleDate { get; set; }
 }

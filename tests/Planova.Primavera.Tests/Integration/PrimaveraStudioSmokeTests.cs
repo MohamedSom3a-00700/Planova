@@ -460,7 +460,7 @@ public class PrimaveraStudioSmokeTests
         var loggerMock = new Mock<ILogger<PrimaveraImportService>>();
         var importService = new PrimaveraImportService(repoMock.Object, parser, loggerMock.Object);
 
-            var result = await importService.CommitAsync(Guid.NewGuid(), false);
+            var result = await importService.CommitAsync(Guid.NewGuid(), XerImportType.Update);
 
         result.Success.Should().BeFalse();
         result.ErrorMessage.Should().Be("Import session not found.");

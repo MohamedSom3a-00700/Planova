@@ -27,6 +27,7 @@ public class XerParserResult
 public class XerParser
 {
     private static readonly string[] DateFormats = { "dd-MMM-yyyy", "dd-MMM-yy", "yyyy-MM-dd", "MM/dd/yyyy" };
+    private char _delimiter = '\t';
 
     public async Task<XerParserResult> ParseAsync(string filePath, CancellationToken ct = default)
     {
@@ -63,7 +64,9 @@ public class XerParser
                 }
                 headerFound = true;
 
-                var headerParts = line.Split('|');
+                _delimiter = line.Contains('|') ? '|' : '\t';
+
+                var headerParts = line.Split(_delimiter);
                 if (headerParts.Length > 3)
                 {
                     var declaredEncoding = headerParts[3].Trim();
@@ -92,11 +95,11 @@ public class XerParser
             }
             else if (marker is 'F' or 'f')
             {
-                currentFields = line[2..].Split('|', StringSplitOptions.TrimEntries);
+                currentFields = line[2..].Split(_delimiter, StringSplitOptions.TrimEntries);
             }
             else if (marker is 'R' or 'r' && currentFields != null)
             {
-                var values = line[2..].Split('|');
+                var values = line[2..].Split(_delimiter);
                 try
                 {
                     ParseRow(result, currentTable, currentFields, values, sessionId, rawTableAccumulator);
@@ -226,29 +229,45 @@ public class XerParser
             SourceFileName = string.Empty,
             ImportedAt = DateTime.UtcNow,
             IsActive = true,
-            ImportSessionId = 0
+            ImportSessionId = 0,
+            LastRecalcDate = TryParseDate(row.GetValueOrDefault("last_recalc_date", "")),
+            PlanStartDate = TryParseDate(row.GetValueOrDefault("plan_start_date", "")),
+            PlanEndDate = TryParseDate(row.GetValueOrDefault("plan_end_date", "")),
+            SchedEndDate = TryParseDate(row.GetValueOrDefault("scd_end_date", "")),
+            AddDate = TryParseDate(row.GetValueOrDefault("add_date", "")),
+            LastTasksumDate = TryParseDate(row.GetValueOrDefault("last_tasksum_date", "")),
+            LastScheduleDate = TryParseDate(row.GetValueOrDefault("last_schedule_date", ""))
         };
         IncrementCount(result, nameof(PrimaveraEntityType.Project));
     }
 
     private void ParseTask(XerParserResult result, Dictionary<string, string> row, Guid sessionId)
     {
-        var start = TryParseDate(row.GetValueOrDefault("start_date", ""));
-        var end = TryParseDate(row.GetValueOrDefault("end_date", ""));
+        var duration = ParseDouble(row.GetValueOrDefault("target_drtn_hr_cnt", "0"));
 
         var activity = new PrimaveraActivity
         {
             Id = Guid.NewGuid(),
             ProjectId = 1,
             TaskId = row.GetValueOrDefault("task_id", string.Empty),
+            ActivityCode = row.GetValueOrDefault("task_code"),
             WbsId = row.GetValueOrDefault("wbs_id"),
             Name = row.GetValueOrDefault("task_name", string.Empty),
             Status = row.GetValueOrDefault("status_code", string.Empty),
-            StartDate = start,
-            EndDate = end,
-            Duration = ParseDouble(row.GetValueOrDefault("duration", "0")),
-            RemainingDuration = ParseDouble(row.GetValueOrDefault("remain_dur", row.GetValueOrDefault("duration", "0"))),
-            PercentComplete = ParseDouble(row.GetValueOrDefault("phys_complete", "0")),
+            StartDate = TryParseDate(row.GetValueOrDefault("target_start_date", "")),
+            EndDate = TryParseDate(row.GetValueOrDefault("target_end_date", "")),
+            Duration = duration,
+            OriginalDuration = duration,
+            RemainingDuration = ParseDouble(row.GetValueOrDefault("remain_drtn_hr_cnt", "0")),
+            PercentComplete = ParseDouble(row.GetValueOrDefault("phys_complete_pct", "0")),
+            ActualStartDate = TryParseDate(row.GetValueOrDefault("act_start_date", "")),
+            ActualEndDate = TryParseDate(row.GetValueOrDefault("act_end_date", "")),
+            EarlyStartDate = TryParseDate(row.GetValueOrDefault("early_start_date", "")),
+            EarlyEndDate = TryParseDate(row.GetValueOrDefault("early_end_date", "")),
+            LateStartDate = TryParseDate(row.GetValueOrDefault("late_start_date", "")),
+            LateEndDate = TryParseDate(row.GetValueOrDefault("late_end_date", "")),
+            TotalFloat = ParseDouble(row.GetValueOrDefault("total_float_hr_cnt", "0")),
+            FreeFloat = ParseDouble(row.GetValueOrDefault("free_float_hr_cnt", "0")),
             CalendarId = row.GetValueOrDefault("clndr_id"),
             SourceType = PrimaveraSourceType.Imported,
             CreatedAt = DateTime.UtcNow,

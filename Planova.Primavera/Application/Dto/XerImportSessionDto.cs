@@ -15,6 +15,8 @@ public class XerImportSessionDto
     public string? ProjectCode { get; set; }
     public string? ProjectName { get; set; }
     public string? TableNames { get; set; }
+    public string? ImportType { get; set; }
+    public string? ParsedDataJson { get; set; }
 
     public List<string> TableNamesList => string.IsNullOrEmpty(TableNames)
         ? new()

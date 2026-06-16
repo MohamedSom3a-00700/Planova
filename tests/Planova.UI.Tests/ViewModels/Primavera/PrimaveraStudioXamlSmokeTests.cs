@@ -87,7 +87,7 @@ public class PrimaveraStudioXamlSmokeTests
     [Fact]
     public void PrimaveraImportViewModel_CanBeInstantiated()
     {
-        var vm = new PrimaveraImportViewModel(Mock.Of<IPrimaveraImportService>());
+        var vm = new PrimaveraImportViewModel(Mock.Of<IPrimaveraImportService>(), Mock.Of<ICurrentProjectService>());
         vm.Should().NotBeNull();
         vm.SelectedFilePath.Should().BeEmpty();
         vm.IsPreviewVisible.Should().BeFalse();
@@ -101,7 +101,17 @@ public class PrimaveraStudioXamlSmokeTests
     [Fact]
     public void PrimaveraImportViewModel_CancelImport_ResetsState()
     {
-        var vm = new PrimaveraImportViewModel(Mock.Of<IPrimaveraImportService>());
+        var mockService = new Mock<IPrimaveraImportService>();
+        mockService.Setup(s => s.CancelImportAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new XerImportResultDto { Success = true });
+
+        var vm = new PrimaveraImportViewModel(mockService.Object, Mock.Of<ICurrentProjectService>())
+        {
+            Preview = new XerImportPreviewDto
+            {
+                SessionId = Guid.NewGuid()
+            }
+        };
 
         vm.CancelImportCommand.Execute(null);
 
@@ -109,7 +119,7 @@ public class PrimaveraStudioXamlSmokeTests
         vm.IsPreviewVisible.Should().BeFalse();
         vm.Preview.Should().BeNull();
         vm.ValidationIssues.Should().BeEmpty();
-        vm.ImportLog.Should().Contain(e => e.Message == "Import cancelled.");
+        vm.ImportLog.Should().Contain(e => e.Message == "Import cancelled and rolled back.");
     }
 
     [Fact]
@@ -442,7 +452,7 @@ public class PrimaveraStudioXamlSmokeTests
     [Fact]
     public void AllViewModels_AreObservableObjects()
     {
-        var importVm = new PrimaveraImportViewModel(Mock.Of<IPrimaveraImportService>());
+        var importVm = new PrimaveraImportViewModel(Mock.Of<IPrimaveraImportService>(), Mock.Of<ICurrentProjectService>());
         var workspaceVm = CreateWorkspaceViewModel();
         var activitiesVm = new PrimaveraActivitiesViewModel(Mock.Of<IPrimaveraWorkspaceService>());
         var relationshipsVm = new PrimaveraRelationshipsViewModel(Mock.Of<IPrimaveraWorkspaceService>());
@@ -472,7 +482,7 @@ public class PrimaveraStudioXamlSmokeTests
     private static PrimaveraStudioViewModel CreateStudioViewModel(ICurrentProjectService? projectService = null)
     {
         projectService ??= new SpyCurrentProjectService();
-        var importVm = new PrimaveraImportViewModel(Mock.Of<IPrimaveraImportService>());
+        var importVm = new PrimaveraImportViewModel(Mock.Of<IPrimaveraImportService>(), Mock.Of<ICurrentProjectService>());
         var workspaceVm = CreateWorkspaceViewModel();
         var validationVm = new PrimaveraValidationViewModel(Mock.Of<IPrimaveraValidationService>(), Mock.Of<IPrimaveraImportService>());
         var repairVm = new PrimaveraRepairViewModel(Mock.Of<IPrimaveraRepairService>());

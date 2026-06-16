@@ -1,0 +1,24 @@
+<UserControl x:Class="Planova.UI.Views.ScheduleComparison.FloatImpactView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.ScheduleComparison"
+             d:DataContext="{d:DesignInstance vm:FloatImpactViewModel}"
+             mc:Ignorable="d"
+             FlowDirection="{Binding FlowDirection, RelativeSource={RelativeSource Self}}">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="Float Impact" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,10" />
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="{Binding NegativeFloatCount, StringFormat='Negative Float: {0}'}" Margin="0,0,15,0" />
+            <TextBlock Text="{Binding ImprovedCount, StringFormat='Improved: {0}'}" Margin="0,0,15,0" />
+            <TextBlock Text="{Binding WorsenedCount, StringFormat='Worsened: {0}'}" />
+        </StackPanel>
+        <DataGrid Grid.Row="2" ItemsSource="{Binding FloatDeltas}" AutoGenerateColumns="True" IsReadOnly="True" />
+    </Grid>
+</UserControl>

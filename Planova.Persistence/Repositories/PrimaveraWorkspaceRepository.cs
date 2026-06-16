@@ -65,43 +65,36 @@ public class PrimaveraWorkspaceRepository : IPrimaveraWorkspaceRepository
 
     public async Task UpdateActivityAsync(PrimaveraActivity activity, CancellationToken ct = default)
     {
-        _context.Set<PrimaveraActivity>().Update(activity);
         await Task.CompletedTask;
     }
 
     public async Task UpdateRelationshipAsync(PrimaveraRelationship relationship, CancellationToken ct = default)
     {
-        _context.Set<PrimaveraRelationship>().Update(relationship);
         await Task.CompletedTask;
     }
 
     public async Task UpdateResourceAssignmentAsync(PrimaveraResourceAssignment assignment, CancellationToken ct = default)
     {
-        _context.Set<PrimaveraResourceAssignment>().Update(assignment);
         await Task.CompletedTask;
     }
 
     public async Task UpdateCalendarAsync(PrimaveraCalendar calendar, CancellationToken ct = default)
     {
-        _context.Set<PrimaveraCalendar>().Update(calendar);
         await Task.CompletedTask;
     }
 
     public async Task UpdateCodeAsync(PrimaveraCode code, CancellationToken ct = default)
     {
-        _context.Set<PrimaveraCode>().Update(code);
         await Task.CompletedTask;
     }
 
     public async Task UpdateBaselineAsync(PrimaveraBaseline baseline, CancellationToken ct = default)
     {
-        _context.Set<PrimaveraBaseline>().Update(baseline);
         await Task.CompletedTask;
     }
 
     public async Task UpdateUdfAsync(PrimaveraUdf udf, CancellationToken ct = default)
     {
-        _context.Set<PrimaveraUdf>().Update(udf);
         await Task.CompletedTask;
     }
 

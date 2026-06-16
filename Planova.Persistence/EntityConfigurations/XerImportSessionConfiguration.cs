@@ -12,6 +12,7 @@ public class XerImportSessionConfiguration : IEntityTypeConfiguration<XerImportS
         builder.ToTable("XerImportSessions");
         builder.HasKey(e => e.Id);
         builder.Property(e => e.Id).ValueGeneratedNever();
+        builder.Property(e => e.ProjectId).IsRequired();
         builder.Property(e => e.SourceFileName).HasMaxLength(500).IsRequired();
         builder.Property(e => e.SourceFileHash).HasMaxLength(64).IsRequired();
         builder.Property(e => e.ImportedBy).HasMaxLength(200).IsRequired();
@@ -20,5 +21,6 @@ public class XerImportSessionConfiguration : IEntityTypeConfiguration<XerImportS
         builder.Property(e => e.ProjectName).HasMaxLength(500);
         builder.Property(e => e.TableNames);
         builder.HasIndex(e => new { e.SourceFileHash, e.ImportedAt });
+        builder.HasIndex(e => e.ProjectId);
     }
 }

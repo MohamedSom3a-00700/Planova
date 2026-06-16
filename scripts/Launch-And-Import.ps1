@@ -340,8 +340,8 @@ if (-not $fileDialog) {
             [System.Windows.Automation.TreeScope]::Descendants,
             [System.Windows.Automation.Condition]::TrueCondition)
         foreach ($w in $allWindows) {
-            $wn = $w.Current.Name; $wt = $w.Current.ControlTypeName
-            if ($wt -eq "window" -and $wn -eq "Select Primavera XER File") {
+            $wn = $w.Current.Name
+            if ($wn -eq "Select Primavera XER File") {
                 $fileDialog = $w
                 Write-Host "  Found exact title: '$wn'" -ForegroundColor Green; break
             }
@@ -372,12 +372,14 @@ Write-Host "Waiting for import to complete..." -ForegroundColor Yellow
 Start-Sleep -Seconds 3
 
 $foundCommit = $false
+# Wait longer for parsing to finish before looking for commit
+Start-Sleep -Seconds 5
 for ($t = 0; $t -lt 60; $t++) {
-    if (Click-ElementByText "Commit" -TimeoutSeconds 2) {
+    if (Click-ElementByText "Commit Import" -TimeoutSeconds 2) {
         Write-Host "Import committed!" -ForegroundColor Green
         $foundCommit = $true; break
     }
-    if ($t % 10 -eq 0) { Write-Host "  Waiting for Commit button... (${t}s)" -ForegroundColor DarkGray }
+    if ($t % 10 -eq 0) { Write-Host "  Waiting for Commit Import button... (${t}s)" -ForegroundColor DarkGray }
 }
 
 if (-not $foundCommit) {

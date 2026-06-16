@@ -56,4 +56,78 @@ public class PrimaveraImportRepository : IPrimaveraImportRepository
         return await _context.Set<XerImportSession>()
             .AnyAsync(s => s.SourceFileHash == fileHash && s.Status == Primavera.Domain.Enums.PrimaveraImportStatus.Committed, ct);
     }
+
+    public async Task DeleteAllXerDataAsync(CancellationToken ct = default)
+    {
+        _context.Set<PrimaveraRepairAction>().RemoveRange(await _context.Set<PrimaveraRepairAction>().ToListAsync(ct));
+        _context.Set<PrimaveraValidationIssue>().RemoveRange(await _context.Set<PrimaveraValidationIssue>().ToListAsync(ct));
+        _context.Set<PrimaveraValidationRule>().RemoveRange(await _context.Set<PrimaveraValidationRule>().ToListAsync(ct));
+        _context.Set<PrimaveraUdf>().RemoveRange(await _context.Set<PrimaveraUdf>().ToListAsync(ct));
+        _context.Set<PrimaveraBaseline>().RemoveRange(await _context.Set<PrimaveraBaseline>().ToListAsync(ct));
+        _context.Set<PrimaveraCode>().RemoveRange(await _context.Set<PrimaveraCode>().ToListAsync(ct));
+        _context.Set<PrimaveraCalendar>().RemoveRange(await _context.Set<PrimaveraCalendar>().ToListAsync(ct));
+        _context.Set<PrimaveraResourceAssignment>().RemoveRange(await _context.Set<PrimaveraResourceAssignment>().ToListAsync(ct));
+        _context.Set<PrimaveraRelationship>().RemoveRange(await _context.Set<PrimaveraRelationship>().ToListAsync(ct));
+        _context.Set<PrimaveraActivity>().RemoveRange(await _context.Set<PrimaveraActivity>().ToListAsync(ct));
+        _context.Set<PrimaveraProject>().RemoveRange(await _context.Set<PrimaveraProject>().ToListAsync(ct));
+        _context.Set<XerRawTable>().RemoveRange(await _context.Set<XerRawTable>().ToListAsync(ct));
+        _context.Set<XerExportProfile>().RemoveRange(await _context.Set<XerExportProfile>().ToListAsync(ct));
+        _context.Set<XerImportSession>().RemoveRange(await _context.Set<XerImportSession>().ToListAsync(ct));
+        await _context.SaveChangesAsync(ct);
+    }
+
+    public async Task<List<XerImportSession>> GetSessionsByProjectAsync(int projectId, CancellationToken ct = default)
+    {
+        return await _context.Set<XerImportSession>()
+            .Where(s => s.ProjectId == projectId)
+            .OrderByDescending(s => s.ImportedAt)
+            .ToListAsync(ct);
+    }
+
+    public async Task PersistImportDataAsync(int projectId, Guid sessionId,
+        List<PrimaveraActivity> activities, List<PrimaveraRelationship> relationships,
+        List<PrimaveraResourceAssignment> resourceAssignments, List<PrimaveraCalendar> calendars,
+        List<PrimaveraCode> codes, List<PrimaveraBaseline> baselines, List<PrimaveraUdf> udfs,
+        CancellationToken ct = default)
+    {
+        var strategy = _context.Database.CreateExecutionStrategy();
+        await strategy.ExecuteAsync(async () =>
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync(ct);
+            try
+            {
+                _context.Set<PrimaveraActivity>().RemoveRange(
+                    await _context.Set<PrimaveraActivity>().Where(a => a.ProjectId == projectId).ToListAsync(ct));
+                _context.Set<PrimaveraRelationship>().RemoveRange(
+                    await _context.Set<PrimaveraRelationship>().Where(r => r.ProjectId == projectId).ToListAsync(ct));
+                _context.Set<PrimaveraResourceAssignment>().RemoveRange(
+                    await _context.Set<PrimaveraResourceAssignment>().Where(r => r.ProjectId == projectId).ToListAsync(ct));
+                _context.Set<PrimaveraCalendar>().RemoveRange(
+                    await _context.Set<PrimaveraCalendar>().Where(c => c.ProjectId == projectId).ToListAsync(ct));
+                _context.Set<PrimaveraCode>().RemoveRange(
+                    await _context.Set<PrimaveraCode>().Where(c => c.ProjectId == projectId).ToListAsync(ct));
+                _context.Set<PrimaveraBaseline>().RemoveRange(
+                    await _context.Set<PrimaveraBaseline>().Where(b => b.ProjectId == projectId).ToListAsync(ct));
+                _context.Set<PrimaveraUdf>().RemoveRange(
+                    await _context.Set<PrimaveraUdf>().Where(u => u.ProjectId == projectId).ToListAsync(ct));
+                await _context.SaveChangesAsync(ct);
+
+                _context.Set<PrimaveraActivity>().AddRange(activities);
+                _context.Set<PrimaveraRelationship>().AddRange(relationships);
+                _context.Set<PrimaveraResourceAssignment>().AddRange(resourceAssignments);
+                _context.Set<PrimaveraCalendar>().AddRange(calendars);
+                _context.Set<PrimaveraCode>().AddRange(codes);
+                _context.Set<PrimaveraBaseline>().AddRange(baselines);
+                _context.Set<PrimaveraUdf>().AddRange(udfs);
+                await _context.SaveChangesAsync(ct);
+
+                await transaction.CommitAsync(ct);
+            }
+            catch
+            {
+                await transaction.RollbackAsync(ct);
+                throw;
+            }
+        });
+    }
 }

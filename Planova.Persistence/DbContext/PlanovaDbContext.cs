@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Planova.Domain.Entities;
 using Planova.Persistence.EntityConfigurations;
 using Planova.Reporting.Domain.Entities;
+using Planova.ScheduleComparison.Domain.Entities;
 
 namespace Planova.Persistence.DbContext;
 
@@ -52,6 +53,11 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<ReportExport> ReportExports => Set<ReportExport>();
     public DbSet<ReportSettings> ReportSettings => Set<ReportSettings>();
     public DbSet<ProjectParty> ProjectParties => Set<ProjectParty>();
+
+    public DbSet<ComparisonSession> ComparisonSessions => Set<ComparisonSession>();
+    public DbSet<ComparisonResult> ComparisonResults => Set<ComparisonResult>();
+    public DbSet<ScheduleSnapshot> ScheduleSnapshots => Set<ScheduleSnapshot>();
+    public DbSet<ComparisonRule> ComparisonRules => Set<ComparisonRule>();
 
     public DbSet<Planova.Primavera.Domain.Entities.PrimaveraProject> PrimaveraProjects => Set<Planova.Primavera.Domain.Entities.PrimaveraProject>();
     public DbSet<Planova.Primavera.Domain.Entities.XerImportSession> XerImportSessions => Set<Planova.Primavera.Domain.Entities.XerImportSession>();
@@ -120,6 +126,11 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.ApplyConfiguration(new ReportExportConfiguration());
         modelBuilder.ApplyConfiguration(new ReportSettingsConfiguration());
         modelBuilder.ApplyConfiguration(new ProjectPartyConfiguration());
+
+        modelBuilder.ApplyConfiguration(new ComparisonSessionConfiguration());
+        modelBuilder.ApplyConfiguration(new ComparisonResultConfiguration());
+        modelBuilder.ApplyConfiguration(new ScheduleSnapshotConfiguration());
+        modelBuilder.ApplyConfiguration(new ComparisonRuleConfiguration());
 
         modelBuilder.ApplyConfiguration(new PrimaveraProjectConfiguration());
         modelBuilder.ApplyConfiguration(new XerImportSessionConfiguration());
