@@ -37,7 +37,9 @@ public partial class SnapshotViewModel : ObservableObject
         try
         {
             var snapshots = await _snapshotService.ListSnapshotsAsync(projectId, ct);
-            Snapshots = new ObservableCollection<ScheduleSnapshot>(snapshots);
+            Snapshots.Clear();
+            foreach (var s in snapshots)
+                Snapshots.Add(s);
         }
         finally
         {
@@ -73,7 +75,15 @@ public partial class SnapshotViewModel : ObservableObject
     [RelayCommand]
     private async Task DeleteSnapshotAsync(ScheduleSnapshot snapshot, CancellationToken ct)
     {
-        await _snapshotService.DeleteSnapshotAsync(snapshot.Id, ct);
-        Snapshots.Remove(snapshot);
+        try
+        {
+            await _snapshotService.DeleteSnapshotAsync(snapshot.Id, ct);
+            Snapshots.Remove(snapshot);
+            StatusMessage = $"Snapshot '{snapshot.Label}' deleted.";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Delete failed: {ex.Message}";
+        }
     }
 }

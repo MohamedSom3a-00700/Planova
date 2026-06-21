@@ -59,10 +59,12 @@ public class ProjectService : IProjectService
             ClientId = dto.ClientId,
             ContractorId = dto.ContractorId,
             SubcontractorId = dto.SubcontractorId,
+            ConsultantId = dto.ConsultantId,
             Notes = dto.Notes,
             DocumentsFolder = dto.DocumentsFolder,
             Latitude = dto.Latitude,
             Longitude = dto.Longitude,
+            GoogleMapsLink = dto.GoogleMapsLink,
         };
 
         ValidateCoordinates(dto.Latitude, dto.Longitude);
@@ -80,6 +82,21 @@ public class ProjectService : IProjectService
             var logoDest = Path.Combine(logoFolder, $"logo_{Guid.NewGuid()}{ext}");
             File.Copy(dto.LogoSourcePath, logoDest, overwrite: false);
             project.LogoPath = logoDest;
+        }
+
+        if (!string.IsNullOrWhiteSpace(dto.CoverImageSourcePath))
+        {
+            if (!File.Exists(dto.CoverImageSourcePath))
+                throw new ValidationException($"Cover image file not found: {dto.CoverImageSourcePath}");
+
+            var coverFolder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "Planova", "Projects");
+            Directory.CreateDirectory(coverFolder);
+            var ext = Path.GetExtension(dto.CoverImageSourcePath);
+            var coverDest = Path.Combine(coverFolder, $"cover_{Guid.NewGuid()}{ext}");
+            File.Copy(dto.CoverImageSourcePath, coverDest, overwrite: false);
+            project.CoverImagePath = coverDest;
         }
 
         ValidateProjectDates(project);
@@ -108,10 +125,12 @@ public class ProjectService : IProjectService
         project.ClientId = dto.ClientId;
         project.ContractorId = dto.ContractorId;
         project.SubcontractorId = dto.SubcontractorId;
+        project.ConsultantId = dto.ConsultantId;
         project.Notes = dto.Notes;
         project.DocumentsFolder = dto.DocumentsFolder;
         project.Latitude = dto.Latitude;
         project.Longitude = dto.Longitude;
+        project.GoogleMapsLink = dto.GoogleMapsLink ?? project.GoogleMapsLink;
         project.QrCodePath = dto.QrCodePath ?? project.QrCodePath;
         project.UpdatedAt = DateTime.UtcNow;
 
@@ -132,6 +151,21 @@ public class ProjectService : IProjectService
             project.LogoPath = logoDest;
         }
 
+        if (!string.IsNullOrWhiteSpace(dto.CoverImageSourcePath))
+        {
+            if (!File.Exists(dto.CoverImageSourcePath))
+                throw new ValidationException($"Cover image file not found: {dto.CoverImageSourcePath}");
+
+            var coverFolder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "Planova", "Projects");
+            Directory.CreateDirectory(coverFolder);
+            var ext = Path.GetExtension(dto.CoverImageSourcePath);
+            var coverDest = Path.Combine(coverFolder, $"cover_{Guid.NewGuid()}{ext}");
+            File.Copy(dto.CoverImageSourcePath, coverDest, overwrite: false);
+            project.CoverImagePath = coverDest;
+        }
+
         ValidateProjectDates(project);
         await ValidateClientExists(dto.ClientId, ct);
 
@@ -148,7 +182,37 @@ public class ProjectService : IProjectService
         if (project.Contracts is { Count: > 0 })
             throw new EntityInUseException("Project", "contract");
 
+        DeleteProjectFiles(project);
+
         await _projectRepository.DeleteAsync(project, ct);
+    }
+
+    private static void DeleteProjectFiles(Domain.Entities.Project project)
+    {
+        TryDeleteFile(project.LogoPath);
+        TryDeleteFile(project.CoverImagePath);
+        TryDeleteFile(project.QrCodePath);
+        TryDeleteFile(project.ConnectedXerPath);
+
+        TryDeleteDirectory(project.DocumentsFolder);
+        TryDeleteDirectory(project.ProjectFolderPath);
+
+        var appDataProjectDir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "Planova", "Projects", project.Id.ToString());
+        TryDeleteDirectory(appDataProjectDir);
+    }
+
+    private static void TryDeleteFile(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path)) return;
+        try { if (File.Exists(path)) File.Delete(path); } catch { }
+    }
+
+    private static void TryDeleteDirectory(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path)) return;
+        try { if (Directory.Exists(path)) Directory.Delete(path, recursive: true); } catch { }
     }
 
     public async Task<ProjectDetailDto> ChangeStatusAsync(int id, string newStatus, CancellationToken ct = default)

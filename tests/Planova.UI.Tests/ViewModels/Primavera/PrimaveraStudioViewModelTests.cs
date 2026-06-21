@@ -54,7 +54,7 @@ public class PrimaveraStudioViewModelTests
 
     private static PrimaveraStudioViewModel CreateViewModel(ICurrentProjectService projectService)
     {
-        var importVm = new PrimaveraImportViewModel(Mock.Of<IPrimaveraImportService>(), Mock.Of<ICurrentProjectService>());
+        var importVm = new PrimaveraImportViewModel(Mock.Of<IPrimaveraImportService>(), projectService);
         var workspaceVm = new PrimaveraWorkspaceViewModel(
             Mock.Of<IPrimaveraWorkspaceService>(),
             Mock.Of<IPrimaveraImportService>(),

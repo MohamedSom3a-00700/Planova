@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Planova.Application.Dto;
 using Planova.Application.Services;
@@ -11,6 +12,7 @@ using Planova.Reporting.Application.Dto;
 using Planova.Reporting.Domain.Interfaces;
 using Planova.Shared.Abstractions;
 using Planova.UI.Services;
+using Planova.UI.ViewModels.Projects;
 
 namespace Planova.UI.ViewModels;
 
@@ -20,39 +22,64 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
     private readonly IClientService _clientService;
     private readonly IContractorService _contractorService;
     private readonly ISubcontractorService _subcontractorService;
+    private readonly IConsultantService _consultantService;
     private readonly ICurrentProjectService _currentProjectService;
     private readonly IProjectDocumentService _projectDocumentService;
     private readonly IProjectPartyService _projectPartyService;
     private readonly QrCodeService _qrCodeService;
     private readonly MapHtmlService _mapHtmlService;
+    private readonly IServiceProvider _serviceProvider;
     private List<ProjectSummaryDto> _allProjects = new();
+
+    public event Action<string>? StatusMessage;
+
+    public ProjectListViewModel ListVM { get; }
+    public ProjectDetailViewModel DetailVM { get; }
 
     public ProjectsWorkspaceViewModel(
         IProjectService projectService,
         IClientService clientService,
         IContractorService contractorService,
         ISubcontractorService subcontractorService,
+        IConsultantService consultantService,
         ICurrentProjectService currentProjectService,
         IProjectDocumentService projectDocumentService,
         IProjectPartyService projectPartyService,
         QrCodeService qrCodeService,
-        MapHtmlService mapHtmlService)
+        MapHtmlService mapHtmlService,
+        IServiceProvider serviceProvider)
     {
         _projectService = projectService;
         _clientService = clientService;
         _contractorService = contractorService;
         _subcontractorService = subcontractorService;
+        _consultantService = consultantService;
         _currentProjectService = currentProjectService;
         _projectDocumentService = projectDocumentService;
         _projectPartyService = projectPartyService;
         _qrCodeService = qrCodeService;
         _mapHtmlService = mapHtmlService;
+        _serviceProvider = serviceProvider;
+
+        ListVM = _serviceProvider.GetRequiredService<ProjectListViewModel>();
+        DetailVM = _serviceProvider.GetRequiredService<ProjectDetailViewModel>();
+
+        ListVM.NewProjectCommand = NewProjectCommand;
+        ListVM.EditProjectCommand = EditProjectCommand;
+        ListVM.DeleteProjectCommand = DeleteCommand;
+        DetailVM.EditProjectCommand = EditProjectCommand;
+        DetailVM.DeleteProjectCommand = DeleteCommand;
+        DetailVM.StatusMessage += msg => StatusMessage?.Invoke(msg);
+
+        ListVM.PropertyChanged += OnListVmPropertyChanged;
+        DetailVM.PropertyChanged += OnDetailVmPropertyChanged;
     }
 
     public ObservableCollection<ProjectSummaryDto> Projects { get; } = new();
-    public ObservableCollection<ClientSummaryDto> Clients { get; } = new();
-    public ObservableCollection<ContractorSummaryDto> Contractors { get; } = new();
-    public ObservableCollection<SubcontractorSummaryDto> Subcontractors { get; } = new();
+    public ObservableCollection<PartyComboItem> Clients { get; } = new();
+    public ObservableCollection<PartyComboItem> Contractors { get; } = new();
+    public ObservableCollection<PartyComboItem> Subcontractors { get; } = new();
+    public ObservableCollection<PartyComboItem> Consultants { get; } = new();
     public ObservableCollection<string> Currencies { get; } = new()
     {
         "USD", "EUR", "GBP", "EGP", "SAR", "AED", "JOD", "KWD", "QAR", "OMR", "BHD", "LYD", "TND", "DZD", "MAD"
@@ -64,7 +91,7 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
     public ObservableCollection<ProjectPartyDto> ProjectParties { get; } = new();
     public ObservableCollection<string> PartyRoles { get; } = new()
     {
-        "Client", "MainContractor", "SubContractor"
+        "Client", "MainContractor", "SubContractor", "Consultant"
     };
 
     [ObservableProperty]
@@ -88,14 +115,34 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
             SelectProjectCommand.Execute(value);
     }
 
+    private async void OnListVmPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ProjectListViewModel.SelectedProject))
+        {
+            var selected = ListVM.SelectedProject;
+            if (selected is not null)
+            {
+                DetailVM.LoadCommand.Execute(selected.Id);
+            }
+        }
+    }
+
+    private void OnDetailVmPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ProjectDetailViewModel.Project) && DetailVM.Project is not null)
+        {
+            SelectedProject = DetailVM.Project;
+        }
+    }
+
     partial void OnSearchQueryChanged(string value)
     {
-        ApplyFilters();
+        ListVM.SearchQuery = value;
     }
 
     partial void OnSelectedStatusFilterChanged(string value)
     {
-        ApplyFilters();
+        ListVM.SelectedStatusFilter = value;
     }
 
     [ObservableProperty]
@@ -126,19 +173,25 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
     private string? _editLocation;
 
     [ObservableProperty]
-    private int? _editClientId;
+    private PartyComboItem? _editSelectedClient;
 
     [ObservableProperty]
-    private int? _editContractorId;
+    private PartyComboItem? _editSelectedContractor;
 
     [ObservableProperty]
-    private int? _editSubcontractorId;
+    private PartyComboItem? _editSelectedSubcontractor;
+
+    [ObservableProperty]
+    private PartyComboItem? _editSelectedConsultant;
 
     [ObservableProperty]
     private string? _editNotes;
 
     [ObservableProperty]
     private string? _editLogoSourcePath;
+
+    [ObservableProperty]
+    private string? _editCoverSourcePath;
 
     [ObservableProperty]
     private string? _editDocumentsFolder;
@@ -168,6 +221,9 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
     private int _editPartyDisplayOrder;
 
     [ObservableProperty]
+    private string? _editGoogleMapsLink;
+
+    [ObservableProperty]
     private double? _editLatitude;
 
     [ObservableProperty]
@@ -175,6 +231,9 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
 
     [ObservableProperty]
     private string? _logoPreviewPath;
+
+    [ObservableProperty]
+    private string? _coverPreviewPath;
 
     [ObservableProperty]
     private string? _qrCodePath;
@@ -254,19 +313,70 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
             var clients = await _clientService.GetAllAsync();
             Clients.Clear();
             foreach (var c in clients)
-                Clients.Add(c);
+                Clients.Add(new PartyComboItem { SourceId = c.Id, Name = c.Name });
 
             var contractors = await _contractorService.GetAllAsync();
             Contractors.Clear();
             foreach (var c in contractors)
-                Contractors.Add(c);
+                Contractors.Add(new PartyComboItem { SourceId = c.Id, Name = c.Name });
 
             var subcontractors = await _subcontractorService.GetAllAsync();
             Subcontractors.Clear();
             foreach (var s in subcontractors)
-                Subcontractors.Add(s);
+                Subcontractors.Add(new PartyComboItem { SourceId = s.Id, Name = s.Name });
+
+            var consultants = await _consultantService.GetAllAsync();
+            Consultants.Clear();
+            foreach (var c in consultants)
+                Consultants.Add(new PartyComboItem { SourceId = c.Id, Name = c.Name });
+
+            var allParties = await _projectPartyService.GetAllPartiesAsync();
+            foreach (var p in allParties)
+            {
+                if (p.Role == "Client")
+                    Clients.Add(new PartyComboItem { Name = p.Name, IsFromPartySystem = true });
+                else if (p.Role == "MainContractor")
+                    Contractors.Add(new PartyComboItem { Name = p.Name, IsFromPartySystem = true });
+                else if (p.Role == "SubContractor")
+                    Subcontractors.Add(new PartyComboItem { Name = p.Name, IsFromPartySystem = true });
+                else if (p.Role == "Consultant")
+                    Consultants.Add(new PartyComboItem { Name = p.Name, IsFromPartySystem = true });
+            }
 
             ApplyFilters();
+
+            await ListVM.LoadCommand.ExecuteAsync(null);
+
+            if (System.Windows.Application.Current.Properties["StartupAction"] is string action)
+            {
+                System.Windows.Application.Current.Properties.Remove("StartupAction");
+
+                switch (action)
+                {
+                    case "new":
+                        NewProject();
+                        break;
+
+                    case "edit":
+                    case "delete":
+                        var first = ListVM.Projects.FirstOrDefault();
+                        if (first is not null)
+                        {
+                            SelectedProject = await _projectService.GetByIdAsync(first.Id);
+                            if (SelectedProject is not null)
+                            {
+                                _currentProjectService.SetProject(new ProjectContext(
+                                    SelectedProject.Id, SelectedProject.Code, SelectedProject.Name));
+
+                                if (action == "edit")
+                                    EditProject();
+                                else
+                                    await DeleteAsync();
+                            }
+                        }
+                        break;
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -282,7 +392,7 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
     [RelayCommand]
     private void Search()
     {
-        ApplyFilters();
+        ListVM.SearchCommand.Execute(null);
     }
 
     [RelayCommand]
@@ -304,29 +414,37 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
             IsCreating = false;
             LoadDocuments();
             await LoadPartiesAsync();
+            await SyncPartiesInternalAsync();
+            await LoadPartiesAsync();
 
-        if (SelectedProject != null)
-        {
-            _currentProjectService.SetProject(new ProjectContext(
-                SelectedProject.Id,
-                SelectedProject.Code,
-                SelectedProject.Name));
-
-            EditLatitude = SelectedProject.Latitude;
-            EditLongitude = SelectedProject.Longitude;
-
-            if (SelectedProject.Latitude.HasValue && SelectedProject.Longitude.HasValue)
+            if (SelectedProject is not null)
             {
-                GenerateMapHtml(SelectedProject.Latitude.Value, SelectedProject.Longitude.Value, SelectedProject.Name);
-            }
-            else
-            {
-                MapHtmlPath = null;
+                DetailVM.LoadCommand.Execute(SelectedProject.Id);
             }
 
-            QrCodePath = SelectedProject.QrCodePath;
-            LogoPreviewPath = SelectedProject.LogoPath;
-        }
+            if (SelectedProject != null)
+            {
+                _currentProjectService.SetProject(new ProjectContext(
+                    SelectedProject.Id,
+                    SelectedProject.Code,
+                    SelectedProject.Name));
+
+                EditLatitude = SelectedProject.Latitude;
+                EditLongitude = SelectedProject.Longitude;
+
+                if (SelectedProject.Latitude.HasValue && SelectedProject.Longitude.HasValue)
+                {
+                    GenerateMapHtml(SelectedProject.Latitude.Value, SelectedProject.Longitude.Value, SelectedProject.Name);
+                }
+                else
+                {
+                    MapHtmlPath = null;
+                }
+
+                QrCodePath = SelectedProject.QrCodePath;
+                LogoPreviewPath = SelectedProject.LogoPath;
+                CoverPreviewPath = SelectedProject.CoverImagePath;
+            }
         }
         catch (Exception ex)
         {
@@ -340,7 +458,7 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void NewProject()
+    public void NewProject()
     {
         IsCreating = true;
         IsEditing = true;
@@ -352,15 +470,19 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         EditFinishDate = null;
         EditCurrency = null;
         EditLocation = null;
-        EditClientId = null;
-        EditContractorId = null;
-        EditSubcontractorId = null;
+        EditSelectedClient = null;
+        EditSelectedContractor = null;
+        EditSelectedSubcontractor = null;
+        EditSelectedConsultant = null;
         EditNotes = null;
         EditLogoSourcePath = null;
+        EditCoverSourcePath = null;
         EditDocumentsFolder = null;
+        EditGoogleMapsLink = null;
         EditLatitude = null;
         EditLongitude = null;
         LogoPreviewPath = null;
+        CoverPreviewPath = null;
         QrCodePath = null;
         MapHtmlPath = null;
         ErrorMessage = string.Empty;
@@ -381,15 +503,23 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         EditFinishDate = SelectedProject.FinishDate;
         EditCurrency = SelectedProject.Currency;
         EditLocation = SelectedProject.Location;
-        EditClientId = SelectedProject.ClientId;
-        EditContractorId = SelectedProject.ContractorId;
-        EditSubcontractorId = SelectedProject.SubcontractorId;
+        EditSelectedClient = SelectedProject.ClientId.HasValue
+            ? Clients.FirstOrDefault(c => c.SourceId == SelectedProject.ClientId) : null;
+        EditSelectedContractor = SelectedProject.ContractorId.HasValue
+            ? Contractors.FirstOrDefault(c => c.SourceId == SelectedProject.ContractorId) : null;
+        EditSelectedSubcontractor = SelectedProject.SubcontractorId.HasValue
+            ? Subcontractors.FirstOrDefault(c => c.SourceId == SelectedProject.SubcontractorId) : null;
+        EditSelectedConsultant = SelectedProject.ConsultantId.HasValue
+            ? Consultants.FirstOrDefault(c => c.SourceId == SelectedProject.ConsultantId) : null;
         EditNotes = SelectedProject.Notes;
         EditLogoSourcePath = null;
+        EditCoverSourcePath = null;
         EditDocumentsFolder = SelectedProject.DocumentsFolder;
         EditLatitude = SelectedProject.Latitude;
         EditLongitude = SelectedProject.Longitude;
+        EditGoogleMapsLink = SelectedProject.GoogleMapsLink;
         LogoPreviewPath = SelectedProject.LogoPath;
+        CoverPreviewPath = SelectedProject.CoverImagePath;
         QrCodePath = SelectedProject.QrCodePath;
         ErrorMessage = string.Empty;
         HasError = false;
@@ -412,31 +542,84 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
 
         try
         {
+            var clientId = EditSelectedClient?.IsFromPartySystem == false ? EditSelectedClient.SourceId : null;
+            var contractorId = EditSelectedContractor?.IsFromPartySystem == false ? EditSelectedContractor.SourceId : null;
+            var subcontractorId = EditSelectedSubcontractor?.IsFromPartySystem == false ? EditSelectedSubcontractor.SourceId : null;
+            var consultantId = EditSelectedConsultant?.IsFromPartySystem == false ? EditSelectedConsultant.SourceId : null;
+
             if (IsCreating)
             {
+                if (!string.IsNullOrEmpty(EditGoogleMapsLink) && string.IsNullOrEmpty(QrCodePath))
+                {
+                    QrCodePath = _qrCodeService.GenerateQrFromUrl(0, EditGoogleMapsLink);
+                    if (QrCodeService.TryParseGoogleMapsLink(EditGoogleMapsLink, out var lat, out var lng))
+                    {
+                        EditLatitude = lat;
+                        EditLongitude = lng;
+                    }
+                }
+                else if (EditLatitude.HasValue && EditLongitude.HasValue && string.IsNullOrEmpty(QrCodePath))
+                {
+                    QrCodePath = _qrCodeService.GenerateLocationQr(0, EditLatitude.Value, EditLongitude.Value);
+                    var latStr = EditLatitude.Value.ToString(CultureInfo.InvariantCulture);
+                    var lngStr = EditLongitude.Value.ToString(CultureInfo.InvariantCulture);
+                    EditGoogleMapsLink = $"https://www.google.com/maps?q={latStr},{lngStr}";
+                }
+
                 var dto = new CreateProjectDto(
                     EditCode, EditName, EditDescription,
                     EditStartDate, EditFinishDate, EditCurrency,
-                    EditLocation, EditClientId, EditContractorId, EditSubcontractorId, EditNotes,
-                    EditLogoSourcePath, EditDocumentsFolder, EditLatitude, EditLongitude);
+                    EditLocation, clientId, contractorId, subcontractorId, consultantId, EditNotes,
+                    EditLogoSourcePath, EditCoverSourcePath, EditDocumentsFolder, EditLatitude, EditLongitude, EditGoogleMapsLink);
 
                 SelectedProject = await _projectService.CreateAsync(dto);
+
+                if (SelectedProject is not null && !string.IsNullOrEmpty(QrCodePath))
+                {
+                    QrCodePath = _qrCodeService.GenerateQrFromUrl(SelectedProject.Id, EditGoogleMapsLink ?? $"https://www.google.com/maps?q={EditLatitude?.ToString(CultureInfo.InvariantCulture)},{EditLongitude?.ToString(CultureInfo.InvariantCulture)}");
+                    var updateDto = new UpdateProjectDto(
+                        SelectedProject.Code, SelectedProject.Name, SelectedProject.Description,
+                        SelectedProject.StartDate, SelectedProject.FinishDate, SelectedProject.Currency,
+                        SelectedProject.Location, clientId, contractorId, subcontractorId, consultantId, SelectedProject.Notes,
+                        null, null, SelectedProject.DocumentsFolder, EditLatitude, EditLongitude, EditGoogleMapsLink, QrCodePath);
+                    SelectedProject = await _projectService.UpdateAsync(SelectedProject.Id, updateDto);
+                }
             }
             else if (SelectedProject != null)
             {
+                if (!string.IsNullOrEmpty(EditGoogleMapsLink) && string.IsNullOrEmpty(QrCodePath))
+                {
+                    QrCodePath = _qrCodeService.GenerateQrFromUrl(SelectedProject.Id, EditGoogleMapsLink);
+                    if (QrCodeService.TryParseGoogleMapsLink(EditGoogleMapsLink, out var lat, out var lng))
+                    {
+                        EditLatitude = lat;
+                        EditLongitude = lng;
+                    }
+                }
+                else if (EditLatitude.HasValue && EditLongitude.HasValue && string.IsNullOrEmpty(QrCodePath))
+                {
+                    QrCodePath = _qrCodeService.GenerateLocationQr(SelectedProject.Id, EditLatitude.Value, EditLongitude.Value);
+                    var latStr = EditLatitude.Value.ToString(CultureInfo.InvariantCulture);
+                    var lngStr = EditLongitude.Value.ToString(CultureInfo.InvariantCulture);
+                    EditGoogleMapsLink = $"https://www.google.com/maps?q={latStr},{lngStr}";
+                }
+
                 var dto = new UpdateProjectDto(
                     EditCode, EditName, EditDescription,
                     EditStartDate, EditFinishDate, EditCurrency,
-                    EditLocation, EditClientId, EditContractorId, EditSubcontractorId, EditNotes,
-                    EditLogoSourcePath, EditDocumentsFolder, EditLatitude, EditLongitude, QrCodePath);
+                    EditLocation, clientId, contractorId, subcontractorId, consultantId, EditNotes,
+                    EditLogoSourcePath, EditCoverSourcePath, EditDocumentsFolder, EditLatitude, EditLongitude, EditGoogleMapsLink, QrCodePath);
 
                 SelectedProject = await _projectService.UpdateAsync(SelectedProject.Id, dto);
             }
 
+            var wasCreating = IsCreating;
             IsEditing = false;
             IsCreating = false;
             LoadDocuments();
             await LoadAsync();
+            await SyncPartiesInternalAsync();
+            StatusMessage?.Invoke(wasCreating ? "Project created successfully" : "Project saved successfully");
         }
         catch (Exception ex)
         {
@@ -449,7 +632,7 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
+        [RelayCommand]
     private async Task DeleteAsync()
     {
         if (SelectedProject == null) return;
@@ -457,10 +640,13 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         IsLoading = true;
         try
         {
+            var projectName = SelectedProject.Name;
             await _projectService.DeleteAsync(SelectedProject.Id);
             _currentProjectService.SetProject(null);
+            DetailVM.Project = null;
             SelectedProject = null;
             await LoadAsync();
+            StatusMessage?.Invoke($"Project '{projectName}' deleted");
         }
         catch (Exception ex)
         {
@@ -483,6 +669,7 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         {
             SelectedProject = await _projectService.ChangeStatusAsync(SelectedProject.Id, newStatus);
             await LoadAsync();
+            StatusMessage?.Invoke($"Status changed to {newStatus}");
         }
         catch (Exception ex)
         {
@@ -508,6 +695,22 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         {
             EditLogoSourcePath = dialog.FileName;
             LogoPreviewPath = dialog.FileName;
+        }
+    }
+
+    [RelayCommand]
+    private void BrowseCover()
+    {
+        var dialog = new OpenFileDialog
+        {
+            Filter = "Image files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp",
+            Title = "Select Project Cover Image"
+        };
+
+        if (dialog.ShowDialog() == true)
+        {
+            EditCoverSourcePath = dialog.FileName;
+            CoverPreviewPath = dialog.FileName;
         }
     }
 
@@ -586,6 +789,7 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
             await _projectDocumentService.DeleteAsync(doc.Id);
             SelectedProject = await _projectService.GetByIdAsync(SelectedProject.Id);
             LoadDocuments();
+            StatusMessage?.Invoke($"Document '{doc.FileName}' deleted");
         }
         catch (Exception ex)
         {
@@ -617,6 +821,7 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
             await _projectDocumentService.DeleteByProjectAsync(SelectedProject.Id);
             SelectedProject = await _projectService.GetByIdAsync(SelectedProject.Id);
             LoadDocuments();
+            StatusMessage?.Invoke("All documents deleted");
         }
         catch (Exception ex)
         {
@@ -652,6 +857,7 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
             await _projectDocumentService.ScanFolderAsync(dto);
             SelectedProject = await _projectService.GetByIdAsync(SelectedProject.Id);
             LoadDocuments();
+            StatusMessage?.Invoke("Folder scanned successfully");
         }
         catch (Exception ex)
         {
@@ -677,15 +883,24 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
 
             GenerateMapHtml(EditLatitude.Value, EditLongitude.Value, SelectedProject.Name);
 
+            var latStr = EditLatitude.Value.ToString(CultureInfo.InvariantCulture);
+            var lngStr = EditLongitude.Value.ToString(CultureInfo.InvariantCulture);
+            var googleMapsUrl = $"https://www.google.com/maps?q={latStr},{lngStr}";
+
             var dto = new UpdateProjectDto(
                 SelectedProject.Code, SelectedProject.Name, SelectedProject.Description,
                 SelectedProject.StartDate, SelectedProject.FinishDate, SelectedProject.Currency,
                 SelectedProject.Location, SelectedProject.ClientId, SelectedProject.ContractorId,
-                SelectedProject.SubcontractorId, SelectedProject.Notes,
-                null, SelectedProject.DocumentsFolder, EditLatitude, EditLongitude, QrCodePath);
+                SelectedProject.SubcontractorId, null, SelectedProject.Notes,
+                null, null, SelectedProject.DocumentsFolder, EditLatitude, EditLongitude, googleMapsUrl, QrCodePath);
 
             await _projectService.UpdateAsync(SelectedProject.Id, dto);
             SelectedProject = await _projectService.GetByIdAsync(SelectedProject.Id);
+
+            if (SelectedProject is not null)
+                DetailVM.LoadCommand.Execute(SelectedProject.Id);
+
+            StatusMessage?.Invoke("Location QR code generated");
         }
         catch (Exception ex)
         {
@@ -796,6 +1011,29 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         }
     }
 
+    private async Task SyncPartiesInternalAsync()
+    {
+        if (SelectedProject == null) return;
+        var project = SelectedProject;
+        var ct = CancellationToken.None;
+
+        if (!string.IsNullOrEmpty(project.ClientName))
+            await _projectPartyService.SavePartyAsync(project.Id,
+                new SavePartyRequest(null, "Client", project.ClientName, null, null, null, null, 0), ct);
+
+        if (!string.IsNullOrEmpty(project.ContractorName))
+            await _projectPartyService.SavePartyAsync(project.Id,
+                new SavePartyRequest(null, "MainContractor", project.ContractorName, null, null, null, null, 1), ct);
+
+        if (!string.IsNullOrEmpty(project.SubcontractorName))
+            await _projectPartyService.SavePartyAsync(project.Id,
+                new SavePartyRequest(null, "SubContractor", project.SubcontractorName, null, null, null, null, 2), ct);
+
+        if (!string.IsNullOrEmpty(project.ConsultantName))
+            await _projectPartyService.SavePartyAsync(project.Id,
+                new SavePartyRequest(null, "Consultant", project.ConsultantName, null, null, null, null, 3), ct);
+    }
+
     [RelayCommand]
     private async Task SyncPartiesFromProjectAsync()
     {
@@ -803,22 +1041,9 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         IsLoading = true;
         try
         {
-            var ct = CancellationToken.None;
-            var project = SelectedProject;
-
-            if (!string.IsNullOrEmpty(project.ClientName))
-                await _projectPartyService.SavePartyAsync(project.Id,
-                    new SavePartyRequest(null, "Client", project.ClientName, null, null, null, null, 0), ct);
-
-            if (!string.IsNullOrEmpty(project.ContractorName))
-                await _projectPartyService.SavePartyAsync(project.Id,
-                    new SavePartyRequest(null, "MainContractor", project.ContractorName, null, null, null, null, 1), ct);
-
-            if (!string.IsNullOrEmpty(project.SubcontractorName))
-                await _projectPartyService.SavePartyAsync(project.Id,
-                    new SavePartyRequest(null, "SubContractor", project.SubcontractorName, null, null, null, null, 2), ct);
-
+            await SyncPartiesInternalAsync();
             await LoadPartiesAsync();
+            StatusMessage?.Invoke("Parties synced from project");
         }
         catch (Exception ex)
         {
@@ -861,6 +1086,7 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
             EditPartyContactPhone = null;
             EditPartyDisplayOrder = 0;
             SelectedParty = null;
+            StatusMessage?.Invoke($"Party saved");
         }
         catch (Exception ex)
         {
@@ -882,6 +1108,7 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         {
             await _projectPartyService.DeletePartyAsync(party.Id);
             await LoadPartiesAsync();
+            StatusMessage?.Invoke($"Party '{party.Name}' removed");
         }
         catch (Exception ex)
         {
@@ -915,4 +1142,11 @@ public partial class ProjectsWorkspaceViewModel : ObservableObject
         EditPartyDisplayOrder = 0;
         SelectedParty = null;
     }
+}
+
+public class PartyComboItem
+{
+    public int? SourceId { get; init; }
+    public string Name { get; init; } = string.Empty;
+    public bool IsFromPartySystem { get; init; }
 }

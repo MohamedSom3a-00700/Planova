@@ -5,6 +5,7 @@ using Planova.ScheduleComparison.Application.Mappings;
 using Planova.ScheduleComparison.Application.Models;
 using Planova.ScheduleComparison.Domain.Entities;
 using Planova.ScheduleComparison.Domain.Enums;
+using Planova.Primavera.Application.Models;
 using Planova.Primavera.Application.Services;
 using Planova.Primavera.Domain.Interfaces;
 using Planova.ScheduleComparison.Domain.Interfaces;
@@ -19,6 +20,7 @@ internal static class CompareTrace
     private static readonly string LogPath = Path.Combine(LogDir, "compare-trace.log");
     private static readonly object Lock = new();
     private static bool _dirCreated;
+    [System.Diagnostics.Conditional("DEBUG")]
     internal static void Write(string msg)
     {
         lock (Lock)
@@ -213,7 +215,7 @@ public class ScheduleComparisonService : IScheduleComparisonService
         return await _repository.GetSessionsByProjectAsync(projectId, ct);
     }
 
-    public async Task ReOpenSessionAsync(Guid sessionId, CancellationToken ct = default)
+    public async Task ValidateCanReOpenAsync(Guid sessionId, CancellationToken ct = default)
     {
         var session = await _repository.GetSessionByIdAsync(sessionId, ct);
         if (session == null)
@@ -280,10 +282,7 @@ public class ScheduleComparisonService : IScheduleComparisonService
         if (importService == null)
             throw new InvalidOperationException("XER import service is not available.");
 
-        var sessions = await importService.GetImportedSessionsAsync(ct);
-        CompareTrace.Write($"  Total import sessions available: {sessions.Count}");
-
-        var session = sessions.FirstOrDefault(s => s.Id == importSessionId);
+        var session = await importService.GetSessionByIdAsync(importSessionId, ct);
         if (session == null)
         {
             CompareTrace.Write($"  Session {importSessionId} NOT FOUND in imported sessions!");

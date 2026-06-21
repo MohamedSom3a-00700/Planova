@@ -14,7 +14,13 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<Contract> Contracts => Set<Contract>();
     public DbSet<Contractor> Contractors => Set<Contractor>();
     public DbSet<Subcontractor> Subcontractors => Set<Subcontractor>();
+    public DbSet<Consultant> Consultants => Set<Consultant>();
     public DbSet<ExcelMappingProfile> ExcelMappingProfiles => Set<ExcelMappingProfile>();
+    public DbSet<Party> Parties => Set<Party>();
+    public DbSet<ProjectPartyLink> ProjectPartyLinks => Set<ProjectPartyLink>();
+    public DbSet<Planova.Boq.Domain.Entities.BoqImportSession> BoqImportSessions => Set<Planova.Boq.Domain.Entities.BoqImportSession>();
+    public DbSet<Planova.Boq.Domain.Entities.BoqWorksheetMapping> BoqWorksheetMappings => Set<Planova.Boq.Domain.Entities.BoqWorksheetMapping>();
+    public DbSet<Planova.Wbs.Domain.Entities.WbsEditLock> WbsEditLocks => Set<Planova.Wbs.Domain.Entities.WbsEditLock>();
     public DbSet<Planova.Boq.Domain.Entities.Boq> Boqs => Set<Planova.Boq.Domain.Entities.Boq>();
     public DbSet<Planova.Boq.Domain.Entities.BoqItem> BoqItems => Set<Planova.Boq.Domain.Entities.BoqItem>();
     public DbSet<Planova.Boq.Domain.Entities.BoqClassification> BoqClassifications => Set<Planova.Boq.Domain.Entities.BoqClassification>();
@@ -86,6 +92,7 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.ApplyConfiguration(new ContractConfiguration());
         modelBuilder.ApplyConfiguration(new ContractorConfiguration());
         modelBuilder.ApplyConfiguration(new SubcontractorConfiguration());
+        modelBuilder.ApplyConfiguration(new ConsultantConfiguration());
         modelBuilder.ApplyConfiguration(new ExcelMappingProfileConfiguration());
         modelBuilder.ApplyConfiguration(new BoqConfiguration());
         modelBuilder.ApplyConfiguration(new BoqItemConfiguration());
@@ -116,6 +123,12 @@ public class PlanovaDbContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.ApplyConfiguration(new CostBaselineConfiguration());
         modelBuilder.ApplyConfiguration(new CostBaselineRowConfiguration());
         modelBuilder.ApplyConfiguration(new ActualCostConfiguration());
+        modelBuilder.ApplyConfiguration(new ProjectMetadataConfiguration());
+        modelBuilder.ApplyConfiguration(new PartyConfiguration());
+        modelBuilder.ApplyConfiguration(new ProjectPartyLinkConfiguration());
+        modelBuilder.ApplyConfiguration(new BoqImportSessionConfiguration());
+        modelBuilder.ApplyConfiguration(new BoqWorksheetMappingConfiguration());
+        modelBuilder.ApplyConfiguration(new WbsEditLockConfiguration());
         modelBuilder.ApplyConfiguration(new AuditLogConfiguration());
         modelBuilder.ApplyConfiguration(new ProjectDocumentConfiguration());
 

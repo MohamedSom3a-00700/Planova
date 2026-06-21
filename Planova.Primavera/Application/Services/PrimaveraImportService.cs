@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Planova.Primavera.Application.Dto;
+using Planova.Primavera.Application.Models;
 using Planova.Primavera.Application.Parsers;
 using Planova.Primavera.Domain.Entities;
 using Planova.Primavera.Domain.Enums;
@@ -48,22 +49,14 @@ public class PrimaveraImportService : IPrimaveraImportService
             };
         }
 
-        var fileHash = ComputeFileHash(filePath);
-        if (await _repository.HasDuplicateFileAsync(fileHash, ct))
-        {
-            return new XerImportPreviewDto
-            {
-                FileName = fileInfo.Name,
-                FileSize = fileInfo.Length,
-                ValidationIssues = new List<PrimaveraValidationIssueDto>
-                {
-                    new() { Severity = "Warning", Description = "This file appears to be a duplicate of a previously imported file." }
-                }
-            };
-        }
-
         var parseResult = await _parser.ParseAsync(filePath, ct);
         var issues = new List<PrimaveraValidationIssueDto>();
+
+        var xerProjectId = parseResult.Project?.ProjectId;
+        var existingProjectId = xerProjectId != null
+            && await _repository.HasExistingProjectByXerIdAsync(xerProjectId, ct)
+            ? xerProjectId
+            : null;
 
         if (parseResult.Errors.Count > 0)
         {
@@ -101,12 +94,14 @@ public class PrimaveraImportService : IPrimaveraImportService
             });
         }
 
-        var projectCode = parseResult.Project?.ProjectId;
         var projectName = parseResult.Project?.Name;
         var allTables = JsonSerializer.Serialize(parseResult.TableNames.ToList());
 
+        var xerContent = await File.ReadAllTextAsync(filePath, ct);
+
         var parsedData = new XerStoredData
         {
+            RawXerContent = xerContent,
             Activities = parseResult.Activities.Select(a => new XerStoredActivity
             {
                 TaskId = a.TaskId,
@@ -144,6 +139,53 @@ public class PrimaveraImportService : IPrimaveraImportService
                 Units = ra.Units,
                 CostPerUnit = ra.CostPerUnit
             }).ToList(),
+            Calendars = parseResult.Calendars.Select(c => new XerStoredCalendar
+            {
+                CalendarId = c.CalendarId,
+                Name = c.Name,
+                IsBaseCalendar = c.IsBaseCalendar,
+                BaseCalendarId = c.BaseCalendarId
+            }).ToList(),
+            Codes = parseResult.Codes.Select(c => new XerStoredCode
+            {
+                CodeTypeId = c.CodeTypeId,
+                CodeType = c.CodeType,
+                CodeValue = c.CodeValue,
+                CodeName = c.CodeName
+            }).ToList(),
+            Baselines = parseResult.Baselines.Select(b => new XerStoredBaseline
+            {
+                BaselineId = b.BaselineId,
+                Name = b.Name,
+                VersionNumber = b.VersionNumber,
+                IsActive = b.IsActive
+            }).ToList(),
+            Udfs = parseResult.Udfs.Select(u => new XerStoredUdf
+            {
+                UdfTypeId = u.UdfTypeId,
+                TableName = u.TableName,
+                FieldName = u.FieldName,
+                FieldType = u.FieldType
+            }).ToList(),
+            RawTables = parseResult.RawTables.GroupBy(r => r.TableName).Select(g =>
+            {
+                var first = g.First();
+                var headers = string.IsNullOrEmpty(first.ColumnHeaders)
+                    ? new List<string>()
+                    : JsonSerializer.Deserialize<List<string>>(first.ColumnHeaders) ?? new();
+                var rows = g.SelectMany(r =>
+                {
+                    if (string.IsNullOrEmpty(r.Rows))
+                        return new List<Dictionary<string, string>>();
+                    return JsonSerializer.Deserialize<List<Dictionary<string, string>>>(r.Rows) ?? new();
+                }).ToList();
+                return new XerStoredRawTable
+                {
+                    TableName = g.Key,
+                    ColumnHeaders = headers,
+                    Rows = rows
+                };
+            }).ToList(),
             ProjectId = parseResult.Project?.ProjectId,
             ProjectName = parseResult.Project?.Name,
             LastRecalcDate = parseResult.Project?.LastRecalcDate,
@@ -161,11 +203,11 @@ public class PrimaveraImportService : IPrimaveraImportService
             ProjectId = projectId,
             Status = PrimaveraImportStatus.Previewing,
             SourceFileName = fileInfo.Name,
-            SourceFileHash = fileHash,
+            SourceFileHash = ComputeFileHash(filePath),
             ImportedAt = DateTime.UtcNow,
             ImportedBy = Environment.UserName,
             RowCounts = JsonSerializer.Serialize(parseResult.RowCounts),
-            ProjectCode = projectCode,
+            ProjectCode = xerProjectId,
             ProjectName = projectName,
             TableNames = allTables,
             ParsedDataJson = JsonSerializer.Serialize(parsedData, JsonOptions)
@@ -180,7 +222,8 @@ public class PrimaveraImportService : IPrimaveraImportService
             FileSize = fileInfo.Length,
             RowCounts = parseResult.RowCounts,
             UnsupportedTables = parseResult.RawTables.Select(r => r.TableName).Distinct().ToList(),
-            ValidationIssues = issues
+            ValidationIssues = issues,
+            ExistingProjectId = existingProjectId
         };
     }
 
@@ -198,10 +241,6 @@ public class PrimaveraImportService : IPrimaveraImportService
 
         try
         {
-            session.Status = PrimaveraImportStatus.Committed;
-            session.ImportType = importType;
-            await _repository.UpdateSessionAsync(session, ct);
-
             if (session.ParsedDataJson != null)
             {
                 var parsedData = JsonSerializer.Deserialize<XerStoredData>(session.ParsedDataJson, JsonOptions);
@@ -271,6 +310,10 @@ public class PrimaveraImportService : IPrimaveraImportService
                         ct);
                 }
             }
+
+            session.Status = PrimaveraImportStatus.Committed;
+            session.ImportType = importType;
+            await _repository.UpdateSessionAsync(session, ct);
 
             _logger.LogInformation(
                 "Import committed: Session={SessionId}, File={File}, Type={ImportType}",
@@ -380,6 +423,29 @@ public class PrimaveraImportService : IPrimaveraImportService
         }).ToList();
     }
 
+    public async Task<XerImportSessionDto?> GetSessionByIdAsync(Guid sessionId, CancellationToken ct = default)
+    {
+        var session = await _repository.GetSessionByIdAsync(sessionId, ct);
+        if (session == null) return null;
+
+        return new XerImportSessionDto
+        {
+            Id = session.Id,
+            SourceFileName = session.SourceFileName,
+            ImportedAt = session.ImportedAt,
+            ImportedBy = session.ImportedBy,
+            Status = session.Status.ToString(),
+            RowCounts = session.RowCounts,
+            ValidationSummary = session.ValidationSummary,
+            ErrorMessage = session.ErrorMessage,
+            ProjectCode = session.ProjectCode,
+            ProjectName = session.ProjectName,
+            TableNames = session.TableNames,
+            ImportType = session.ImportType?.ToString(),
+            ParsedDataJson = session.ParsedDataJson
+        };
+    }
+
     public async Task DeleteAllXerDataAsync(CancellationToken ct = default)
     {
         await _repository.DeleteAllXerDataAsync(ct);
@@ -393,60 +459,4 @@ public class PrimaveraImportService : IPrimaveraImportService
         var hash = sha256.ComputeHash(stream);
         return Convert.ToHexString(hash).ToLowerInvariant();
     }
-}
-
-public class XerStoredData
-{
-    public List<XerStoredActivity> Activities { get; set; } = new();
-    public List<XerStoredRelationship> Relationships { get; set; } = new();
-    public List<XerStoredResourceAssignment> ResourceAssignments { get; set; } = new();
-    public string? ProjectId { get; set; }
-    public string? ProjectName { get; set; }
-    public DateTime? LastRecalcDate { get; set; }
-    public DateTime? PlanStartDate { get; set; }
-    public DateTime? PlanEndDate { get; set; }
-    public DateTime? SchedEndDate { get; set; }
-    public DateTime? AddDate { get; set; }
-    public DateTime? LastTasksumDate { get; set; }
-    public DateTime? LastScheduleDate { get; set; }
-}
-
-public class XerStoredActivity
-{
-    public string TaskId { get; set; } = string.Empty;
-    public string? TaskCode { get; set; }
-    public string? WbsId { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Status { get; set; } = string.Empty;
-    public DateTime? StartDate { get; set; }
-    public DateTime? EndDate { get; set; }
-    public double Duration { get; set; }
-    public double OriginalDuration { get; set; }
-    public double RemainingDuration { get; set; }
-    public double PercentComplete { get; set; }
-    public DateTime? ActualStartDate { get; set; }
-    public DateTime? ActualEndDate { get; set; }
-    public DateTime? EarlyStartDate { get; set; }
-    public DateTime? EarlyEndDate { get; set; }
-    public DateTime? LateStartDate { get; set; }
-    public DateTime? LateEndDate { get; set; }
-    public double TotalFloat { get; set; }
-    public double FreeFloat { get; set; }
-    public string? CalendarId { get; set; }
-}
-
-public class XerStoredRelationship
-{
-    public string PredTaskId { get; set; } = string.Empty;
-    public string SuccTaskId { get; set; } = string.Empty;
-    public string Type { get; set; } = string.Empty;
-    public double LagDuration { get; set; }
-}
-
-public class XerStoredResourceAssignment
-{
-    public string TaskId { get; set; } = string.Empty;
-    public string ResourceId { get; set; } = string.Empty;
-    public double Units { get; set; }
-    public decimal CostPerUnit { get; set; }
 }

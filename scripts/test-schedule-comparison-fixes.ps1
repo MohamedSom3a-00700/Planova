@@ -16,19 +16,22 @@ Write-Host ""
 Write-Host "[1/4] Building solution..." -ForegroundColor Yellow
 dotnet build "$RepoRoot\Planova.UI\Planova.UI.csproj" --no-restore | Out-Null
 if ($LASTEXITCODE -ne 0) { throw "Build failed" }
+dotnet build "$RepoRoot\tests\Planova.ScheduleComparison.Tests\Planova.ScheduleComparison.Tests.csproj" --no-restore | Out-Null
+if ($LASTEXITCODE -ne 0) { throw "Test project build failed" }
 Write-Host "  PASS`tBuild succeeded" -ForegroundColor Green
 
 # ── Step 2: Unit tests ─────────────────────────────────
 Write-Host "[2/4] Running unit tests..." -ForegroundColor Yellow
-$testOut = dotnet test "$RepoRoot\tests\Planova.ScheduleComparison.Tests\Planova.ScheduleComparison.Tests.csproj" --no-build 2>&1
+$testOut = dotnet test "$RepoRoot\tests\Planova.ScheduleComparison.Tests\Planova.ScheduleComparison.Tests.csproj" 2>&1
 $testOut | Select-String "Passed!|Failed"
 if ($LASTEXITCODE -ne 0) { throw "Unit tests failed" }
-Write-Host "  PASS`tAll $($testOut | Select-String 'Total:' | ForEach-Object { $_ -replace '.*Total:\s*(\d+).*','$1' }) tests passed" -ForegroundColor Green
+Write-Host "  PASS`tAll unit tests passed" -ForegroundColor Green
 
 # ── Step 3: Pipeline round-trip tests ──────────────────
 Write-Host "[3/4] Verifying result-pipeline round-trip..." -ForegroundColor Yellow
-$pipeOut = dotnet test "$RepoRoot\tests\Planova.ScheduleComparison.Tests\Planova.ScheduleComparison.Tests.csproj" --no-build --filter "ScheduleComparisonResultPipeline" 2>&1
+$pipeOut = dotnet test "$RepoRoot\tests\Planova.ScheduleComparison.Tests\Planova.ScheduleComparison.Tests.csproj" --filter "ScheduleComparisonResultPipeline" 2>&1
 $pipeOut | Select-String "Passed!|Failed"
+if ($LASTEXITCODE -ne 0) { throw "Pipeline tests failed" }
 Write-Host "  PASS`t5 pipeline round-trip tests passed" -ForegroundColor Green
 
 # ── Step 4: Launch app ─────────────────────────────────

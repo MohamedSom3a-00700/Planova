@@ -1,0 +1,43 @@
+<UserControl x:Class="Planova.UI.Views.Boq.BoqImportPreviewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:conv="clr-namespace:Planova.UI.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800">
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Import Preview" FontSize="20" FontWeight="Bold" Margin="0,0,0,12"/>
+
+        <ListView Grid.Row="1" ItemsSource="{Binding PreviewRows}"
+                  VirtualizingPanel.ScrollUnit="Item"
+                  VirtualizingPanel.VirtualizationMode="Recycling"
+                  Background="{DynamicResource ThemeSurface}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Code" Width="100" DisplayMemberBinding="{Binding Code}"/>
+                    <GridViewColumn Header="Description" Width="250" DisplayMemberBinding="{Binding Description}"/>
+                    <GridViewColumn Header="Unit" Width="70" DisplayMemberBinding="{Binding Unit}"/>
+                    <GridViewColumn Header="Quantity" Width="100" DisplayMemberBinding="{Binding Quantity}"/>
+                    <GridViewColumn Header="Rate" Width="100" DisplayMemberBinding="{Binding Rate}"/>
+                    <GridViewColumn Header="Amount" Width="100" DisplayMemberBinding="{Binding Amount}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <TextBlock Text="{Binding RowCount, StringFormat='{}{0} rows'}" VerticalAlignment="Center" Margin="0,0,16,0"/>
+            <Button Content="Import" Command="{Binding ImportCommand}" MinWidth="100" Height="30"/>
+            <Button Content="Cancel" Command="{Binding CancelCommand}" MinWidth="100" Height="30" Margin="8,0,0,0"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

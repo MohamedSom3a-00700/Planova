@@ -13,6 +13,7 @@ public class Wbs
     public WbsSource Source { get; set; } = WbsSource.Manual;
     public Guid? SourceBoqId { get; set; }
     public decimal TotalWeight { get; set; }
+    public string? CreatedBy { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 

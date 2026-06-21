@@ -13,4 +13,7 @@ public record ProjectPartyDto(
     int DisplayOrder,
     DateTime CreatedAt,
     DateTime UpdatedAt
-);
+)
+{
+    public string ProjectName { get; init; } = string.Empty;
+}

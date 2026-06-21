@@ -117,6 +117,9 @@ public class BoqImportSmokeTests : IDisposable
             Level: null,
             ParentId: null,
             ParentCode: null,
+            Classification: null,
+            Division: null,
+            SourceSheet: null,
             RawValues: new Dictionary<string, object>(r, StringComparer.OrdinalIgnoreCase)
         )).ToList();
 
@@ -126,7 +129,8 @@ public class BoqImportSmokeTests : IDisposable
             Mock.Of<IBoqItemRepository>(),
             treeBuilder,
             Mock.Of<IBoqCsvReader>(),
-            Mock.Of<IExcelRowReader>());
+            Mock.Of<IExcelRowReader>(),
+            new BoqDescriptionParser());
 
         var preview = await service.PreviewImportAsync(importRows, TreeBuildStrategy.LevelColumn, CancellationToken.None);
 

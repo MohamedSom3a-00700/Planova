@@ -11,10 +11,13 @@ public record UpdateProjectDto(
     int? ClientId,
     int? ContractorId,
     int? SubcontractorId,
+    int? ConsultantId,
     string? Notes,
     string? LogoSourcePath = null,
+    string? CoverImageSourcePath = null,
     string? DocumentsFolder = null,
     double? Latitude = null,
     double? Longitude = null,
+    string? GoogleMapsLink = null,
     string? QrCodePath = null
 );

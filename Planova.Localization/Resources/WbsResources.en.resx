@@ -86,4 +86,16 @@
   <data name="WbsWeightExceeded" xml:space="preserve"><value>Total weight of siblings cannot exceed 100%</value></data>
   <data name="WbsWorkPackageNoChildren" xml:space="preserve"><value>Work Package items cannot have children</value></data>
   <data name="WbsDateValidation" xml:space="preserve"><value>Finish date must be on or after start date</value></data>
+  <data name="WbsMapping_EmptyTitle" xml:space="preserve"><value>No Mapping Data</value></data>
+  <data name="WbsMapping_EmptyDescription" xml:space="preserve"><value>Import a BOQ to start mapping</value></data>
+  <data name="WbsMapping_BySection" xml:space="preserve"><value>By Section</value></data>
+  <data name="WbsMapping_ByCSI" xml:space="preserve"><value>By CSI Code</value></data>
+  <data name="WbsMapping_ByCostCode" xml:space="preserve"><value>By Cost Code</value></data>
+  <data name="WbsMapping_ByTrade" xml:space="preserve"><value>By Trade</value></data>
+  <data name="WbsMapping_ByDiscipline" xml:space="preserve"><value>By Discipline</value></data>
+  <data name="WbsReports_Title" xml:space="preserve"><value>WBS Reports</value></data>
+  <data name="WbsReports_Export" xml:space="preserve"><value>Export</value></data>
+  <data name="WbsTemplates_Title" xml:space="preserve"><value>WBS Templates</value></data>
+  <data name="WbsTemplates_Apply" xml:space="preserve"><value>Apply Template</value></data>
+  <data name="WbsTemplates_Category" xml:space="preserve"><value>Category</value></data>
 </root>

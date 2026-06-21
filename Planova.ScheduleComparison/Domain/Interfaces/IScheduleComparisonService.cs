@@ -21,6 +21,6 @@ public interface IScheduleComparisonService
 
     Task<ComparisonSession?> GetSessionAsync(Guid sessionId, CancellationToken ct = default);
     Task<List<ComparisonSession>> ListSessionsAsync(int projectId, CancellationToken ct = default);
-    Task ReOpenSessionAsync(Guid sessionId, CancellationToken ct = default);
+    Task ValidateCanReOpenAsync(Guid sessionId, CancellationToken ct = default);
     Task SoftDeleteSessionAsync(Guid sessionId, CancellationToken ct = default);
 }

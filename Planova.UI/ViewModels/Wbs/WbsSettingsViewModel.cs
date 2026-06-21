@@ -32,6 +32,9 @@ public sealed partial class WbsSettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool _enableAiAssistedEditing = true;
 
+    [ObservableProperty]
+    private bool _enableDragDrop = true;
+
     public WbsSettingsViewModel()
     {
     }

@@ -98,16 +98,19 @@ public partial class ScheduleComparisonViewModel : ObservableObject
             switch (tab.Content)
             {
                 case CompareViewModel vm:
-                    vm.CurrentSummary = result.Summary.ToSummaryDto();
+                    vm.CurrentSummary = result.Summary?.ToSummaryDto();
                     break;
                 case ActivityDiffViewModel vm:
-                    vm.LoadDiffs(result.ActivityDiffs.Select(d => d.ToDto()).ToList());
+                    if (result.ActivityDiffs != null)
+                        vm.LoadDiffs(result.ActivityDiffs.Select(d => d.ToDto()).ToList());
                     break;
                 case LogicDiffViewModel vm:
-                    vm.LoadDiffs(result.LogicDiffs.Select(d => d.ToDto()).ToList());
+                    if (result.LogicDiffs != null)
+                        vm.LoadDiffs(result.LogicDiffs.Select(d => d.ToDto()).ToList());
                     break;
                 case ResourceDiffViewModel vm:
-                    vm.LoadDiffs(result.ResourceDiffs.Select(d => d.ToDto()).ToList());
+                    if (result.ResourceDiffs != null)
+                        vm.LoadDiffs(result.ResourceDiffs.Select(d => d.ToDto()).ToList());
                     break;
                 case CriticalPathDiffViewModel vm:
                     vm.LoadDiff(result.CriticalPathDiffResult?.ToDto());

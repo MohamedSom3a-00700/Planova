@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Planova.Domain.Entities;
 using Planova.Persistence.DbContext;
 using Planova.Persistence.Extensions;
+using Planova.Primavera.Application.Models;
 using Planova.Primavera.Application.Parsers;
 using Planova.Primavera.Application.Services;
 using Planova.Primavera.Domain.Entities;
@@ -55,7 +56,10 @@ await ctx.Database.EnsureCreatedAsync();
 
 if (cmdClean)
 {
-    var existingSessions = await ctx.Set<XerImportSession>().ToListAsync();
+    var query = ctx.Set<XerImportSession>().AsQueryable();
+    if (selectedProject != null)
+        query = query.Where(s => s.ProjectId == selectedProject.Id);
+    var existingSessions = await query.ToListAsync();
     ctx.Set<XerImportSession>().RemoveRange(existingSessions);
     await ctx.SaveChangesAsync();
     Console.WriteLine($"Cleaned {existingSessions.Count} existing import sessions.");
@@ -222,6 +226,7 @@ if (string.Equals(commit, "y", StringComparison.OrdinalIgnoreCase))
     var session = new XerImportSession
     {
         Id = Guid.NewGuid(),
+        ProjectId = selectedProject?.Id ?? 0,
         Status = PrimaveraImportStatus.Committed,
         SourceFileName = Path.GetFileName(xerPath),
         SourceFileHash = Convert.ToHexString(

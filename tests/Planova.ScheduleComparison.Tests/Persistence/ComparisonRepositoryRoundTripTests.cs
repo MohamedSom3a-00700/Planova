@@ -105,6 +105,7 @@ public class ComparisonRepositoryRoundTripTests : IDisposable
                 EntityType = "Activity",
                 MatchKey = "A1",
                 ChangeType = ChangeType.Modified,
+                MatchConfidence = MatchConfidence.High,
                 FieldName = "Duration",
                 OldValue = "5",
                 NewValue = "10",
@@ -117,6 +118,7 @@ public class ComparisonRepositoryRoundTripTests : IDisposable
                 EntityType = "Relationship",
                 MatchKey = "R1",
                 ChangeType = ChangeType.Added,
+                MatchConfidence = MatchConfidence.High,
                 Severity = "Major"
             }
         };
@@ -194,9 +196,11 @@ public class ComparisonRepositoryRoundTripTests : IDisposable
             EntityType = "Activity",
             MatchKey = $"A{i}",
             ChangeType = ChangeType.Modified,
+            MatchConfidence = MatchConfidence.High,
             FieldName = "Duration",
             OldValue = "5",
-            NewValue = "10"
+            NewValue = "10",
+            Severity = "Info"
         }).ToList();
 
         await _repo.AddResultsAsync(results);

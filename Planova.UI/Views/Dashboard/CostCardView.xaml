@@ -1,0 +1,51 @@
+<UserControl x:Class="Planova.UI.Views.Dashboard.CostCardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:vm="clr-namespace:Planova.UI.ViewModels.Dashboard"
+              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+              d:DataContext="{d:DesignInstance vm:CostCardViewModel}"
+              mc:Ignorable="d">
+    <Border Style="{StaticResource CostCardStyle}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <ui:SymbolIcon Symbol="Money24" FontSize="28" Foreground="{DynamicResource ThemeAccent}" HorizontalAlignment="Left"/>
+
+            <TextBlock Grid.Row="1" Text="{Binding ProjectName}" Style="{StaticResource CardTitleStyle}"/>
+
+            <StackPanel Grid.Row="2" VerticalAlignment="Center">
+                <TextBlock Style="{StaticResource CardSubValueStyle}">
+                    <Run Text="Original: "/><Run Text="{Binding OriginalBudget, StringFormat={}{0:N2}}"/>
+                </TextBlock>
+                <TextBlock Style="{StaticResource CardSubValueStyle}">
+                    <Run Text="Current: "/><Run Text="{Binding CurrentBudget, StringFormat={}{0:N2}}"/>
+                </TextBlock>
+                <TextBlock Style="{StaticResource CardSubValueStyle}">
+                    <Run Text="Actual: "/><Run Text="{Binding ActualCost, StringFormat={}{0:N2}}"/>
+                </TextBlock>
+                <TextBlock Style="{StaticResource CardSubValueStyle}">
+                    <Run Text="EV: "/><Run Text="{Binding EarnedValue, StringFormat={}{0:N2}}"/>
+                </TextBlock>
+                <TextBlock Style="{StaticResource CardSubValueStyle}">
+                    <Run Text="CPI: "/><Run Text="{Binding Cpi, StringFormat={}{0:F4}}"/>
+                </TextBlock>
+                <TextBlock Style="{StaticResource CardSubValueStyle}">
+                    <Run Text="SPI: "/><Run Text="{Binding Spi, StringFormat={}{0:F4}}"/>
+                </TextBlock>
+            </StackPanel>
+
+            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="Budget: " Foreground="{DynamicResource BrandTextSecondary}" FontSize="12"/>
+                <TextBlock Text="{Binding CurrentBudget, StringFormat={}{0:N2}}"
+                           Foreground="{DynamicResource BrandTextSecondary}" FontSize="12"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

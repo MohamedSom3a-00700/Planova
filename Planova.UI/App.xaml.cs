@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+using Planova.Application.Interfaces;
 using Planova.Application.Repositories;
 using Planova.Application.Services;
 using Planova.Infrastructure.Logging;
@@ -30,7 +31,10 @@ using Planova.UI.Views.AI;
 using Planova.UI.Views.Boq;
 using Planova.UI.Views.Clients;
 using Planova.UI.Views.Wbs;
+using Planova.UI.ViewModels.Projects;
+using Planova.UI.ViewModels.Parties;
 using Planova.UI.Views.Projects;
+using Planova.UI.Views.Parties;
 using Planova.UI.Views.Contracts;
 using Planova.UI.Views.Dashboard;
 using Planova.UI.Views.Excel;
@@ -82,22 +86,32 @@ public partial class App : System.Windows.Application
         DispatcherUnhandledException += OnDispatcherUnhandledException;
         AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainUnhandledException;
 
+        var splash = new Views.SplashScreenView();
+        splash.Show();
+
         try
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
             Log.Information("Planova starting up");
+            splash.ReportProgress(5, "Initializing services...");
 
             _host = Host.CreateDefaultBuilder(e.Args)
                 .UseSerilog(dispose: true)
                 .ConfigureServices(ConfigureServices)
                 .Build();
 
+            splash.ReportProgress(20, "Configuring database...");
+
             var databaseService = _host.Services.GetRequiredService<IDatabaseService>();
             databaseService.InitializeAsync().GetAwaiter().GetResult();
 
+            splash.ReportProgress(40, "Loading settings...");
+
             var settingsService = _host.Services.GetRequiredService<ISettingsService>();
             settingsService.Load().GetAwaiter().GetResult();
+
+            splash.ReportProgress(55, "Applying theme...");
 
             var theme = settingsService.Get<string>("ThemePreference");
             var resolvedTheme = AppTheme.Dark;
@@ -110,6 +124,8 @@ public partial class App : System.Windows.Application
 
             ApplyWpfUiTheme(resolvedTheme);
 
+            splash.ReportProgress(70, "Configuring language...");
+
             var language = settingsService.Get<string>("LanguagePreference");
             if (!string.IsNullOrEmpty(language))
             {
@@ -117,9 +133,14 @@ public partial class App : System.Windows.Application
                 localizationService.SetLanguage(language);
             }
 
+            splash.ReportProgress(85, "Preparing workspace...");
+
             var shellView = _host.Services.GetRequiredService<ShellView>();
 
             ApplyWindowBounds(shellView, settingsService);
+
+            splash.ReportProgress(100, "Ready");
+            splash.Close();
 
             shellView.Show();
 
@@ -134,9 +155,21 @@ public partial class App : System.Windows.Application
                     navService.NavigateTo(targetId);
                 }
             }
+
+            // Support startup action via command-line argument: --action <new|edit|delete>
+            var actionIndex = Array.IndexOf(e.Args, "--action");
+            if (actionIndex >= 0 && actionIndex + 1 < e.Args.Length)
+            {
+                var action = e.Args[actionIndex + 1];
+                if (!string.IsNullOrEmpty(action))
+                {
+                    System.Windows.Application.Current.Properties["StartupAction"] = action;
+                }
+            }
         }
         catch (Exception ex)
         {
+            splash.Close();
             Log.Fatal(ex, "Application terminated unexpectedly");
             MessageBox.Show(
                 "An error occurred while starting the application. Please check the logs for details.",
@@ -168,6 +201,7 @@ public partial class App : System.Windows.Application
         services.AddScoped<IContractRepository, ContractRepository>();
         services.AddScoped<IContractorRepository, ContractorRepository>();
         services.AddScoped<ISubcontractorRepository, SubcontractorRepository>();
+        services.AddScoped<IConsultantRepository, ConsultantRepository>();
         services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 
         services.AddScoped<IProjectService, ProjectService>();
@@ -175,9 +209,12 @@ public partial class App : System.Windows.Application
         services.AddScoped<IContractService, ContractService>();
         services.AddScoped<IContractorService, ContractorService>();
         services.AddScoped<ISubcontractorService, SubcontractorService>();
+        services.AddScoped<IConsultantService, ConsultantService>();
         services.AddScoped<IUserProfileService, UserProfileService>();
         services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<IReportService, ReportService>();
+        services.AddScoped<IProjectFolderService, ProjectFolderService>();
+        services.AddScoped<IPartyService, PartyService>();
 
         services.AddTransient<ShellViewModel>();
         services.AddTransient<ShellView>();
@@ -193,6 +230,16 @@ public partial class App : System.Windows.Application
         services.AddTransient<UserProfileView>();
         services.AddTransient<DashboardViewModel>();
         services.AddTransient<DashboardView>();
+        services.AddTransient<ViewModels.Dashboard.HealthCardViewModel>();
+        services.AddTransient<ViewModels.Dashboard.CostCardViewModel>();
+        services.AddTransient<ProjectListViewModel>();
+        services.AddTransient<ProjectListView>();
+        services.AddTransient<ProjectDetailViewModel>();
+        services.AddTransient<ProjectDetailView>();
+        services.AddTransient<PartyListViewModel>();
+        services.AddTransient<PartyListView>();
+        services.AddTransient<PartyDetailViewModel>();
+        services.AddTransient<PartyDetailView>();
         services.AddTransient<AssistantPanelViewModel>();
         services.AddTransient<AssistantPanelView>();
         services.AddTransient<SettingsViewModel>();
@@ -205,6 +252,7 @@ public partial class App : System.Windows.Application
         services.AddPlanovaActivity();
         services.AddScoped<IExcelRowReader, ExcelRowReader>();
         services.AddScoped<IMappingProfileService, MappingProfileService>();
+        services.AddScoped<IBoqFileUploadService, BoqFileUploadService>();
         services.AddTransient<WorkbookBrowserViewModel>();
         services.AddTransient<WorkbookBrowserView>();
         services.AddTransient<ImportViewModel>();
@@ -222,6 +270,9 @@ public partial class App : System.Windows.Application
         services.AddTransient<BoqEditorView>();
         services.AddTransient<BoqImportViewModel>();
         services.AddTransient<BoqImportWizardView>();
+        services.AddTransient<BoqImportOutlineViewModel>();
+        services.AddTransient<BoqImportOutlineView>();
+        services.AddTransient<BoqImportPreviewView>();
         services.AddTransient<BoqValidationViewModel>();
         services.AddTransient<BoqValidationView>();
         services.AddTransient<BoqClassificationViewModel>();
@@ -249,6 +300,8 @@ public partial class App : System.Windows.Application
         services.AddTransient<WbsAiGenerationView>();
         services.AddTransient<WbsReportViewModel>();
         services.AddTransient<WbsReportView>();
+        services.AddTransient<WbsReportsViewModel>();
+        services.AddTransient<WbsReportsView>();
         services.AddTransient<WbsStudioViewModel>();
         services.AddTransient<WbsStudioView>();
         services.AddTransient<WbsSettingsViewModel>();
@@ -479,10 +532,18 @@ public partial class App : System.Windows.Application
         System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
     {
         Log.Error(e.Exception, "Unhandled dispatcher exception");
-        var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Planova", "logs");
-        Directory.CreateDirectory(dir);
-        File.WriteAllText(Path.Combine(dir, "fatal-error.txt"),
-            $"Message: {e.Exception.Message}\nType: {e.Exception.GetType()}\nStack: {e.Exception.StackTrace}\nInner: {e.Exception.InnerException?.Message}");
+        try
+        {
+            var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Planova", "logs");
+            Directory.CreateDirectory(dir);
+            File.WriteAllText(Path.Combine(dir, "fatal-error.txt"),
+                $"Message: {e.Exception.Message}\nType: {e.Exception.GetType()}\nStack: {e.Exception.StackTrace}\nInner: {e.Exception.InnerException?.Message}");
+        }
+        catch (Exception ioEx)
+        {
+            Log.Error(ioEx, "Failed to write fatal error log");
+        }
+
         MessageBox.Show(
             $"An unexpected error occurred: {e.Exception.Message}",
             "Error",

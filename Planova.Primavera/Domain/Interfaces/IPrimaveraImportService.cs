@@ -10,5 +10,6 @@ public interface IPrimaveraImportService
     Task<XerImportResultDto> CancelImportAsync(Guid sessionId, CancellationToken ct = default);
     Task<List<XerImportSessionDto>> GetImportedSessionsAsync(CancellationToken ct = default);
     Task<List<XerImportSessionDto>> GetImportedSessionsByProjectAsync(int projectId, CancellationToken ct = default);
+    Task<XerImportSessionDto?> GetSessionByIdAsync(Guid sessionId, CancellationToken ct = default);
     Task DeleteAllXerDataAsync(CancellationToken ct = default);
 }

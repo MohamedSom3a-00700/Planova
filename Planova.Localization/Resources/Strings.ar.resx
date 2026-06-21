@@ -100,6 +100,45 @@
   <data name="DashboardRecentActivity" xml:space="preserve"><value>النشاط الأخير</value></data>
   <data name="DashboardNewProject" xml:space="preserve"><value>+ مشروع جديد</value></data>
   <data name="DashboardNewClient" xml:space="preserve"><value>+ عميل جديد</value></data>
+  <data name="Dashboard_Loading" xml:space="preserve"><value>جاري التحميل...</value></data>
+  <data name="Dashboard_EmptyTitle" xml:space="preserve"><value>لا توجد مشاريع بعد</value></data>
+  <data name="Dashboard_EmptyDescription" xml:space="preserve"><value>قم بإنشاء مشروعك الأول للبدء</value></data>
+  <data name="Dashboard_CreateFirstProject" xml:space="preserve"><value>إنشاء أول مشروع</value></data>
+  <data name="Projects_Loading" xml:space="preserve"><value>جاري تحميل المشاريع...</value></data>
+  <data name="Projects_EmptyTitle" xml:space="preserve"><value>لا توجد مشاريع بعد</value></data>
+  <data name="Projects_EmptyDescription" xml:space="preserve"><value>قم بإنشاء مشروعك الأول للبدء</value></data>
+  <data name="Projects_OpenFolder" xml:space="preserve"><value>فتح المجلد</value></data>
+  <data name="Projects_GoogleMaps" xml:space="preserve"><value>خرائط Google</value></data>
+  <data name="Projects_CreateFolderStructure" xml:space="preserve"><value>إنشاء هيكل المجلدات</value></data>
+  <data name="Projects_Logo" xml:space="preserve"><value>الشعار</value></data>
+  <data name="Projects_CoverImage" xml:space="preserve"><value>صورة الغلاف</value></data>
+  <data name="Parties_Loading" xml:space="preserve"><value>جاري تحميل الأطراف...</value></data>
+  <data name="Parties_EmptyTitle" xml:space="preserve"><value>لا توجد أطراف بعد</value></data>
+  <data name="Parties_EmptyDescription" xml:space="preserve"><value>أضف طرفاً للبدء</value></data>
+  <data name="BoqImport_Loading" xml:space="preserve"><value>جاري تحميل بيانات BOQ...</value></data>
+  <data name="BoqImport_EmptyTitle" xml:space="preserve"><value>لا توجد بيانات BOQ</value></data>
+  <data name="BoqImport_EmptyDescription" xml:space="preserve"><value>قم باستيراد ملف Excel للبدء</value></data>
+  <data name="BoqImport_ColumnMapping" xml:space="preserve"><value>تعيين الأعمدة</value></data>
+  <data name="BoqImport_Preview" xml:space="preserve"><value>معاينة</value></data>
+  <data name="BoqImport_Export" xml:space="preserve"><value>تصدير</value></data>
+  <data name="BoqExport_Title" xml:space="preserve"><value>تصدير BOQ</value></data>
+  <data name="BoqExport_Excel" xml:space="preserve"><value>تصدير إلى Excel</value></data>
+  <data name="BoqExport_CSV" xml:space="preserve"><value>تصدير إلى CSV</value></data>
+  <data name="BoqExport_PDF" xml:space="preserve"><value>تصدير إلى PDF</value></data>
+  <data name="BoqExport_Tender" xml:space="preserve"><value>BOQ العطاء</value></data>
+  <data name="BoqExport_Client" xml:space="preserve"><value>BOQ العميل</value></data>
+  <data name="WbsMapping_EmptyTitle" xml:space="preserve"><value>لا توجد بيانات تحويل</value></data>
+  <data name="WbsMapping_EmptyDescription" xml:space="preserve"><value>قم باستيراد BOQ لبدء التحويل</value></data>
+  <data name="WbsMapping_BySection" xml:space="preserve"><value>حسب القسم</value></data>
+  <data name="WbsMapping_ByCSI" xml:space="preserve"><value>حسب كود CSI</value></data>
+  <data name="WbsMapping_ByCostCode" xml:space="preserve"><value>حسب كود التكلفة</value></data>
+  <data name="WbsMapping_ByTrade" xml:space="preserve"><value>حسب التخصص</value></data>
+  <data name="WbsMapping_ByDiscipline" xml:space="preserve"><value>حسب الاختصاص</value></data>
+  <data name="WbsReports_Title" xml:space="preserve"><value>تقارير WBS</value></data>
+  <data name="WbsReports_Export" xml:space="preserve"><value>تصدير</value></data>
+  <data name="WbsTemplates_Title" xml:space="preserve"><value>قوالب WBS</value></data>
+  <data name="WbsTemplates_Apply" xml:space="preserve"><value>تطبيق القالب</value></data>
+  <data name="WbsTemplates_Category" xml:space="preserve"><value>الفئة</value></data>
   <data name="ReportTitle" xml:space="preserve"><value>التقارير</value></data>
   <data name="ReportTabProjects" xml:space="preserve"><value>المشاريع</value></data>
   <data name="ReportTabClients" xml:space="preserve"><value>العملاء</value></data>

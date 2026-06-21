@@ -12,12 +12,14 @@
                 <Rectangle Width="4" Height="16" Fill="{Binding LevelColor}" Margin="0,0,8,0"/>
                 <TextBlock Text="{Binding Code}" FontWeight="SemiBold" Margin="0,0,8,0"/>
                 <TextBlock Text="{Binding Name}" Margin="0,0,8,0"/>
-                <TextBlock Text="{Binding WeightPercent}" Foreground="Gray"/>
+                <TextBlock Text="{Binding WeightPercent}" Foreground="Gray" Margin="0,0,8,0"/>
+                <TextBlock Text="{Binding NodeInfo}" Foreground="SteelBlue" FontStyle="Italic"/>
             </StackPanel>
         </HierarchicalDataTemplate>
     </UserControl.Resources>
     <Grid Margin="16">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -29,16 +31,22 @@
                       DisplayMemberPath="Name"
                       MinWidth="250"
                       ToolTip="Select a WBS to view"/>
-            <CheckBox Content="Primavera Colors" IsChecked="{Binding UsePrimaveraColors}"
-                      Margin="16,0,0,0" VerticalAlignment="Center"/>
+            <ComboBox ItemsSource="{Binding ViewModes}"
+                      SelectedItem="{Binding ViewMode}"
+                      MinWidth="140"
+                      VerticalAlignment="Center"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
-            <Button Content="Expand All" Margin="0,0,8,0"/>
-            <Button Content="Collapse All"/>
+            <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Width="200" Margin="0,0,8,0"
+                     ToolTip="Search node by name or code"/>
+            <Button Content="Search" Command="{Binding SearchNodeCommand}" Margin="0,0,8,0"/>
+            <Button Content="Clear" Command="{Binding ClearSearchCommand}" Margin="0,0,16,0"/>
+            <Button Content="Expand All" Command="{Binding ExpandAllCommand}" Margin="0,0,8,0"/>
+            <Button Content="Collapse All" Command="{Binding CollapseAllCommand}"/>
         </StackPanel>
 
-        <TreeView Grid.Row="2" ItemsSource="{Binding RootNodes}"
+        <TreeView Grid.Row="3" ItemsSource="{Binding FilteredRootNodes}"
                   VirtualizingPanel.ScrollUnit="Item"
                   VirtualizingPanel.VirtualizationMode="Recycling"/>
     </Grid>

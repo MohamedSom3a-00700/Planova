@@ -41,6 +41,11 @@ public partial class PrimaveraStudioViewModel : ObservableObject
         RepairViewModel = repairVm;
         ExportViewModel = exportVm;
 
+        ImportViewModel.ImportCommitted += async () =>
+        {
+            await WorkspaceViewModel.LoadSessionsAsync();
+        };
+
         _currentProjectService.CurrentProjectChanged += OnCurrentProjectChanged;
 
         if (_currentProjectService.CurrentProject is { } project)

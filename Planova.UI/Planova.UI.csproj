@@ -47,6 +47,9 @@
     <Resource Include="Resources\Branding\LogoLight.png" />
     <Resource Include="Resources\Branding\WordmarkDark.png" />
     <Resource Include="Resources\Branding\WordmarkLight.png" />
+    <Resource Include="Resources\Branding\Splashscreen.png" />
+    <Resource Include="Resources\Branding\Splashscreen-light.png" />
+    <Resource Include="Resources\Branding\planova-ai.png" />
   </ItemGroup>
 
 </Project>

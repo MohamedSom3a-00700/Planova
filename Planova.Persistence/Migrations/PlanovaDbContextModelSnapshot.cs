@@ -517,6 +517,63 @@ namespace Planova.Persistence.Migrations
                     b.ToTable("BoqClassifications", (string)null);
                 });
 
+            modelBuilder.Entity("Planova.Boq.Domain.Entities.BoqImportSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImportMode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ImportedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.Property<int?>("ImportedByUserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("TotalItemsImported")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TotalSectionsCreated")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TotalSheetsDetected")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TotalSheetsImported")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BoqImportSessions", (string)null);
+                });
+
             modelBuilder.Entity("Planova.Boq.Domain.Entities.BoqItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -676,6 +733,44 @@ namespace Planova.Persistence.Migrations
                         .HasDatabaseName("IX_BoqLibraryItems_LibraryId");
 
                     b.ToTable("BoqLibraryItems", (string)null);
+                });
+
+            modelBuilder.Entity("Planova.Boq.Domain.Entities.BoqWorksheetMapping", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ColumnMappings")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ImportSessionId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("MatchConfidence")
+                        .HasPrecision(5, 4)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RowsImported")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("SectionAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("WorksheetName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ImportSessionId");
+
+                    b.ToTable("BoqWorksheetMappings", (string)null);
                 });
 
             modelBuilder.Entity("Planova.Cost.Domain.Entities.ActualCost", b =>
@@ -1078,6 +1173,68 @@ namespace Planova.Persistence.Migrations
                     b.ToTable("Clients", (string)null);
                 });
 
+            modelBuilder.Entity("Planova.Domain.Entities.Consultant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContactEmail")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContactPhone")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.Property<string>("Logo")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(4000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("OrganizationDetails")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Consultants_Code");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Consultants_Name");
+
+                    b.HasIndex("UpdatedAt")
+                        .HasDatabaseName("IX_Consultants_UpdatedAt");
+
+                    b.ToTable("Consultants", (string)null);
+                });
+
             modelBuilder.Entity("Planova.Domain.Entities.Contract", b =>
                 {
                     b.Property<int>("Id")
@@ -1273,11 +1430,79 @@ namespace Planova.Persistence.Migrations
                     b.ToTable("ExcelMappingProfiles", (string)null);
                 });
 
+            modelBuilder.Entity("Planova.Domain.Entities.Party", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContactEmail")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContactName")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContactPhone")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.Property<string>("LogoPath")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PartyType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("datetime('now')");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_Parties_Name");
+
+                    b.ToTable("Parties", (string)null);
+                });
+
             modelBuilder.Entity("Planova.Domain.Entities.Project", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<int>("ActivityCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal?>("ActualCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("Budget")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
 
                     b.Property<int?>("ClientId")
                         .HasColumnType("INTEGER");
@@ -1287,16 +1512,49 @@ namespace Planova.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ConnectedDatabase")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ConnectedXerPath")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("ConsultantId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int?>("ContractorId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<decimal?>("CostHealthPct")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CoverImagePath")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("Cpi")
+                        .HasPrecision(10, 4)
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasDefaultValueSql("datetime('now')");
 
+                    b.Property<int?>("CriticalActivityCount")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Currency")
                         .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("CurrentBudget")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("CurrentDataDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -1307,7 +1565,28 @@ namespace Planova.Persistence.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("TEXT");
 
+                    b.Property<decimal?>("EarnedValue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime?>("FinishDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("GoogleMapsLink")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HealthIndicator")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("Green");
+
+                    b.Property<DateTime?>("LastExportDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("LastImportDate")
                         .HasColumnType("TEXT");
 
                     b.Property<double?>("Latitude")
@@ -1333,8 +1612,35 @@ namespace Planova.Persistence.Migrations
                         .HasMaxLength(4000)
                         .HasColumnType("TEXT");
 
+                    b.Property<decimal?>("OriginalBudget")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("ProgressPercentage")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProjectFolderPath")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("QrCodePath")
                         .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RiskLevel")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("Low");
+
+                    b.Property<decimal?>("ScheduleHealthPct")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("Spi")
+                        .HasPrecision(10, 4)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("StartDate")
@@ -1361,6 +1667,8 @@ namespace Planova.Persistence.Migrations
                     b.HasIndex("Code")
                         .IsUnique()
                         .HasDatabaseName("IX_Projects_Code");
+
+                    b.HasIndex("ConsultantId");
 
                     b.HasIndex("ContractorId")
                         .HasDatabaseName("IX_Projects_ContractorId");
@@ -1426,6 +1734,30 @@ namespace Planova.Persistence.Migrations
                         .HasDatabaseName("IX_ProjectDocuments_ProjectId_Type");
 
                     b.ToTable("ProjectDocuments", (string)null);
+                });
+
+            modelBuilder.Entity("Planova.Domain.Entities.ProjectPartyLink", b =>
+                {
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("PartyId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ProjectId", "PartyId");
+
+                    b.HasIndex("PartyId");
+
+                    b.HasIndex("ProjectId", "PartyId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_ProjectPartyLinks_ProjectId_PartyId");
+
+                    b.ToTable("ProjectPartyLinks", (string)null);
                 });
 
             modelBuilder.Entity("Planova.Domain.Entities.Subcontractor", b =>
@@ -1809,8 +2141,8 @@ namespace Planova.Persistence.Migrations
                     b.Property<DateTime?>("AddDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ImportSessionId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("ImportSessionId")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("ImportedAt")
                         .HasColumnType("TEXT");
@@ -3164,6 +3496,9 @@ namespace Planova.Persistence.Migrations
                         .HasColumnType("TEXT")
                         .HasDefaultValueSql("datetime('now')");
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Description")
                         .HasMaxLength(2000)
                         .HasColumnType("TEXT");
@@ -3217,6 +3552,32 @@ namespace Planova.Persistence.Migrations
                     b.ToTable("Wbs", (string)null);
                 });
 
+            modelBuilder.Entity("Planova.Wbs.Domain.Entities.WbsEditLock", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("LockExpiresAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("LockedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("LockedByUserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("WbsId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WbsId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_WbsEditLocks_WbsId");
+
+                    b.ToTable("WbsEditLocks", (string)null);
+                });
+
             modelBuilder.Entity("Planova.Wbs.Domain.Entities.WbsItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3245,6 +3606,10 @@ namespace Planova.Persistence.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Discipline")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("DurationDays")
                         .HasColumnType("INTEGER");
 
@@ -3261,6 +3626,10 @@ namespace Planova.Persistence.Migrations
 
                     b.Property<string>("Notes")
                         .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Owner")
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<Guid?>("ParentId")
@@ -3549,6 +3918,17 @@ namespace Planova.Persistence.Migrations
                     b.Navigation("Library");
                 });
 
+            modelBuilder.Entity("Planova.Boq.Domain.Entities.BoqWorksheetMapping", b =>
+                {
+                    b.HasOne("Planova.Boq.Domain.Entities.BoqImportSession", "ImportSession")
+                        .WithMany("WorksheetMappings")
+                        .HasForeignKey("ImportSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ImportSession");
+                });
+
             modelBuilder.Entity("Planova.Cost.Domain.Entities.BudgetRevision", b =>
                 {
                     b.HasOne("Planova.Cost.Domain.Entities.Budget", "Budget")
@@ -3597,6 +3977,11 @@ namespace Planova.Persistence.Migrations
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("Planova.Domain.Entities.Consultant", "Consultant")
+                        .WithMany("Projects")
+                        .HasForeignKey("ConsultantId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Planova.Domain.Entities.Contractor", "Contractor")
                         .WithMany("Projects")
                         .HasForeignKey("ContractorId")
@@ -3608,6 +3993,8 @@ namespace Planova.Persistence.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Client");
+
+                    b.Navigation("Consultant");
 
                     b.Navigation("Contractor");
 
@@ -3621,6 +4008,25 @@ namespace Planova.Persistence.Migrations
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("Planova.Domain.Entities.ProjectPartyLink", b =>
+                {
+                    b.HasOne("Planova.Domain.Entities.Party", "Party")
+                        .WithMany()
+                        .HasForeignKey("PartyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Planova.Domain.Entities.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Party");
 
                     b.Navigation("Project");
                 });
@@ -3742,6 +4148,17 @@ namespace Planova.Persistence.Migrations
                     b.Navigation("Session");
                 });
 
+            modelBuilder.Entity("Planova.Wbs.Domain.Entities.WbsEditLock", b =>
+                {
+                    b.HasOne("Planova.Wbs.Domain.Entities.Wbs", "Wbs")
+                        .WithOne()
+                        .HasForeignKey("Planova.Wbs.Domain.Entities.WbsEditLock", "WbsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Wbs");
+                });
+
             modelBuilder.Entity("Planova.Wbs.Domain.Entities.WbsItem", b =>
                 {
                     b.HasOne("Planova.Wbs.Domain.Entities.WbsItem", "Parent")
@@ -3810,6 +4227,11 @@ namespace Planova.Persistence.Migrations
                     b.Navigation("Children");
                 });
 
+            modelBuilder.Entity("Planova.Boq.Domain.Entities.BoqImportSession", b =>
+                {
+                    b.Navigation("WorksheetMappings");
+                });
+
             modelBuilder.Entity("Planova.Boq.Domain.Entities.BoqItem", b =>
                 {
                     b.Navigation("Children");
@@ -3834,6 +4256,11 @@ namespace Planova.Persistence.Migrations
                 {
                     b.Navigation("Contracts");
 
+                    b.Navigation("Projects");
+                });
+
+            modelBuilder.Entity("Planova.Domain.Entities.Consultant", b =>
+                {
                     b.Navigation("Projects");
                 });
 

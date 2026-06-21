@@ -9,6 +9,9 @@ public record ImportRow(
     int? Level,
     string? ParentId,
     string? ParentCode,
+    string? Classification,
+    string? Division,
+    string? SourceSheet,
     IReadOnlyDictionary<string, object> RawValues
 );
 

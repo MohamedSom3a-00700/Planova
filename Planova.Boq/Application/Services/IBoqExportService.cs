@@ -6,4 +6,7 @@ public interface IBoqExportService
 {
     Task<ExportResult> ExportToExcelAsync(Guid boqId, ExportOptions options, CancellationToken ct);
     Task<ExportResult> ExportToCsvAsync(Guid boqId, ExportOptions options, CancellationToken ct);
+    Task<ExportResult> ExportTenderBoqAsync(Guid boqId, ExportOptions options, CancellationToken ct);
+    Task<ExportResult> ExportClientBoqAsync(Guid boqId, ExportOptions options, CancellationToken ct);
+    Task<ExportResult> ExportToPdfAsync(Guid boqId, ExportOptions options, CancellationToken ct);
 }

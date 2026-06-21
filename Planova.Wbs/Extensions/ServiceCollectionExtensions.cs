@@ -14,6 +14,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IWbsTemplateService, WbsTemplateService>();
         services.AddScoped<IWbsAiGenerationService, WbsAiGenerationService>();
         services.AddScoped<IWbsReportService, WbsReportService>();
+        services.AddScoped<IWbsCodeGenerationService, WbsCodeGenerationService>();
+        services.AddScoped<IWbsLockService, WbsLockService>();
+        services.AddScoped<IWbsMappingService, WbsMappingService>();
 
         return services;
     }

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:vm="clr-namespace:Planova.UI.ViewModels.Boq"
              xmlns:shared="clr-namespace:Planova.UI.Views.Shared"
              d:DataContext="{d:DesignInstance vm:BoqStudioViewModel}"
@@ -16,8 +17,13 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Margin="12,12,12,0">
-            <TextBlock Text="BOQ Studio" FontSize="24" FontWeight="Bold"
-                       Foreground="{DynamicResource ThemeForeground}"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                <TextBlock Text="BOQ Studio" FontSize="24" FontWeight="Bold"
+                           Foreground="{DynamicResource ThemeForeground}" VerticalAlignment="Center"/>
+                <Button Content="Open in Schedule" Command="{Binding OpenInScheduleCommand}"
+                        MinHeight="28" Padding="10,4" Margin="12,0,0,0"
+                        HorizontalAlignment="Right"/>
+            </StackPanel>
             <shared:DocumentValidationBannerView DataContext="{Binding DocumentValidationBanner}"/>
         </StackPanel>
 
@@ -28,7 +34,10 @@
                     BorderThickness="0">
             <TabControl.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Header}" FontFamily="{DynamicResource BrandFontFamily}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <ui:SymbolIcon Symbol="{Binding Icon}" FontSize="16" Margin="0,0,6,0"/>
+                        <TextBlock Text="{Binding Header}" FontFamily="{DynamicResource BrandFontFamily}"/>
+                    </StackPanel>
                 </DataTemplate>
             </TabControl.ItemTemplate>
             <TabControl.ContentTemplate>

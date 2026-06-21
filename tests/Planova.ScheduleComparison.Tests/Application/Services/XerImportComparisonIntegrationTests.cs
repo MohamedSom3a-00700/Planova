@@ -1,5 +1,7 @@
 using System.Text.Json;
 using FluentAssertions;
+using Xunit;
+using Planova.Primavera.Application.Models;
 using Planova.Primavera.Application.Parsers;
 using Planova.Primavera.Application.Services;
 using Planova.Primavera.Domain.Entities;
@@ -27,7 +29,7 @@ public class XerImportComparisonIntegrationTests
         var xer2 = Path.Combine(TestDataDir, "Silver Sand  - Land Scape - Update 07- jun- 2026.xer");
 
         if (!File.Exists(xer1) || !File.Exists(xer2))
-            return;
+            Assert.Fail("Integration test XER fixture files not found. Ensure test data is available.");
 
         var parser = new XerParser();
 
@@ -90,7 +92,7 @@ public class XerImportComparisonIntegrationTests
             }
         }
 
-        modified.Should().BeGreaterThan(0, "979 activities have date/float differences between the two files");
+        modified.Should().BeGreaterThan(0, "expected activities to have date/float differences between the two files");
         added.Should().Be(0, "all 2392 task_codes match between files");
         removed.Should().Be(0, "all 2392 task_codes match between files");
     }

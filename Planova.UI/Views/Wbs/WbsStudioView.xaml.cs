@@ -21,7 +21,7 @@ public partial class WbsStudioView : UserControl
         vm.Tabs.Add(new WbsStudioTab("Mapping", serviceProvider.GetRequiredService<WbsMappingWizardView>()));
         vm.Tabs.Add(new WbsStudioTab("Templates", serviceProvider.GetRequiredService<WbsTemplateManagerView>()));
         vm.Tabs.Add(new WbsStudioTab("AI Generation", serviceProvider.GetRequiredService<WbsAiGenerationView>()));
-        vm.Tabs.Add(new WbsStudioTab("Reports", serviceProvider.GetRequiredService<WbsReportView>()));
+        vm.Tabs.Add(new WbsStudioTab("Reports", serviceProvider.GetRequiredService<WbsReportsView>()));
         vm.Tabs.Add(new WbsStudioTab("Settings", serviceProvider.GetRequiredService<WbsSettingsView>()));
         vm.SelectedTab = vm.Tabs[0];
     }

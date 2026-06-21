@@ -65,6 +65,13 @@ public class ExcelRowReader : IExcelRowReader
         var parentIdCol = FindColumn(columns, "ParentId", "Parent ID", "ParentId", "parent_id");
         var rows = new List<ImportRow>(rawData.Count);
 
+        var classCol = FindColumn(columns,
+            "Classification", "Class", "Category", "Type", "Group", "Trade",
+            "classification", "class", "category", "type", "group", "trade");
+        var divCol = FindColumn(columns,
+            "Division", "Div", "CSI", "CSI Code", "Section",
+            "division", "div", "csi", "csi_code", "section");
+
         foreach (var row in rawData)
         {
             var rawValues = new Dictionary<string, object>(row, StringComparer.OrdinalIgnoreCase);
@@ -77,10 +84,13 @@ public class ExcelRowReader : IExcelRowReader
             int? level = levelCol != null ? GetInt(row, levelCol) : null;
             string? parentCode = parentCodeCol != null ? GetString(row, parentCodeCol) : null;
             string? parentId = parentIdCol != null ? GetString(row, parentIdCol) : null;
+            string? classification = classCol != null ? GetString(row, classCol) : null;
+            string? division = divCol != null ? GetString(row, divCol) : null;
 
             rows.Add(new ImportRow(
                 code, description, unit, qty, rate,
                 level, parentId, parentCode,
+                classification, division, null,
                 rawValues
             ));
         }

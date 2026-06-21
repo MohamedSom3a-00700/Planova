@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter</value>
+  </resheader>
+  <data name="Parties" xml:space="preserve"><value>Parties</value></data>
+  <data name="PartyName" xml:space="preserve"><value>Name</value></data>
+  <data name="PartyType" xml:space="preserve"><value>Type</value></data>
+  <data name="Client" xml:space="preserve"><value>Client</value></data>
+  <data name="MainContractor" xml:space="preserve"><value>Main Contractor</value></data>
+  <data name="Subcontractor" xml:space="preserve"><value>Subcontractor</value></data>
+  <data name="Consultant" xml:space="preserve"><value>Consultant</value></data>
+  <data name="ContactName" xml:space="preserve"><value>Contact Name</value></data>
+  <data name="ContactEmail" xml:space="preserve"><value>Email</value></data>
+  <data name="ContactPhone" xml:space="preserve"><value>Phone</value></data>
+  <data name="Address" xml:space="preserve"><value>Address</value></data>
+  <data name="Notes" xml:space="preserve"><value>Notes</value></data>
+  <data name="AddParty" xml:space="preserve"><value>Add Party</value></data>
+  <data name="EditParty" xml:space="preserve"><value>Edit Party</value></data>
+  <data name="DeleteParty" xml:space="preserve"><value>Delete Party</value></data>
+  <data name="NoPartiesYet" xml:space="preserve"><value>No parties yet — add a party to get started</value></data>
+  <data name="LoadingParties" xml:space="preserve"><value>Loading parties...</value></data>
+  <data name="Parties_Loading" xml:space="preserve"><value>Loading parties...</value></data>
+  <data name="Parties_EmptyTitle" xml:space="preserve"><value>No Parties Yet</value></data>
+  <data name="Parties_EmptyDescription" xml:space="preserve"><value>Add a party to get started</value></data>
+</root>

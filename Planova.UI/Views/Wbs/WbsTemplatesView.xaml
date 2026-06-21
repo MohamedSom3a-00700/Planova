@@ -1,0 +1,66 @@
+<UserControl x:Class="Planova.UI.Views.Wbs.WbsTemplatesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Wbs"
+             xmlns:conv="clr-namespace:Planova.UI.Converters"
+             d:DataContext="{d:DesignInstance vm:WbsTemplatesViewModel}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="WBS Templates" FontSize="20" FontWeight="Bold" Margin="0,0,0,12"/>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+            <TextBlock Text="Category:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}"
+                      MinWidth="150" Margin="0,0,12,0"/>
+            <Button Content="Refresh" Command="{Binding LoadTemplatesCommand}" MinWidth="80"/>
+        </StackPanel>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <ListView Grid.Column="0" ItemsSource="{Binding Templates}"
+                      SelectedItem="{Binding SelectedTemplate, Mode=TwoWay}"
+                      Background="{DynamicResource ThemeSurface}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Name" Width="200" DisplayMemberBinding="{Binding Name}"/>
+                        <GridViewColumn Header="Category" Width="120" DisplayMemberBinding="{Binding Category}"/>
+                        <GridViewColumn Header="Version" Width="60" DisplayMemberBinding="{Binding Version}"/>
+                        <GridViewColumn Header="Standard" Width="70">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding IsStandard, StringFormat='{}{0}'}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Created" Width="110" DisplayMemberBinding="{Binding CreatedAt, StringFormat='{}{0:MMM dd, yyyy}'}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+            <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Top">
+                <Button Content="Apply Template" Command="{Binding ApplyTemplateCommand}"
+                        MinWidth="120" Height="30" Margin="0,0,0,8"
+                        IsEnabled="{Binding SelectedTemplate, Converter={StaticResource BoolToVis}}"/>
+            </StackPanel>
+        </Grid>
+
+        <TextBlock Text="{Binding ErrorMessage}" Foreground="Red"
+                   Grid.Row="2" VerticalAlignment="Bottom"
+                   Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"/>
+    </Grid>
+</UserControl>

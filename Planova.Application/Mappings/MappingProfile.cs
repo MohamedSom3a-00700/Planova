@@ -20,7 +20,12 @@ public static class MappingProfile
             project.UpdatedAt,
             project.Contractor?.Name,
             project.Documents?.Count ?? 0,
-            project.LogoPath
+            project.LogoPath,
+            CoverImagePath: project.CoverImagePath,
+            ProgressPercentage: (double?)project.ProgressPercentage,
+            Budget: project.Budget,
+            HealthStatus: project.HealthIndicator,
+            ConsultantName: project.Consultant?.Name
         );
     }
 
@@ -44,16 +49,20 @@ public static class MappingProfile
             project.Contractor?.Name,
             project.SubcontractorId,
             project.Subcontractor?.Name,
+            project.ConsultantId,
+            project.Consultant?.Name,
             project.Contracts?.Select(c => c.ToSummaryDto()).ToList() ?? new(),
             project.CreatedAt,
             project.UpdatedAt,
             status?.AllowedNext().Select(s => s.Value).ToArray() ?? Array.Empty<string>(),
-            project.LogoPath,
-            project.DocumentsFolder,
-            project.Latitude,
-            project.Longitude,
-            project.QrCodePath,
-            project.Documents?.Select(d => d.ToDto(project.DocumentsFolder)).ToList() ?? new()
+            LogoPath: project.LogoPath,
+            CoverImagePath: project.CoverImagePath,
+            DocumentsFolder: project.DocumentsFolder,
+            Latitude: project.Latitude,
+            Longitude: project.Longitude,
+            QrCodePath: project.QrCodePath,
+            GoogleMapsLink: project.GoogleMapsLink,
+            Documents: project.Documents?.Select(d => d.ToDto(project.DocumentsFolder)).ToList() ?? new()
         );
     }
 
@@ -145,6 +154,35 @@ public static class MappingProfile
             subcontractor.Projects?.Select(p => p.ToSummaryDto()).ToList() ?? new(),
             subcontractor.CreatedAt,
             subcontractor.UpdatedAt
+        );
+    }
+
+    public static ConsultantSummaryDto ToSummaryDto(this Consultant consultant)
+    {
+        return new ConsultantSummaryDto(
+            consultant.Id,
+            consultant.Code,
+            consultant.Name,
+            consultant.ContactEmail,
+            consultant.Projects?.Count ?? 0,
+            consultant.UpdatedAt
+        );
+    }
+
+    public static ConsultantDetailDto ToDetailDto(this Consultant consultant)
+    {
+        return new ConsultantDetailDto(
+            consultant.Id,
+            consultant.Code,
+            consultant.Name,
+            consultant.ContactEmail,
+            consultant.ContactPhone,
+            consultant.OrganizationDetails,
+            consultant.Logo,
+            consultant.Notes,
+            consultant.Projects?.Select(p => p.ToSummaryDto()).ToList() ?? new(),
+            consultant.CreatedAt,
+            consultant.UpdatedAt
         );
     }
 

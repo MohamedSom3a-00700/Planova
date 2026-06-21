@@ -100,6 +100,45 @@
   <data name="DashboardRecentActivity" xml:space="preserve"><value>Recent Activity</value></data>
   <data name="DashboardNewProject" xml:space="preserve"><value>+ New Project</value></data>
   <data name="DashboardNewClient" xml:space="preserve"><value>+ New Client</value></data>
+  <data name="Dashboard_Loading" xml:space="preserve"><value>Loading...</value></data>
+  <data name="Dashboard_EmptyTitle" xml:space="preserve"><value>No Projects Yet</value></data>
+  <data name="Dashboard_EmptyDescription" xml:space="preserve"><value>Create your first project to get started</value></data>
+  <data name="Dashboard_CreateFirstProject" xml:space="preserve"><value>Create First Project</value></data>
+  <data name="Projects_Loading" xml:space="preserve"><value>Loading projects...</value></data>
+  <data name="Projects_EmptyTitle" xml:space="preserve"><value>No Projects Yet</value></data>
+  <data name="Projects_EmptyDescription" xml:space="preserve"><value>Create your first project to get started</value></data>
+  <data name="Projects_OpenFolder" xml:space="preserve"><value>Open Folder</value></data>
+  <data name="Projects_GoogleMaps" xml:space="preserve"><value>Google Maps</value></data>
+  <data name="Projects_CreateFolderStructure" xml:space="preserve"><value>Create Folder Structure</value></data>
+  <data name="Projects_Logo" xml:space="preserve"><value>Logo</value></data>
+  <data name="Projects_CoverImage" xml:space="preserve"><value>Cover Image</value></data>
+  <data name="Parties_Loading" xml:space="preserve"><value>Loading parties...</value></data>
+  <data name="Parties_EmptyTitle" xml:space="preserve"><value>No Parties Yet</value></data>
+  <data name="Parties_EmptyDescription" xml:space="preserve"><value>Add a party to get started</value></data>
+  <data name="BoqImport_Loading" xml:space="preserve"><value>Loading BOQ data...</value></data>
+  <data name="BoqImport_EmptyTitle" xml:space="preserve"><value>No BOQ Data</value></data>
+  <data name="BoqImport_EmptyDescription" xml:space="preserve"><value>Import an Excel file to get started</value></data>
+  <data name="BoqImport_ColumnMapping" xml:space="preserve"><value>Column Mapping</value></data>
+  <data name="BoqImport_Preview" xml:space="preserve"><value>Preview</value></data>
+  <data name="BoqImport_Export" xml:space="preserve"><value>Export</value></data>
+  <data name="BoqExport_Title" xml:space="preserve"><value>BOQ Export</value></data>
+  <data name="BoqExport_Excel" xml:space="preserve"><value>Export to Excel</value></data>
+  <data name="BoqExport_CSV" xml:space="preserve"><value>Export to CSV</value></data>
+  <data name="BoqExport_PDF" xml:space="preserve"><value>Export to PDF</value></data>
+  <data name="BoqExport_Tender" xml:space="preserve"><value>Tender BOQ</value></data>
+  <data name="BoqExport_Client" xml:space="preserve"><value>Client BOQ</value></data>
+  <data name="WbsMapping_EmptyTitle" xml:space="preserve"><value>No Mapping Data</value></data>
+  <data name="WbsMapping_EmptyDescription" xml:space="preserve"><value>Import a BOQ to start mapping</value></data>
+  <data name="WbsMapping_BySection" xml:space="preserve"><value>By Section</value></data>
+  <data name="WbsMapping_ByCSI" xml:space="preserve"><value>By CSI Code</value></data>
+  <data name="WbsMapping_ByCostCode" xml:space="preserve"><value>By Cost Code</value></data>
+  <data name="WbsMapping_ByTrade" xml:space="preserve"><value>By Trade</value></data>
+  <data name="WbsMapping_ByDiscipline" xml:space="preserve"><value>By Discipline</value></data>
+  <data name="WbsReports_Title" xml:space="preserve"><value>WBS Reports</value></data>
+  <data name="WbsReports_Export" xml:space="preserve"><value>Export</value></data>
+  <data name="WbsTemplates_Title" xml:space="preserve"><value>WBS Templates</value></data>
+  <data name="WbsTemplates_Apply" xml:space="preserve"><value>Apply Template</value></data>
+  <data name="WbsTemplates_Category" xml:space="preserve"><value>Category</value></data>
   <data name="ReportTitle" xml:space="preserve"><value>Reports</value></data>
   <data name="ReportTabProjects" xml:space="preserve"><value>Projects</value></data>
   <data name="ReportTabClients" xml:space="preserve"><value>Clients</value></data>

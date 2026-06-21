@@ -22,6 +22,13 @@ public class ProjectPartyRepository : IProjectPartyRepository
             .ToListAsync(ct);
     }
 
+    public async Task<List<ProjectParty>> GetAllAsync(CancellationToken ct = default)
+    {
+        return await _context.ProjectParties
+            .OrderBy(p => p.DisplayOrder)
+            .ToListAsync(ct);
+    }
+
     public async Task<ProjectParty?> GetClientAsync(int projectId, CancellationToken ct = default)
     {
         return await _context.ProjectParties
@@ -40,6 +47,12 @@ public class ProjectPartyRepository : IProjectPartyRepository
             .Where(p => p.ProjectId == projectId && p.Role == Reporting.Domain.Enums.PartyRole.SubContractor)
             .OrderBy(p => p.DisplayOrder)
             .ToListAsync(ct);
+    }
+
+    public async Task<Dictionary<int, string>> GetProjectNamesAsync(CancellationToken ct = default)
+    {
+        return await _context.Projects
+            .ToDictionaryAsync(p => p.Id, p => p.Name, ct);
     }
 
     public async Task<ProjectParty?> GetByIdAsync(Guid id, CancellationToken ct = default)

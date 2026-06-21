@@ -1,0 +1,423 @@
+<UserControl x:Class="Planova.UI.Views.Projects.ProjectDetailView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Projects"
+             xmlns:conv="clr-namespace:Planova.UI.Converters"
+              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+               xmlns:dash="clr-namespace:Planova.UI.Views.Dashboard"
+               xmlns:dto="clr-namespace:Planova.Application.Dto;assembly=Planova.Application"
+              d:DataContext="{d:DesignInstance vm:ProjectDetailViewModel}"
+             mc:Ignorable="d"
+             Background="{DynamicResource WorkspaceBackgroundGradient}">
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:BoolToVisibilityConverter x:Key="InvertedBoolToVis" Invert="True"/>
+        <conv:HealthToColorConverter x:Key="HealthToColor"/>
+        <conv:PartyRoleToIconConverter x:Key="RoleToIcon"/>
+         <conv:FilePathToImageConverter x:Key="FilePathToImage"/>
+         <conv:DocumentCategoryToIconConverter x:Key="CatToIcon"/>
+         <conv:FileSizeConverter x:Key="FileSize"/>
+    </UserControl.Resources>
+    <Grid>
+        <!-- Empty state when no project selected -->
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Visibility="{Binding Project, Converter={StaticResource InverseBoolToVis}}">
+            <ui:SymbolIcon Symbol="Folder24" FontSize="48" Foreground="{DynamicResource BrandTextSecondary}"
+                           HorizontalAlignment="Center"/>
+            <TextBlock Text="Select a project to view details"
+                       FontSize="16" Foreground="{DynamicResource BrandTextSecondary}"
+                       HorizontalAlignment="Center" Margin="0,12,0,0"/>
+        </StackPanel>
+
+        <!-- Project detail content -->
+        <Grid Visibility="{Binding Project, Converter={StaticResource BoolToVis}}">
+        <ScrollViewer>
+            <StackPanel Margin="16">
+                <!-- Header with logo and cover -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Image Grid.Column="0" Width="80" Height="80" Stretch="UniformToFill"
+                           Source="{Binding Project.LogoPath}" Margin="0,0,16,0"
+                           Visibility="{Binding Project.LogoPath, Converter={StaticResource BoolToVis}}"/>
+                    <StackPanel Grid.Column="1">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Folder24" FontSize="22" Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="{Binding Project.Name}" FontSize="22" FontWeight="Bold"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding Project.Code, StringFormat='Code: {0}'}" FontSize="14"/>
+                        <WrapPanel Margin="0,4,0,0">
+                            <TextBlock Text="{Binding Project.Status, StringFormat='Status: {0}'}" FontSize="13"/>
+                            <Ellipse Width="8" Height="8" Margin="8,4,0,0"
+                                     Fill="{Binding Project.HealthIndicator, Converter={StaticResource HealthToColor}}"
+                                     VerticalAlignment="Center"/>
+                        </WrapPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
+                        <TextBlock Text="{Binding Project.ProgressPercentage, StringFormat='{}{0:P0}'}"
+                                   FontSize="28" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}"
+                                   HorizontalAlignment="Right"/>
+                        <TextBlock Text="Progress" FontSize="11" Foreground="{DynamicResource BrandTextSecondary}"
+                                   HorizontalAlignment="Right"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Cover image -->
+                <Border CornerRadius="6" ClipToBounds="True" Margin="0,12,0,0"
+                        Visibility="{Binding Project.CoverImagePath, Converter={StaticResource BoolToVis}}">
+                    <Image Source="{Binding Project.CoverImagePath}" Height="120" Stretch="UniformToFill"/>
+                </Border>
+
+                <!-- Error -->
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="Red"
+                           Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"/>
+
+                <!-- Action buttons -->
+                <WrapPanel Margin="0,12,0,0">
+                    <Button Command="{Binding OpenProjectFolderCommand}" Height="30" Margin="0,0,8,0">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Folder24" FontSize="16" Margin="0,0,4,0"/>
+                            <TextBlock Text="Open Folder"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding OpenInGoogleMapsCommand}" Height="30" Margin="0,0,8,0">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Globe24" FontSize="16" Margin="0,0,4,0"/>
+                            <TextBlock Text="Google Maps"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding CreateFolderStructureCommand}" Height="30" Margin="0,0,8,0">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Folder24" FontSize="16" Margin="0,0,4,0"/>
+                            <TextBlock Text="Create Folder Structure"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Content="Scan Folder"
+                            Command="{Binding ScanFolderCommand}"
+                            Height="30" Margin="0,0,8,0">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Project.DocumentsFolder}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button Content="Edit"
+                            Command="{Binding EditProjectCommand}"
+                            Height="30" Margin="0,0,8,0"/>
+                    <Button Content="Delete"
+                            Command="{Binding DeleteProjectCommand}"
+                            Height="30"/>
+                </WrapPanel>
+
+                <!-- Cost + Health + QR cards -->
+                <WrapPanel Margin="0,12,0,0">
+                    <dash:CostCardView DataContext="{Binding CostCard}" Margin="0,0,12,0"/>
+                    <dash:HealthCardView DataContext="{Binding HealthCard}" Margin="0,0,12,0"/>
+                    <dash:QrCodeCardView DataContext="{Binding QrCodeCard}"/>
+                </WrapPanel>
+
+                <!-- Details section -->
+                <StackPanel Margin="0,16,0,0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <ui:SymbolIcon Symbol="Info24" FontSize="18" Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Project Details" FontSize="16" FontWeight="SemiBold"/>
+                    </StackPanel>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/><ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Client:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Project.ClientName}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Contractor:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Project.ContractorName}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Start:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Project.StartDate, StringFormat='{}{0:MMM dd, yyyy}'}"/>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Finish:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Project.FinishDate, StringFormat='{}{0:MMM dd, yyyy}'}"/>
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Currency:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Project.Currency}"/>
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Location:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Project.Location}"/>
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Folder:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding Project.DocumentsFolder}"/>
+                        <TextBlock Grid.Row="7" Grid.Column="0" Text="Notes:" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding Project.Notes}" TextWrapping="Wrap"/>
+                    </Grid>
+                </StackPanel>
+
+                <!-- Parties rail with logo + cover cards -->
+                <StackPanel Margin="0,16,0,0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <ui:SymbolIcon Symbol="People24" FontSize="18" Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Project Parties" FontSize="16" FontWeight="SemiBold"/>
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding ProjectParties}" Margin="0,0,0,8">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Width="200" MinHeight="80" Margin="0,0,8,8"
+                                        CornerRadius="10" BorderThickness="1"
+                                        BorderBrush="{DynamicResource ThemeBorder}"
+                                        Background="{DynamicResource ThemeCard}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Logo/Avatar -->
+                                        <Border Grid.Column="0" Width="40" Height="40" CornerRadius="8"
+                                                Background="{DynamicResource ThemeSurface}"
+                                                BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1"
+                                                VerticalAlignment="Top" Margin="10,10,0,0">
+                                            <Grid>
+                                                <Image Source="{Binding LogoPath, Converter={StaticResource FilePathToImage}}"
+                                                        Width="36" Height="36" Stretch="Uniform"
+                                                        Visibility="{Binding LogoPath, Converter={StaticResource BoolToVis}}"/>
+                                                <ui:SymbolIcon Symbol="{Binding Role, Converter={StaticResource RoleToIcon}}"
+                                                                FontSize="18" Foreground="{DynamicResource ThemeAccent}"
+                                                                HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                                Visibility="{Binding LogoPath, Converter={StaticResource InvertedBoolToVis}}"/>
+                                            </Grid>
+                                         </Border>
+
+                                        <!-- Remove button -->
+                                        <Button Grid.Column="1"
+                                                Command="{Binding DataContext.RemovePartyCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                CommandParameter="{Binding}"
+                                                Width="20" Height="20"
+                                                HorizontalAlignment="Right" VerticalAlignment="Top"
+                                                Margin="0,6,6,0"
+                                                Background="{DynamicResource ThemeSurface}"
+                                                BorderThickness="0">
+                                            <ui:SymbolIcon Symbol="Dismiss24" FontSize="10"
+                                                            Foreground="#e74c3c"/>
+                                        </Button>
+
+                                        <!-- Card content -->
+                                        <StackPanel Grid.Column="1" Margin="6,10,10,10" VerticalAlignment="Top">
+                                            <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource ThemeForeground}"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       HorizontalAlignment="Center"/>
+                                            <Border CornerRadius="4" Padding="6,2" Margin="0,6,0,0"
+                                                    Background="{DynamicResource ThemeAccent}"
+                                                    HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding Role}" FontSize="10" FontWeight="Bold"
+                                                           Foreground="White"/>
+                                            </Border>
+                                            <TextBlock Text="{Binding ContactPerson}" FontSize="11"
+                                                       Foreground="{DynamicResource BrandTextSecondary}"
+                                                       HorizontalAlignment="Center"
+                                                       Visibility="{Binding ContactPerson, Converter={StaticResource BoolToVis}}"
+                                                       Margin="0,6,0,0"/>
+                                            <TextBlock Text="{Binding ContactEmail}" FontSize="11"
+                                                       Foreground="{DynamicResource BrandTextSecondary}"
+                                                       HorizontalAlignment="Center"
+                                                       Visibility="{Binding ContactEmail, Converter={StaticResource BoolToVis}}"/>
+                                            <TextBlock Text="{Binding ContactPhone}" FontSize="11"
+                                                       Foreground="{DynamicResource BrandTextSecondary}"
+                                                       HorizontalAlignment="Center"
+                                                       Visibility="{Binding ContactPhone, Converter={StaticResource BoolToVis}}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- All parties combobox for assignment -->
+                    <Border Style="{StaticResource CardSurfaceStyle}" Padding="12" Margin="0,0,0,8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ui:SymbolIcon Grid.Column="0" Symbol="PersonAdd24" FontSize="16"
+                                           Foreground="{DynamicResource ThemeAccent}"
+                                           VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <ComboBox Grid.Column="1"
+                                       ItemsSource="{Binding AllParties}"
+                                       SelectedItem="{Binding SelectedAssignParty}"
+                                       MinHeight="28">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock>
+                                            <Run Text="{Binding Role}"/>
+                                            <Run Text="-"/>
+                                            <Run Text="{Binding Name}"/>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Button Grid.Column="2" Content="Assign" Command="{Binding AssignPartyCommand}"
+                                    Margin="8,0,0,0" MinHeight="28" MinWidth="60"
+                                    Background="{DynamicResource ThemeAccent}" Foreground="White"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <!-- Documents outline grid by category -->
+                <Expander IsExpanded="False" Margin="0,16,0,0"
+                          Background="{DynamicResource ThemeCard}"
+                          BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1">
+                    <Expander.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Document24" FontSize="18" Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="Documents" FontSize="16" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding Documents.Count, StringFormat='({0})'}"
+                                       FontSize="13" Foreground="{DynamicResource BrandTextSecondary}"
+                                       VerticalAlignment="Center" Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </Expander.Header>
+
+                    <StackPanel>
+                    <!-- Grid header row -->
+                    <Border Background="{DynamicResource ThemeAccent}" CornerRadius="4,4,0,0" Padding="10,6" Margin="0,0,0,1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="28"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="60"/>
+                                <ColumnDefinition Width="70"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="1" Text="File Name" FontSize="11" FontWeight="SemiBold" Foreground="White"/>
+                            <TextBlock Grid.Column="2" Text="Type" FontSize="11" FontWeight="SemiBold" Foreground="White"/>
+                            <TextBlock Grid.Column="3" Text="Ext" FontSize="11" FontWeight="SemiBold" Foreground="White"/>
+                            <TextBlock Grid.Column="4" Text="Size" FontSize="11" FontWeight="SemiBold" Foreground="White"/>
+                        </Grid>
+                    </Border>
+
+                    <ItemsControl ItemsSource="{Binding DocumentGroups}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:DocumentCategoryGroup}">
+                                <Expander IsExpanded="False" Margin="0,2,0,0"
+                                          Background="{DynamicResource ThemeCard}"
+                                          BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1">
+                                    <Expander.Header>
+                                        <StackPanel Orientation="Horizontal">
+                                            <ui:SymbolIcon Symbol="{Binding Category, Converter={StaticResource CatToIcon}}"
+                                                           FontSize="16" Foreground="{DynamicResource ThemeAccent}"
+                                                           VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                            <TextBlock Text="{Binding Category}" FontWeight="SemiBold" FontSize="13"
+                                                       Foreground="{DynamicResource ThemeForeground}"/>
+                                            <TextBlock Text="{Binding Count, StringFormat=' ({0})'}" FontSize="12"
+                                                       Foreground="{DynamicResource BrandTextSecondary}"
+                                                       VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                        </StackPanel>
+                                    </Expander.Header>
+                                    <ItemsControl ItemsSource="{Binding Documents}" Margin="4,2,4,4">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="{x:Type dto:ProjectDocumentDto}">
+                                                <Border Background="{DynamicResource ThemeSurface}" CornerRadius="3" Padding="8,5" Margin="0,1,0,1">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="28"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="80"/>
+                                                            <ColumnDefinition Width="60"/>
+                                                            <ColumnDefinition Width="70"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <ui:SymbolIcon Grid.Column="0" Symbol="Document24" FontSize="14"
+                                                                       Foreground="{DynamicResource BrandTextSecondary}"
+                                                                       VerticalAlignment="Center"/>
+                                                        <TextBlock Grid.Column="1" Text="{Binding FileName}" FontSize="12" FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource ThemeForeground}"
+                                                                   TextTrimming="CharacterEllipsis"/>
+                                                        <TextBlock Grid.Column="2" Text="{Binding DocumentType}" FontSize="10"
+                                                                   Foreground="{DynamicResource BrandTextSecondary}"/>
+                                                        <TextBlock Grid.Column="3" Text="{Binding FileExtension}" FontSize="10"
+                                                                   Foreground="{DynamicResource BrandTextSecondary}"/>
+                                                        <TextBlock Grid.Column="4" Text="{Binding FileSizeBytes, Converter={StaticResource FileSize}}" FontSize="10"
+                                                                   Foreground="{DynamicResource BrandTextSecondary}"/>
+                                                        <Button Grid.Column="5" Content="Open" FontSize="11" Height="22" Padding="8,0"
+                                                                Command="{Binding DataContext.OpenDocumentCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                CommandParameter="{Binding}"/>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Expander>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    </StackPanel>
+                </Expander>
+
+                <!-- Layout selector -->
+                <StackPanel Margin="0,16,0,0">
+
+                    <!-- No layout folder message -->
+                    <WrapPanel Visibility="{Binding HasLayoutFolder, Converter={StaticResource InvertedBoolToVis}}">
+                        <ui:SymbolIcon Symbol="Info24" FontSize="16" Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="You must define a documents folder" VerticalAlignment="Center" Margin="0,0,8,0"
+                                   Foreground="{DynamicResource BrandTextSecondary}"/>
+                        <Button Content="Browse" Command="{Binding BrowseLayoutFolderCommand}"
+                                MinHeight="24" Padding="10,0"
+                                Background="{DynamicResource ThemeAccent}" Foreground="White" BorderThickness="0"/>
+                    </WrapPanel>
+
+                    <!-- Layout options when folder is defined -->
+                    <StackPanel Visibility="{Binding HasLayoutFolder, Converter={StaticResource BoolToVis}}">
+                        <WrapPanel Margin="0,0,0,8">
+                            <ui:SymbolIcon Symbol="List24" FontSize="16" Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="Layout:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <ComboBox SelectedIndex="{Binding SelectedLayoutIndex}" MinWidth="150" Height="28">
+                                <ComboBoxItem Content="Default"/>
+                                <ComboBoxItem Content="Images"/>
+                                <ComboBoxItem Content="DWG"/>
+                                <ComboBoxItem Content="PDF"/>
+                            </ComboBox>
+                            <Button Content="Browse" Command="{Binding BrowseLayoutFolderCommand}"
+                                    Margin="8,0,0,0" MinHeight="24" Padding="10,0"
+                                    Background="{DynamicResource ThemeAccent}" Foreground="White" BorderThickness="0"/>
+                        </WrapPanel>
+
+                        <!-- Layout preview -->
+                        <Border CornerRadius="6" Padding="12" Background="{DynamicResource ThemeCard}"
+                                BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="{Binding LayoutPreviewTitle}" FontSize="13" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding LayoutPreviewDescription}" FontSize="11"
+                                           Foreground="{DynamicResource BrandTextSecondary}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Loading -->
+                <Border Style="{StaticResource DashboardLoadingOverlayStyle}"
+                        Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Loading project details..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+        </Grid>
+    </Grid>
+</UserControl>

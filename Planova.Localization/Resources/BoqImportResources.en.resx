@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter</value>
+  </resheader>
+  <data name="BoqImport" xml:space="preserve"><value>BOQ Import</value></data>
+  <data name="SelectFile" xml:space="preserve"><value>Select Excel File</value></data>
+  <data name="Scanning" xml:space="preserve"><value>Scanning worksheets...</value></data>
+  <data name="ImportMode" xml:space="preserve"><value>Import Mode</value></data>
+  <data name="Single" xml:space="preserve"><value>Single Sheet</value></data>
+  <data name="Multiple" xml:space="preserve"><value>Multiple Sheets</value></data>
+  <data name="Merge" xml:space="preserve"><value>Merge All</value></data>
+  <data name="Preview" xml:space="preserve"><value>Preview</value></data>
+  <data name="Import" xml:space="preserve"><value>Import</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="SheetsDetected" xml:space="preserve"><value>Worksheets Detected</value></data>
+  <data name="ColumnsMatched" xml:space="preserve"><value>Columns Matched</value></data>
+  <data name="RowsImported" xml:space="preserve"><value>Rows Imported</value></data>
+  <data name="TotalAmount" xml:space="preserve"><value>Total Amount</value></data>
+  <data name="ImportSuccessful" xml:space="preserve"><value>Import completed successfully</value></data>
+  <data name="ImportPartial" xml:space="preserve"><value>Import completed with warnings</value></data>
+  <data name="ImportFailed" xml:space="preserve"><value>Import failed</value></data>
+  <data name="NoBoqData" xml:space="preserve"><value>No BOQ data — import an Excel file to get started</value></data>
+  <data name="LoadingImport" xml:space="preserve"><value>Importing BOQ data...</value></data>
+  <data name="Export" xml:space="preserve"><value>Export</value></data>
+  <data name="ExportTender" xml:space="preserve"><value>Export Tender BOQ</value></data>
+  <data name="ExportClient" xml:space="preserve"><value>Export Client BOQ</value></data>
+  <data name="ExportExcel" xml:space="preserve"><value>Export to Excel</value></data>
+  <data name="ExportPdf" xml:space="preserve"><value>Export to PDF</value></data>
+  <data name="BoqImport_Loading" xml:space="preserve"><value>Loading BOQ data...</value></data>
+  <data name="BoqImport_EmptyTitle" xml:space="preserve"><value>No BOQ Data</value></data>
+  <data name="BoqImport_EmptyDescription" xml:space="preserve"><value>Import an Excel file to get started</value></data>
+  <data name="BoqImport_ColumnMapping" xml:space="preserve"><value>Column Mapping</value></data>
+  <data name="BoqImport_Preview" xml:space="preserve"><value>Preview</value></data>
+  <data name="BoqImport_Export" xml:space="preserve"><value>Export</value></data>
+  <data name="BoqExport_Title" xml:space="preserve"><value>BOQ Export</value></data>
+  <data name="BoqExport_Excel" xml:space="preserve"><value>Export to Excel</value></data>
+  <data name="BoqExport_CSV" xml:space="preserve"><value>Export to CSV</value></data>
+  <data name="BoqExport_PDF" xml:space="preserve"><value>Export to PDF</value></data>
+  <data name="BoqExport_Tender" xml:space="preserve"><value>Tender BOQ</value></data>
+  <data name="BoqExport_Client" xml:space="preserve"><value>Client BOQ</value></data>
+</root>

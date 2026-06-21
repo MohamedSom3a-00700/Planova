@@ -51,29 +51,28 @@ public class PrimaveraImportRepository : IPrimaveraImportRepository
             .FirstOrDefaultAsync(p => p.ProjectId == projectId, ct);
     }
 
-    public async Task<bool> HasDuplicateFileAsync(string fileHash, CancellationToken ct = default)
+    public async Task<bool> HasExistingProjectByXerIdAsync(string xerProjectId, CancellationToken ct = default)
     {
         return await _context.Set<XerImportSession>()
-            .AnyAsync(s => s.SourceFileHash == fileHash && s.Status == Primavera.Domain.Enums.PrimaveraImportStatus.Committed, ct);
+            .AnyAsync(s => s.ProjectCode == xerProjectId && s.Status == Primavera.Domain.Enums.PrimaveraImportStatus.Committed, ct);
     }
 
     public async Task DeleteAllXerDataAsync(CancellationToken ct = default)
     {
-        _context.Set<PrimaveraRepairAction>().RemoveRange(await _context.Set<PrimaveraRepairAction>().ToListAsync(ct));
-        _context.Set<PrimaveraValidationIssue>().RemoveRange(await _context.Set<PrimaveraValidationIssue>().ToListAsync(ct));
-        _context.Set<PrimaveraValidationRule>().RemoveRange(await _context.Set<PrimaveraValidationRule>().ToListAsync(ct));
-        _context.Set<PrimaveraUdf>().RemoveRange(await _context.Set<PrimaveraUdf>().ToListAsync(ct));
-        _context.Set<PrimaveraBaseline>().RemoveRange(await _context.Set<PrimaveraBaseline>().ToListAsync(ct));
-        _context.Set<PrimaveraCode>().RemoveRange(await _context.Set<PrimaveraCode>().ToListAsync(ct));
-        _context.Set<PrimaveraCalendar>().RemoveRange(await _context.Set<PrimaveraCalendar>().ToListAsync(ct));
-        _context.Set<PrimaveraResourceAssignment>().RemoveRange(await _context.Set<PrimaveraResourceAssignment>().ToListAsync(ct));
-        _context.Set<PrimaveraRelationship>().RemoveRange(await _context.Set<PrimaveraRelationship>().ToListAsync(ct));
-        _context.Set<PrimaveraActivity>().RemoveRange(await _context.Set<PrimaveraActivity>().ToListAsync(ct));
-        _context.Set<PrimaveraProject>().RemoveRange(await _context.Set<PrimaveraProject>().ToListAsync(ct));
-        _context.Set<XerRawTable>().RemoveRange(await _context.Set<XerRawTable>().ToListAsync(ct));
-        _context.Set<XerExportProfile>().RemoveRange(await _context.Set<XerExportProfile>().ToListAsync(ct));
-        _context.Set<XerImportSession>().RemoveRange(await _context.Set<XerImportSession>().ToListAsync(ct));
-        await _context.SaveChangesAsync(ct);
+        await _context.Set<PrimaveraRepairAction>().ExecuteDeleteAsync(ct);
+        await _context.Set<PrimaveraValidationIssue>().ExecuteDeleteAsync(ct);
+        await _context.Set<PrimaveraValidationRule>().ExecuteDeleteAsync(ct);
+        await _context.Set<PrimaveraUdf>().ExecuteDeleteAsync(ct);
+        await _context.Set<PrimaveraBaseline>().ExecuteDeleteAsync(ct);
+        await _context.Set<PrimaveraCode>().ExecuteDeleteAsync(ct);
+        await _context.Set<PrimaveraCalendar>().ExecuteDeleteAsync(ct);
+        await _context.Set<PrimaveraResourceAssignment>().ExecuteDeleteAsync(ct);
+        await _context.Set<PrimaveraRelationship>().ExecuteDeleteAsync(ct);
+        await _context.Set<PrimaveraActivity>().ExecuteDeleteAsync(ct);
+        await _context.Set<PrimaveraProject>().ExecuteDeleteAsync(ct);
+        await _context.Set<XerRawTable>().ExecuteDeleteAsync(ct);
+        await _context.Set<XerExportProfile>().ExecuteDeleteAsync(ct);
+        await _context.Set<XerImportSession>().ExecuteDeleteAsync(ct);
     }
 
     public async Task<List<XerImportSession>> GetSessionsByProjectAsync(int projectId, CancellationToken ct = default)

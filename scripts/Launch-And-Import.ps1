@@ -1,19 +1,22 @@
 <#
 .SYNOPSIS
-    Launches Planova, selects a project, opens Primavera Studio, and imports an XER file via UI automation.
+    Launches Planova, selects a project, opens BOQ Studio Import tab, imports from project document, and commits.
+.DESCRIPTION
+    Full end-to-end automation: build → launch → select project → navigate to BOQ Studio →
+    click Import tab → select "Use project document" → click "Use Selected" → wait for column mapping →
+    Preview Import → Commit Import → verify success. Exits with code 1 on any failure.
+.PARAMETER ProjectName
+    Partial name of the project to select. Default: picks first real project.
+.PARAMETER SkipBuild
+    Skip the dotnet build step if the app is already built.
 #>
 param(
     [string]$ProjectName = "",
-    [string]$XerPath = "",
-    [string]$AppPath = ""
+    [switch]$SkipBuild
 )
 
-Add-Type -AssemblyName UIAutomationClient
-Add-Type -AssemblyName UIAutomationTypes
-Add-Type -AssemblyName System.Windows.Forms
-Add-Type -AssemblyName System.Drawing
+Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, System.Windows.Forms
 
-# User32 mouse click support
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
@@ -31,71 +34,70 @@ public class Mouse {
 }
 "@
 
-if (-not $XerPath) {
-    $XerPath = Resolve-Path "tests\Silver Sand  - Land Scape - Update 07- jun- 2026.xer" -ErrorAction Stop
-}
-$XerPath = Resolve-Path $XerPath -ErrorAction Stop
+$ScopeDescendants = [System.Windows.Automation.TreeScope]::Subtree
+$NameProp = [System.Windows.Automation.AutomationElement]::NameProperty
+$AutoIdProp = [System.Windows.Automation.AutomationElement]::AutomationIdProperty
 
-function Write-ErrorMsg {
-    param([string]$Context, [string]$Detail)
-    Write-Host "  [ERROR] $Context" -ForegroundColor Red
-    if ($Detail) { Write-Host "    $Detail" -ForegroundColor DarkRed }
-}
+$global:AnyFailed = $false
 
-function Dump-Elements {
-    param([string]$Label = "", [int]$Max = 15)
-    Write-Host "  [DUMP] Elements $Label" -ForegroundColor DarkGray
-    $all = $mainWindow.FindAll([System.Windows.Automation.TreeScope]::Subtree,
-        [System.Windows.Automation.Condition]::TrueCondition)
-    $c = 0
-    for ($i = 0; $i -lt $all.Count -and $c -lt $Max; $i++) {
-        $e = $all[$i]
-        $n = $e.Current.Name
-        $t = $e.Current.ControlTypeName
-        $r = $e.Current.BoundingRectangle
-        if ($n) {
-            $hasI = $false; try { $null = $e.GetSupportedPatterns(); if ($e.GetSupportedPatterns() -contains [System.Windows.Automation.InvokePattern]::Pattern) { $hasI = $true } } catch {}
-            Write-Host "    [$t] '$($n.Substring(0,[Math]::Min($n.Length,60)))' invoke=$hasI rect=$($r.Width)x$($r.Height)" -ForegroundColor DarkGray
-            $c++
-        }
+function Step($text)  { Write-Host "`n>>> $text" -ForegroundColor Cyan }
+function Pass($text) { Write-Host "  [PASS] $text" -ForegroundColor Green }
+function Fail($text) { $global:AnyFailed = $true; Write-Host "  [FAIL] $text" -ForegroundColor Red }
+function Info($text) { Write-Host "  [INFO] $text" -ForegroundColor DarkGray }
+
+function Wait-Window($title, $timeout = 60) {
+    for ($i = 0; $i -lt $timeout; $i++) {
+        $w = [System.Windows.Automation.AutomationElement]::RootElement.FindFirst(
+            [System.Windows.Automation.TreeScope]::Children,
+            [System.Windows.Automation.PropertyCondition]::new($NameProp, $title))
+        if ($w) { return $w }
+        Start-Sleep -Seconds 1
     }
+    return $null
 }
 
-function Click-MouseAt {
-    param([System.Windows.Automation.AutomationElement]$Element)
-    $bbox = $Element.Current.BoundingRectangle
-    if ($bbox.Width -le 0 -or $bbox.Height -le 0) { Write-ErrorMsg "Click" "Element has no bounding rect"; return $false }
-    $x = [int]($bbox.Left + $bbox.Width / 2)
-    $y = [int]($bbox.Top + $bbox.Height / 2)
-    Write-Host "  Mouse click at ($x, $y)" -ForegroundColor DarkGray
-    [Mouse]::Click($x, $y)
-    Start-Sleep -Milliseconds 300
+function Find-Text($parent, $text) {
+    return $parent.FindFirst($ScopeDescendants, [System.Windows.Automation.PropertyCondition]::new($NameProp, $text))
+}
+
+function Wait-Text($parent, $text, $timeout = 15) {
+    for ($i = 0; $i -lt $timeout; $i++) {
+        $e = Find-Text $parent $text
+        if ($e) { return $e }
+        Start-Sleep -Seconds 1
+    }
+    return $null
+}
+
+function Find-Text-Partial($parent, $partialText) {
+    $all = $parent.FindAll($ScopeDescendants, [System.Windows.Automation.Condition]::TrueCondition)
+    return @($all | Where-Object { $_.Current.Name -like "*$partialText*" } | Select-Object -First 1)
+}
+
+function Click-Elem($elem) {
+    if (-not $elem) { return $false }
+    $r = $elem.Current.BoundingRectangle
+    if ($r.Width -le 0 -or $r.Height -le 0) { return $false }
+    [Mouse]::Click([int]($r.Left + $r.Width / 2), [int]($r.Top + $r.Height / 2))
+    Start-Sleep -Milliseconds 400
     return $true
 }
 
-function Click-ElementByText {
-    param([string]$Text, [int]$TimeoutSeconds = 15)
+function Click-ElementByText($parent, [string]$Text, [int]$TimeoutSeconds = 15) {
     for ($t = 0; $t -lt $TimeoutSeconds; $t++) {
-        $all = $mainWindow.FindAll([System.Windows.Automation.TreeScope]::Subtree,
-            [System.Windows.Automation.Condition]::TrueCondition)
+        $all = $parent.FindAll($ScopeDescendants, [System.Windows.Automation.Condition]::TrueCondition)
         for ($i = 0; $i -lt $all.Count; $i++) {
             if ($all[$i].Current.Name -eq $Text) {
-                # 1) Try InvokePattern directly on the matched element (it might be a Button)
                 try {
                     $invoke = $all[$i].GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern)
                     $invoke.Invoke(); return $true
-                }
-                catch {}
-                # 2) Try mouse click on the element directly
+                } catch {}
                 $bbox = $all[$i].Current.BoundingRectangle
                 if ($bbox.Width -gt 0 -and $bbox.Height -gt 0) {
-                    $x = [int]($bbox.Left + $bbox.Width / 2)
-                    $y = [int]($bbox.Top + $bbox.Height / 2)
-                    [Mouse]::Click($x, $y)
-                    Start-Sleep -Milliseconds 300
+                    [Mouse]::Click([int]($bbox.Left + $bbox.Width / 2), [int]($bbox.Top + $bbox.Height / 2))
+                    Start-Sleep -Milliseconds 400
                     return $true
                 }
-                # 3) Walk up parent chain to find clickable parent
                 $walker = [System.Windows.Automation.TreeWalker]::ControlViewWalker
                 $cur = $walker.GetParent($all[$i])
                 $depth = 0
@@ -103,14 +105,11 @@ function Click-ElementByText {
                     try {
                         $invoke = $cur.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern)
                         $invoke.Invoke(); return $true
-                    }
-                    catch {}
+                    } catch {}
                     $bbox = $cur.Current.BoundingRectangle
                     if ($bbox.Width -gt 0 -and $bbox.Height -gt 0) {
-                        $x = [int]($bbox.Left + $bbox.Width / 2)
-                        $y = [int]($bbox.Top + $bbox.Height / 2)
-                        [Mouse]::Click($x, $y)
-                        Start-Sleep -Milliseconds 300
+                        [Mouse]::Click([int]($bbox.Left + $bbox.Width / 2), [int]($bbox.Top + $bbox.Height / 2))
+                        Start-Sleep -Milliseconds 400
                         return $true
                     }
                     $cur = $walker.GetParent($cur)
@@ -118,272 +117,365 @@ function Click-ElementByText {
                 }
             }
         }
-        Write-Host "  Waiting for '$Text'... (${t}s)" -ForegroundColor DarkGray
         Start-Sleep -Seconds 1
     }
-    Write-ErrorMsg "Click-ElementByText" "'$Text' not found/clickable after ${TimeoutSeconds}s"
     return $false
 }
 
-# Launch Planova
-Write-Host "Launching Planova..." -ForegroundColor Cyan
-$appDir = Resolve-Path "$PSScriptRoot\..\Planova.UI\bin\Debug\net8.0-windows"
-$exePath = "$appDir\Planova.UI.exe"
-if (-not (Test-Path $exePath)) {
-    dotnet build "$PSScriptRoot\..\Planova.UI\Planova.UI.csproj" -nologo -clp:NoSummary | Out-Null
-}
-$proc = Start-Process -FilePath $exePath -WindowStyle Normal -PassThru
+function Select-Project($parent, [string]$ProjName) {
+    $navExclusions = @('Dashboard', 'Projects', 'BOQ Studio', 'WBS Studio', 'Activity Studio',
+        'Resource Studio', 'Cost Studio', 'Reports', 'Primavera Studio', 'Schedule Compare',
+        'Settings', 'Parties', 'Excel Studio', 'Delay Analysis', 'Claims', 'Chronology',
+        'Correspondence', 'Knowledge Base', 'Analytics', 'Integration Hub')
 
-# Wait for main window
-Write-Host "Waiting for Planova window..." -ForegroundColor Cyan
-$mainWindow = $null
-for ($t = 0; $t -lt 60; $t++) {
-    Start-Sleep -Seconds 1
-    try {
-        $mainWindow = [System.Windows.Automation.AutomationElement]::RootElement.FindFirst(
-            [System.Windows.Automation.TreeScope]::Children,
-            (New-Object System.Windows.Automation.PropertyCondition(
-                [System.Windows.Automation.AutomationElement]::NameProperty, "Planova")))
-        if ($mainWindow) { Write-Host "  Found after ${t}s" -ForegroundColor Green; break }
-    }
-    catch {}
-}
-if (-not $mainWindow) { Write-Host "Timed out." -ForegroundColor Red; exit 1 }
-Start-Sleep -Seconds 2
+    $all = $parent.FindAll($ScopeDescendants, [System.Windows.Automation.Condition]::TrueCondition)
+    $projCombo = @($all | Where-Object {
+        try { $_.Current.ControlType.ProgrammaticName -match 'ComboBox$' -and $_.Current.BoundingRectangle.Width -gt 100 -and $_.Current.BoundingRectangle.Height -gt 20 } catch { $false }
+    } | Select-Object -First 1)
 
-# --- Step 1: Select project ---
-Write-Host "Selecting project..." -ForegroundColor Yellow
-$projectSel = $mainWindow.FindFirst([System.Windows.Automation.TreeScope]::Subtree,
-    (New-Object System.Windows.Automation.PropertyCondition(
-        [System.Windows.Automation.AutomationElement]::AutomationIdProperty, "ProjectSelector")))
-if ($projectSel) {
-    # Expand the dropdown
-    try {
-        $expand = $projectSel.GetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern)
-        $expand.Expand()
-        Start-Sleep -Milliseconds 500
+    if ($projCombo) {
+        Info "Found project ComboBox"
+        try {
+            $expand = $projCombo.GetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern)
+            $expand.Expand()
+            Start-Sleep -Milliseconds 800
+
+            $comboItems = $projCombo.FindAll($ScopeDescendants, [System.Windows.Automation.Condition]::TrueCondition)
+            foreach ($item in $comboItems) {
+                $n = $item.Current.Name
+                if ($ProjName -and $n -like "*$ProjName*" -and $navExclusions -notcontains $n) {
+                    Write-Host "  Selecting: $n" -ForegroundColor Green
+                    Click-Elem $item; return $true
+                }
+            }
+            foreach ($item in $comboItems) {
+                $n = $item.Current.Name
+                if ($n.Length -gt 2 -and -not $n.Contains("Dto") -and $navExclusions -notcontains $n) {
+                    Write-Host "  Selecting: $n" -ForegroundColor Green
+                    Click-Elem $item; return $true
+                }
+            }
+        } catch { Info "ExpandCollapse failed" }
+
+        Info "Keyboard fallback for project selection"
+        Click-Elem $projCombo; Start-Sleep -Milliseconds 500
+        [System.Windows.Forms.SendKeys]::SendWait('%{DOWN}'); Start-Sleep -Milliseconds 1000
+        [System.Windows.Forms.SendKeys]::SendWait('{DOWN}'); Start-Sleep -Milliseconds 300
+        [System.Windows.Forms.SendKeys]::SendWait('{ENTER}'); Start-Sleep -Milliseconds 300
+        return $true
     }
-    catch { Write-ErrorMsg "ProjectSelector" "Expand failed: $_" }
-    $items = $projectSel.FindAll([System.Windows.Automation.TreeScope]::Subtree,
-        [System.Windows.Automation.Condition]::TrueCondition)
-    Write-Host "  [DIAG] Project items: $($items.Count)" -ForegroundColor DarkGray
-    $selected = $false
-    # Try to match by name
-    foreach ($item in $items) {
-        $n = $item.Current.Name
-        if ($ProjectName -and $n -like "*$ProjectName*") {
-            Write-Host "  Selecting: $n" -ForegroundColor Green
-            Click-MouseAt $item; $selected = $true; break
-        }
-    }
-    if (-not $selected) {
-        # Pick first non-DTO name
+
+    $projSelector = $parent.FindFirst($ScopeDescendants,
+        [System.Windows.Automation.PropertyCondition]::new($AutoIdProp, "ProjectSelector"))
+    if ($projSelector) {
+        Info "Found ProjectSelector by AutomationId"
+        try {
+            $expand = $projSelector.GetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern)
+            $expand.Expand()
+            Start-Sleep -Milliseconds 500
+        } catch {}
+
+        $items = $projSelector.FindAll($ScopeDescendants, [System.Windows.Automation.Condition]::TrueCondition)
         foreach ($item in $items) {
             $n = $item.Current.Name
-            if ($n.Length -gt 2 -and -not $n.Contains("Dto")) {
+            if ($ProjName -and $n -like "*$ProjName*" -and $navExclusions -notcontains $n) {
                 Write-Host "  Selecting: $n" -ForegroundColor Green
-                Click-MouseAt $item; $selected = $true; break
+                Click-Elem $item; return $true
             }
         }
-    }
-    if (-not $selected) { Write-ErrorMsg "ProjectSelector" "No usable project found" }
-    # Close dropdown
-    [System.Windows.Forms.SendKeys]::SendWait("{ESCAPE}")
-}
-else { Write-ErrorMsg "ProjectSelector" "Not found" }
-
-Start-Sleep -Seconds 2
-
-# --- Step 2: Open Primavera Studio ---
-Write-Host "Opening Primavera Studio..." -ForegroundColor Yellow
-# Find the nav button with visible bounding rect
-$navItems = $mainWindow.FindFirst([System.Windows.Automation.TreeScope]::Subtree,
-    (New-Object System.Windows.Automation.PropertyCondition(
-        [System.Windows.Automation.AutomationElement]::AutomationIdProperty, "NavItems")))
-$clicked = $false
-if ($navItems) {
-    $all = $navItems.FindAll([System.Windows.Automation.TreeScope]::Subtree,
-        [System.Windows.Automation.Condition]::TrueCondition)
-    foreach ($el in $all) {
-        if ($el.Current.Name -eq "Primavera Studio") {
-            $walker = [System.Windows.Automation.TreeWalker]::ControlViewWalker
-            $cur = $walker.GetParent($el)
-            while ($cur) {
-                $bbox = $cur.Current.BoundingRectangle
-                if ($bbox.Width -gt 0 -and $bbox.Height -gt 0) {
-                    Write-Host "  Clicking Primavera Studio nav item" -ForegroundColor Green
-                    [Mouse]::Click([int]($bbox.Left+$bbox.Width/2), [int]($bbox.Top+$bbox.Height/2))
-                    Start-Sleep -Milliseconds 500
-                    $clicked = $true; break
-                }
-                $cur = $walker.GetParent($cur)
+        foreach ($item in $items) {
+            $n = $item.Current.Name
+            if ($n.Length -gt 2 -and -not $n.Contains("Dto") -and $navExclusions -notcontains $n) {
+                Write-Host "  Selecting: $n" -ForegroundColor Green
+                Click-Elem $item; return $true
             }
-            if (-not $clicked) {
-                # Click the text element directly
-                $bbox = $el.Current.BoundingRectangle
-                if ($bbox.Width -gt 0) {
-                    [Mouse]::Click([int]($bbox.Left+$bbox.Width/2), [int]($bbox.Top+$bbox.Height/2))
-                    Start-Sleep -Milliseconds 500; $clicked = $true
-                }
-            }
-            break
         }
+        [System.Windows.Forms.SendKeys]::SendWait("{ESCAPE}")
     }
+
+    return $false
 }
-if (-not $clicked) { Write-ErrorMsg "PrimaveraStudio" "Could not find/click Primavera Studio nav item" }
+
+# === MAIN ===
+
+Step "0/8 Building & launching Planova"
+
+if (-not $SkipBuild) {
+    Write-Host "    Building..." -ForegroundColor DarkGray
+    dotnet build "$PSScriptRoot\..\Planova.UI\Planova.UI.csproj" -nologo -clp:NoSummary 2>$null
+    if ($LASTEXITCODE -ne 0) { Fail "Build failed"; exit 1 }
+    Pass "Build succeeded"
+}
+
+$exe = "$PSScriptRoot\..\Planova.UI\bin\Debug\net8.0-windows\Planova.UI.exe"
+if (-not (Test-Path $exe)) { Fail "Exe not found at $exe"; exit 1 }
+
+$proc = Start-Process -FilePath $exe -WindowStyle Normal -PassThru
+$main = Wait-Window 'Planova' 60
+if (-not $main) { Fail "Planova window not found within 60s"; exit 1 }
+Pass "Planova launched"
 
 Start-Sleep -Seconds 3
 
-# --- Step 3: Click Browse and select XER file ---
-Write-Host "Browsing for XER file..." -ForegroundColor Yellow
+Step "1/8 Selecting project"
 
-# Wait for Import tab to be visible by checking for "Import XER File" header text
-$foundImport = $false
+$selected = Select-Project $main $ProjectName
+if (-not $selected) { Fail "No project found or selected"; exit 1 }
+Start-Sleep -Seconds 3
+
+$projText = Find-Text-Partial $main "project"
+if ($projText) { Info "Current project: '$($projText.Current.Name)'" }
+Pass "Project selected"
+
+Step "2/8 Navigating to BOQ Studio"
+
+$boqNav = $null
 for ($t = 0; $t -lt 15; $t++) {
-    $all = $mainWindow.FindAll([System.Windows.Automation.TreeScope]::Subtree,
-        [System.Windows.Automation.Condition]::TrueCondition)
-    foreach ($el in $all) {
-        if ($el.Current.Name -eq "Import XER File") { $foundImport = $true; break }
-    }
-    if ($foundImport) { Write-Host "  Import view loaded" -ForegroundColor Green; break }
-    if ($t -eq 0) { Write-Host "  Waiting for import view..." -ForegroundColor DarkGray }
-    Start-Sleep -Seconds 1
+    $boqNav = Find-Text $main 'BOQ Studio'
+    if ($boqNav) { break }
+    Start-Sleep -Milliseconds 500
 }
-if (-not $foundImport) { Write-ErrorMsg "ImportView" "Import XER File header not found - Primavera Studio may not have opened" }
+if (-not $boqNav) { Fail "BOQ Studio nav item not found"; exit 1 }
 
-# Click Browse — scope search to Import view area
-$allElements = $mainWindow.FindAll([System.Windows.Automation.TreeScope]::Subtree,
-    [System.Windows.Automation.Condition]::TrueCondition)
-$browseBtn = $null
-$importHeader = $null
-$importViewStart = -1
-# Find "Import XER File" header to know where the import view is
-for ($i = 0; $i -lt $allElements.Count; $i++) {
-    if ($allElements[$i].Current.Name -eq "Import XER File") { $importHeader = $allElements[$i]; $importViewStart = $i }
-}
-if ($importHeader) {
-    # Search from the header onward for the FIRST "Browse" — that's the import view's browse
-    for ($i = $importViewStart; $i -lt $allElements.Count; $i++) {
-        if ($allElements[$i].Current.Name -eq "Browse") { $browseBtn = $allElements[$i]; break }
-    }
-}
-if (-not $browseBtn) {
-    # Fallback: find any "Browse" by looking for the one with "Import" nearby
-    for ($i = 0; $i -lt $allElements.Count; $i++) {
-        if ($allElements[$i].Current.Name -eq "Browse") {
-            # Check if nearby elements contain "Import" 
-            $start = [Math]::Max(0, $i - 20)
-            $end = [Math]::Min($allElements.Count - 1, $i + 20)
-            for ($j = $start; $j -le $end; $j++) {
-                if ($allElements[$j].Current.Name -like "*Import*") { $browseBtn = $allElements[$i]; break }
-            }
-            if ($browseBtn) { break }
-        }
-    }
-}
-if ($browseBtn) {
-    Write-Host "  Found Browse button in Import view" -ForegroundColor Green
-    # Try InvokePattern
-    $clicked = $false
-    try {
-        $invoke = $browseBtn.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern)
-        $invoke.Invoke(); $clicked = $true
-    }
-    catch {}
-    if (-not $clicked) {
-        $bbox = $browseBtn.Current.BoundingRectangle
-        if ($bbox.Width -gt 0) {
-            [Mouse]::Click([int]($bbox.Left+$bbox.Width/2), [int]($bbox.Top+$bbox.Height/2))
-            $clicked = $true
-        }
-    }
-    if (-not $clicked) {
-        Write-ErrorMsg "Browse" "Found Browse but could not click it"
-        exit 1
-    }
-}
-else {
-    Write-ErrorMsg "Browse" "Browse button not found in Import view"
-    exit 1
-}
+$clicked = Click-ElementByText $main 'BOQ Studio' 10
+if (-not $clicked) { Fail "Could not click BOQ Studio nav item"; exit 1 }
+
+$studioHdr = Wait-Text $main 'BOQ Studio' 20
+if ($studioHdr) { Pass "BOQ Studio view loaded" }
+else { Fail "BOQ Studio view did not load"; exit 1 }
+
 Start-Sleep -Seconds 2
 
-# --- Step 4: Find file dialog and send file path ---
-Write-Host "Looking for file dialog..." -ForegroundColor DarkGray
-$fileDialog = $null
-for ($t = 0; $t -lt 30; $t++) {
-    try {
-        # Search all top-level windows and descendants
-        foreach ($scope in @([System.Windows.Automation.TreeScope]::Children, [System.Windows.Automation.TreeScope]::Descendants)) {
-            $allTop = [System.Windows.Automation.AutomationElement]::RootElement.FindAll($scope,
-                [System.Windows.Automation.Condition]::TrueCondition) 2>$null
-            foreach ($w in $allTop) {
-                $wn = $w.Current.Name; $wt = $w.Current.ControlTypeName
-                if ($wt -eq "window" -and ($wn -eq "Select Primavera XER File" -or $wn -like "*XER*" -or $wn -like "*Open*" -or $wn -like "*Select*")) {
-                    $fileDialog = $w
-                    Write-Host "  Found UIA window: '$wn'" -ForegroundColor Green; break
-                }
-            }
-            if ($fileDialog) { break }
-        }
+Step "3/8 Clicking Import tab"
+
+$importTab = $null
+for ($t = 0; $t -lt 15; $t++) {
+    $all = $main.FindAll($ScopeDescendants, [System.Windows.Automation.Condition]::TrueCondition)
+    $tabItems = @($all | Where-Object {
+        try { $_.Current.ControlType.ProgrammaticName -match 'TabItem$' -and $_.Current.BoundingRectangle.Width -gt 50 -and $_.Current.BoundingRectangle.Height -gt 15 } catch { $false }
+    })
+    foreach ($tab in $tabItems) {
+        if ($tab.Current.Name -eq 'Import') { $importTab = $tab; break }
     }
-    catch {}
-    if ($fileDialog) { break }
+    if ($importTab) { break }
     Start-Sleep -Milliseconds 500
 }
 
-if (-not $fileDialog) {
-    Write-ErrorMsg "FileDialog" "Not found via UIA top-level windows, checking all windows again..."
-    # Broader UIA search: look at ALL windows (including owned/popup)
-    try {
-        $allWindows = [System.Windows.Automation.AutomationElement]::RootElement.FindAll(
-            [System.Windows.Automation.TreeScope]::Descendants,
-            [System.Windows.Automation.Condition]::TrueCondition)
-        foreach ($w in $allWindows) {
-            $wn = $w.Current.Name
-            if ($wn -eq "Select Primavera XER File") {
-                $fileDialog = $w
-                Write-Host "  Found exact title: '$wn'" -ForegroundColor Green; break
-            }
-        }
+if (-not $importTab) {
+    Info "No TabItem named 'Import', searching by text..."
+    $importTab = Find-Text $main 'Import'
+}
+
+if (-not $importTab) { Fail "Import tab not found"; exit 1 }
+
+Click-Elem $importTab
+Start-Sleep -Seconds 2
+
+$importHdr = Wait-Text $main 'Import BOQ' 15
+if ($importHdr) { Pass "Import view loaded" }
+else { Fail "Import view did not load"; exit 1 }
+
+Step "4/8 Selecting 'Use project document' mode"
+
+$projDocRadio = Find-Text $main 'Use project document'
+if ($projDocRadio) {
+    Info "Found 'Use project document' radio button"
+    Click-Elem $projDocRadio
+    Start-Sleep -Seconds 2
+    Pass "Selected 'Use project document' mode"
+} else {
+    Info "'Use project document' text not found directly, scanning all elements..."
+    $all = $main.FindAll($ScopeDescendants, [System.Windows.Automation.Condition]::TrueCondition)
+    $radioCandidates = @($all | Where-Object {
+        try { $_.Current.Name -like "*project document*" -or $_.Current.Name -like "*Use project*" } catch { $false }
+    })
+    if ($radioCandidates.Count -gt 0) {
+        Click-Elem $radioCandidates[0]
+        Start-Sleep -Seconds 2
+        Pass "Selected project document mode"
+    } else {
+        Fail "'Use project document' option not found"; exit 1
     }
-    catch { Write-ErrorMsg "FileDialog" "Error during broad search: $_" }
 }
 
-if (-not $fileDialog) {
-    Write-ErrorMsg "FileDialog" "No file dialog found after Browse click"
-    Dump-Elements -Label "diagnostic" -Max 40
-    exit 1
+Start-Sleep -Seconds 2
+
+Step "5/8 Selecting BOQ document from ComboBox"
+
+$boqDocStatus = Find-Text-Partial $main "BOQ document"
+if ($boqDocStatus) { Info "BOQ document status: '$($boqDocStatus.Current.Name)'" }
+
+$noBoqText = Find-Text $main 'No BOQ documents found'
+if ($noBoqText) { Fail "No BOQ documents found for this project - cannot import"; exit 1 }
+
+Info "Finding 'Use Selected' button to locate the document ComboBox..."
+$useSelectedBtn = $null
+for ($t = 0; $t -lt 15; $t++) {
+    $useSelectedBtn = Find-Text $main 'Use Selected'
+    if ($useSelectedBtn) { break }
+    Start-Sleep -Seconds 1
+}
+if (-not $useSelectedBtn) { Fail "'Use Selected' button not found"; exit 1 }
+
+$useSelectedRect = $useSelectedBtn.Current.BoundingRectangle
+Info "'Use Selected' at Top=$([int]$useSelectedRect.Top) Left=$([int]$useSelectedRect.Left)"
+
+Info "Searching for ComboBox near 'Use Selected'..."
+$all = $main.FindAll($ScopeDescendants, [System.Windows.Automation.Condition]::TrueCondition)
+$combos = @($all | Where-Object {
+    try {
+        $_.Current.ControlType.ProgrammaticName -match 'ComboBox$' -and
+        $_.Current.BoundingRectangle.Width -gt 80 -and
+        $_.Current.BoundingRectangle.Height -gt 15
+    } catch { $false }
+})
+
+Info "Found $($combos.Count) ComboBoxes total"
+
+$boqComboBox = $null
+$minDist = [double]::MaxValue
+foreach ($cb in $combos) {
+    $cbRect = $cb.Current.BoundingRectangle
+    $distY = [Math]::Abs($cbRect.Top - $useSelectedRect.Top)
+    $distX = [Math]::Abs($cbRect.Left - $useSelectedRect.Left)
+    $dist = $distY + $distX
+    Info "  ComboBox dist=$([int]$dist) Top=$([int]$cbRect.Top) Left=$([int]$cbRect.Left)"
+    if ($dist -lt $minDist) {
+        $minDist = $dist
+        $boqComboBox = $cb
+    }
 }
 
-try { $fileDialog.SetFocus() } catch {}
-Start-Sleep -Milliseconds 500
+if (-not $boqComboBox) { Fail "No ComboBox found near 'Use Selected'"; exit 1 }
 
-Write-Host "  Sending file path..." -ForegroundColor DarkGray
-[System.Windows.Forms.SendKeys]::SendWait("^a")
-Start-Sleep -Milliseconds 100
-[System.Windows.Forms.SendKeys]::SendWait($XerPath)
-Start-Sleep -Milliseconds 300
-[System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
-Write-Host "  File dialog submitted" -ForegroundColor Green
+Info "Selected nearest ComboBox (dist=$([int]$minDist))"
 
-# --- Step 5: Wait for parse, then Commit ---
-Write-Host "Waiting for import to complete..." -ForegroundColor Yellow
+Info "Expanding BOQ ComboBox and selecting first document..."
+try {
+    $expand = $boqComboBox.GetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern)
+    $expand.Expand()
+    Start-Sleep -Milliseconds 800
+} catch {
+    Info "ExpandCollapsePattern failed, trying click + keyboard"
+    Click-Elem $boqComboBox; Start-Sleep -Milliseconds 500
+    [System.Windows.Forms.SendKeys]::SendWait('%{DOWN}'); Start-Sleep -Milliseconds 800
+}
+
+$docItems = $boqComboBox.FindAll($ScopeDescendants, [System.Windows.Automation.Condition]::TrueCondition)
+Info "Expanded ComboBox has $($docItems.Count) elements"
+
+$selectedDoc = $false
+foreach ($item in $docItems) {
+    $n = $item.Current.Name
+    $r = $item.Current.BoundingRectangle
+    if ($n -and $n.Length -gt 2 -and -not $n.Contains("Dto") -and $r.Width -gt 0 -and $r.Height -gt 0) {
+        Write-Host "  Selecting BOQ document: $n" -ForegroundColor Green
+        Click-Elem $item; $selectedDoc = $true; break
+    }
+}
+
+if (-not $selectedDoc) {
+    Info "No visible doc items, trying keyboard DOWN+ENTER"
+    [System.Windows.Forms.SendKeys]::SendWait('{DOWN}'); Start-Sleep -Milliseconds 300
+    [System.Windows.Forms.SendKeys]::SendWait('{ENTER}'); Start-Sleep -Milliseconds 300
+}
+
+Pass "BOQ document selected from ComboBox"
+
+Start-Sleep -Seconds 2
+
+Click-Elem $useSelectedBtn
+Pass "Clicked 'Use Selected'"
+
 Start-Sleep -Seconds 3
 
-$foundCommit = $false
-# Wait longer for parsing to finish before looking for commit
-Start-Sleep -Seconds 5
-for ($t = 0; $t -lt 60; $t++) {
-    if (Click-ElementByText "Commit Import" -TimeoutSeconds 2) {
-        Write-Host "Import committed!" -ForegroundColor Green
-        $foundCommit = $true; break
+Step "6/8 Waiting for column mapping detection"
+
+Info "Waiting for column auto-detection..."
+$mappingDetected = $false
+for ($t = 0; $t -lt 30; $t++) {
+    $codeLabel = Find-Text $main 'Code'
+    $descLabel = Find-Text $main 'Description'
+    $qtyLabel = Find-Text $main 'Quantity'
+    if ($codeLabel -and $descLabel -and $qtyLabel) {
+        $mappingDetected = $true
+        break
     }
-    if ($t % 10 -eq 0) { Write-Host "  Waiting for Commit Import button... (${t}s)" -ForegroundColor DarkGray }
+    Info "Waiting for column mapping labels... ($t s)"
+    Start-Sleep -Seconds 1
 }
 
-if (-not $foundCommit) {
-    Write-ErrorMsg "Commit" "Commit button did not appear within 60s"
+if ($mappingDetected) { Pass "Column mapping section visible" }
+else { Fail "Column mapping did not appear"; exit 1 }
+
+Start-Sleep -Seconds 2
+
+Step "7/8 Previewing import"
+
+$previewBtn = $null
+for ($t = 0; $t -lt 15; $t++) {
+    $previewBtn = Find-Text $main 'Preview Import'
+    if ($previewBtn) { break }
+    Start-Sleep -Milliseconds 500
 }
 
-Write-Host "`nDone. Planova is running with imported data." -ForegroundColor Cyan
+if (-not $previewBtn) { Fail "'Preview Import' button not found"; exit 1 }
+
+Info "Clicking Preview Import..."
+$clicked = Click-ElementByText $main 'Preview Import' 5
+if (-not $clicked) { Fail "Could not click Preview Import"; exit 1 }
+
+Start-Sleep -Seconds 5
+
+$previewResult = Find-Text-Partial $main "Preview loaded"
+if ($previewResult) { Pass "Preview loaded: '$($previewResult.Current.Name)'" }
+else {
+    $previewStatus = Find-Text-Partial $main "Preview"
+    if ($previewStatus) { Info "Preview status: '$($previewStatus.Current.Name)'" }
+    $previewError = Find-Text-Partial $main "Preview error"
+    if ($previewError) { Fail "Preview error: '$($previewError.Current.Name)'" }
+}
+
+Step "8/8 Committing import"
+
+$commitBtn = $null
+for ($t = 0; $t -lt 30; $t++) {
+    $commitBtn = Find-Text $main 'Commit Import'
+    if ($commitBtn) { break }
+    Info "Waiting for 'Commit Import' button... ($t s)"
+    Start-Sleep -Seconds 1
+}
+
+if (-not $commitBtn) { Fail "'Commit Import' button not found"; exit 1 }
+
+Info "Clicking Commit Import..."
+$clicked = Click-ElementByText $main 'Commit Import' 5
+if (-not $clicked) { Fail "Could not click Commit Import"; exit 1 }
+
+Info "Waiting for import to complete..."
+Start-Sleep -Seconds 8
+
+$successMsg = $null
+for ($t = 0; $t -lt 30; $t++) {
+    $successMsg = Find-Text-Partial $main "Import complete"
+    if ($successMsg) { break }
+    $errorMsg = Find-Text-Partial $main "Import error"
+    if ($errorMsg) { Fail "Import error: '$($errorMsg.Current.Name)'"; exit 1 }
+    Info "Waiting for import result... ($t s)"
+    Start-Sleep -Seconds 1
+}
+
+if ($successMsg) { Pass "Import succeeded: '$($successMsg.Current.Name)'" }
+else { Fail "Could not confirm import success within 30s" }
+
+Write-Host "`n========================================" -ForegroundColor Cyan
+if ($global:AnyFailed) {
+    Write-Host "  BOQ PROJECT DOCUMENT IMPORT: SOME STEPS FAILED" -ForegroundColor Red
+} else {
+    Write-Host "  BOQ PROJECT DOCUMENT IMPORT: ALL STEPS PASSED" -ForegroundColor Green
+}
+Write-Host "========================================" -ForegroundColor Cyan
+
+Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+
+if ($global:AnyFailed) { exit 1 } else { exit 0 }

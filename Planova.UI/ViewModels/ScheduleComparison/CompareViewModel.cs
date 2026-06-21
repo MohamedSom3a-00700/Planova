@@ -115,12 +115,12 @@ public partial class CompareViewModel : ObservableObject
         _currentProjectService = currentProjectService;
         _importService = serviceProvider.GetService<IPrimaveraImportService>();
         _currentProjectService.CurrentProjectChanged += OnCurrentProjectChanged;
-        _ = InitializeAsync();
+        try { _ = InitializeAsync(); } catch { /* InitializeAsync handles its own errors */ }
     }
 
     private async void OnCurrentProjectChanged(object? sender, ProjectContext? project)
     {
-        await InitializeAsync();
+        try { await InitializeAsync(); } catch { /* InitializeAsync handles its own errors */ }
     }
 
     private async Task InitializeAsync()
@@ -249,7 +249,14 @@ public partial class CompareViewModel : ObservableObject
                 ComparisonScope.Float
             };
 
-            var projectId = _currentProjectService.CurrentProject?.Id ?? 0;
+            var project = _currentProjectService.CurrentProject;
+            if (project == null)
+            {
+                HasValidationError = true;
+                ValidationErrorMessage = "No active project selected.";
+                return;
+            }
+            var projectId = project.Id;
 
             var session = await _comparisonService.CompareAsync(
                 projectId,

@@ -86,4 +86,16 @@
   <data name="WbsWeightExceeded" xml:space="preserve"><value>إجمالي الوزن للأخوة لا يمكن أن يتجاوز 100%</value></data>
   <data name="WbsWorkPackageNoChildren" xml:space="preserve"><value>عناصر حزمة العمل لا يمكن أن تحتوي على أطفال</value></data>
   <data name="WbsDateValidation" xml:space="preserve"><value>تاريخ النهاية يجب أن يكون بعد أو يساوي تاريخ البداية</value></data>
+  <data name="WbsMapping_EmptyTitle" xml:space="preserve"><value>لا توجد بيانات تحويل</value></data>
+  <data name="WbsMapping_EmptyDescription" xml:space="preserve"><value>قم باستيراد BOQ لبدء التحويل</value></data>
+  <data name="WbsMapping_BySection" xml:space="preserve"><value>حسب القسم</value></data>
+  <data name="WbsMapping_ByCSI" xml:space="preserve"><value>حسب كود CSI</value></data>
+  <data name="WbsMapping_ByCostCode" xml:space="preserve"><value>حسب كود التكلفة</value></data>
+  <data name="WbsMapping_ByTrade" xml:space="preserve"><value>حسب التخصص</value></data>
+  <data name="WbsMapping_ByDiscipline" xml:space="preserve"><value>حسب الاختصاص</value></data>
+  <data name="WbsReports_Title" xml:space="preserve"><value>تقارير WBS</value></data>
+  <data name="WbsReports_Export" xml:space="preserve"><value>تصدير</value></data>
+  <data name="WbsTemplates_Title" xml:space="preserve"><value>قوالب WBS</value></data>
+  <data name="WbsTemplates_Apply" xml:space="preserve"><value>تطبيق القالب</value></data>
+  <data name="WbsTemplates_Category" xml:space="preserve"><value>الفئة</value></data>
 </root>

@@ -26,10 +26,20 @@
             <Button Content="Load Template" Command="{Binding LoadFromTemplateCommand}"
                     Margin="0,0,8,0" MinWidth="90"/>
             <Separator Width="1" Background="Gray" Margin="0,0,8,0"/>
+            <Button Content="Add Root" Command="{Binding AddRootCommand}" Margin="0,0,8,0"/>
             <Button Content="Add Child" Command="{Binding AddChildCommand}" Margin="0,0,8,0"/>
+            <Button Content="Add Sibling" Command="{Binding AddSiblingCommand}" Margin="0,0,8,0"/>
+            <Separator Width="1" Background="Gray" Margin="0,0,8,0"/>
+            <Button Content="Duplicate" Command="{Binding DuplicateNodeCommand}" Margin="0,0,8,0"/>
+            <Button Content="Rename" Command="{Binding RenameNodeCommand}" Margin="0,0,8,0"/>
             <Button Content="Delete" Command="{Binding DeleteItemCommand}" Margin="0,0,8,0"/>
+            <Separator Width="1" Background="Gray" Margin="0,0,8,0"/>
             <Button Content="Move Up" Command="{Binding MoveUpCommand}" Margin="0,0,8,0"/>
-            <Button Content="Move Down" Command="{Binding MoveDownCommand}"/>
+            <Button Content="Move Down" Command="{Binding MoveDownCommand}" Margin="0,0,8,0"/>
+            <Button Content="Indent" Command="{Binding IndentNodeCommand}" Margin="0,0,8,0"/>
+            <Button Content="Outdent" Command="{Binding OutdentNodeCommand}" Margin="0,0,8,0"/>
+            <Separator Width="1" Background="Gray" Margin="0,0,8,0"/>
+            <Button Content="Regen Codes" Command="{Binding RegenerateCodesCommand}" MinWidth="80"/>
         </StackPanel>
 
         <Grid Grid.Row="1">
@@ -42,7 +52,34 @@
                       SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                       VirtualizingPanel.ScrollUnit="Item"
                       VirtualizingPanel.VirtualizationMode="Recycling"
-                      Margin="0,0,8,0">
+                      AllowDrop="True"
+                      Margin="0,0,8,0"
+                      PreviewMouseLeftButtonDown="ListView_PreviewMouseLeftButtonDown"
+                      PreviewMouseMove="ListView_PreviewMouseMove"
+                      Drop="ListView_Drop">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="ContextMenu">
+                            <Setter.Value>
+                                <ContextMenu>
+                                    <MenuItem Header="Add Child" Command="{Binding DataContext.AddChildCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                    <MenuItem Header="Add Sibling" Command="{Binding DataContext.AddSiblingCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                    <MenuItem Header="Add Root" Command="{Binding DataContext.AddRootCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                    <Separator/>
+                                    <MenuItem Header="Duplicate" Command="{Binding DataContext.DuplicateNodeCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                    <MenuItem Header="Rename" Command="{Binding DataContext.RenameNodeCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                    <Separator/>
+                                    <MenuItem Header="Move Up" Command="{Binding DataContext.MoveUpCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                    <MenuItem Header="Move Down" Command="{Binding DataContext.MoveDownCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                    <MenuItem Header="Indent" Command="{Binding DataContext.IndentNodeCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                    <MenuItem Header="Outdent" Command="{Binding DataContext.OutdentNodeCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                    <Separator/>
+                                    <MenuItem Header="Delete" Command="{Binding DataContext.DeleteItemCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                </ContextMenu>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListView.ItemContainerStyle>
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Code" Width="80" DisplayMemberBinding="{Binding Code}"/>
@@ -60,10 +97,14 @@
             <ScrollViewer Grid.Column="1">
                 <StackPanel DataContext="{Binding SelectedItem}">
                     <TextBlock Text="Properties" FontSize="16" FontWeight="Bold" Margin="0,0,0,8"/>
+                    <TextBlock Text="Code" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding DataContext.SelectedNodeCode, RelativeSource={RelativeSource AncestorType=UserControl}, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
                     <TextBlock Text="Name" Margin="0,0,0,4"/>
                     <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
                     <TextBlock Text="Description" Margin="0,0,0,4"/>
                     <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" Height="60" Margin="0,0,0,8"/>
+                    <TextBlock Text="Discipline" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding DataContext.SelectedNodeDiscipline, RelativeSource={RelativeSource AncestorType=UserControl}, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
                     <TextBlock Text="WBS Level" Margin="0,0,0,4"/>
                     <ComboBox ItemsSource="{Binding DataContext.WbsLevelOptions, RelativeSource={RelativeSource AncestorType=UserControl}}"
                               SelectedItem="{Binding DataContext.SelectedItemWbsLevel, RelativeSource={RelativeSource AncestorType=UserControl}}"

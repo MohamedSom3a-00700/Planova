@@ -15,11 +15,12 @@ public class WbsEditorViewModelTests
     private readonly Mock<IWbsValidationService> _validation = new();
     private readonly Mock<IWbsTemplateService> _templateService = new();
     private readonly Mock<IBoqSession> _session = new();
+    private readonly Mock<IWbsCodeGenerationService> _codeGen = new();
     private readonly WbsEditorViewModel _sut;
 
     public WbsEditorViewModelTests()
     {
-        _sut = new WbsEditorViewModel(_wbsService.Object, _itemRepo.Object, _validation.Object, _templateService.Object, _session.Object);
+        _sut = new WbsEditorViewModel(_wbsService.Object, _itemRepo.Object, _validation.Object, _templateService.Object, _session.Object, _codeGen.Object);
     }
 
     [Fact]

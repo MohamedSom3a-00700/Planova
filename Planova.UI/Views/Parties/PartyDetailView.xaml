@@ -1,0 +1,119 @@
+<UserControl x:Class="Planova.UI.Views.Parties.PartyDetailView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Parties"
+             xmlns:conv="clr-namespace:Planova.UI.Converters"
+             d:DataContext="{d:DesignInstance vm:PartyDetailViewModel}"
+             mc:Ignorable="d"
+             Background="{DynamicResource WorkspaceBackgroundGradient}">
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:FilePathToImageConverter x:Key="FilePathToImage"/>
+    </UserControl.Resources>
+    <Grid>
+        <ScrollViewer>
+            <StackPanel Margin="16">
+                <TextBlock Text="{Binding Party.Name, TargetNullValue='Party Details'}"
+                           FontSize="22" FontWeight="Bold"/>
+
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="Red"
+                           Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"
+                           Margin="0,8,0,0"/>
+
+                <Border Style="{StaticResource DashboardEmptyStateStyle}"
+                        Visibility="{Binding Party, Converter={StaticResource BoolToVis}, ConverterParameter=invert}">
+                    <TextBlock Text="Select a party to view details"
+                               Style="{StaticResource DashboardEmptyStateTextStyle}"/>
+                </Border>
+
+                <StackPanel Visibility="{Binding Party, Converter={StaticResource BoolToVis}}" Margin="0,12,0,0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <Image Source="{Binding Party.LogoPath, Converter={StaticResource FilePathToImage}}"
+                               Width="96" Height="96" Stretch="Uniform">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="Source" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                        <ui:SymbolIcon Symbol="Image24" FontSize="48" Foreground="{DynamicResource ThemeAccent}"
+                                       VerticalAlignment="Center" Margin="0,0,12,0">
+                            <ui:SymbolIcon.Style>
+                                <Style TargetType="ui:SymbolIcon">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Party.LogoPath}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Party.LogoPath}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ui:SymbolIcon.Style>
+                        </ui:SymbolIcon>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <ui:SymbolIcon Symbol="Person24" FontSize="16" Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Name" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBox Text="{Binding EditName}" Margin="0,0,0,12"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <ui:SymbolIcon Symbol="Badge24" FontSize="16" Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Role" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBox Text="{Binding EditPartyType}" Margin="0,0,0,12"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <ui:SymbolIcon Symbol="Call24" FontSize="16" Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Contact Person" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBox Text="{Binding EditContactName}" Margin="0,0,0,12"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <ui:SymbolIcon Symbol="Mail24" FontSize="16" Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Email" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBox Text="{Binding EditContactEmail}" Margin="0,0,0,12"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <ui:SymbolIcon Symbol="Phone24" FontSize="16" Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Phone" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBox Text="{Binding EditContactPhone}" Margin="0,0,0,12"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <ui:SymbolIcon Symbol="Location24" FontSize="16" Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Address" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBox Text="{Binding EditAddress}" AcceptsReturn="True" MinHeight="60" TextWrapping="Wrap" Margin="0,0,0,12"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <ui:SymbolIcon Symbol="Note24" FontSize="16" Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Notes" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBox Text="{Binding EditNotes}" AcceptsReturn="True" MinHeight="60" TextWrapping="Wrap" Margin="0,0,0,16"/>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Save" Command="{Binding SaveCommand}" MinHeight="32" Width="100"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <Border Style="{StaticResource DashboardLoadingOverlayStyle}"
+                        Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Saving..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

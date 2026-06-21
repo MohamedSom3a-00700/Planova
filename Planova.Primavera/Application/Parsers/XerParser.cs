@@ -229,7 +229,7 @@ public class XerParser
             SourceFileName = string.Empty,
             ImportedAt = DateTime.UtcNow,
             IsActive = true,
-            ImportSessionId = 0,
+            ImportSessionId = sessionId,
             LastRecalcDate = TryParseDate(row.GetValueOrDefault("last_recalc_date", "")),
             PlanStartDate = TryParseDate(row.GetValueOrDefault("plan_start_date", "")),
             PlanEndDate = TryParseDate(row.GetValueOrDefault("plan_end_date", "")),

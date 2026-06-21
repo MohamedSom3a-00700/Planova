@@ -10,7 +10,7 @@ using Planova.Application.Services;
 using Planova.Shared.Abstractions;
 using Planova.UI.Views.Empty;
 using Planova.UI.Views.Projects;
-using Planova.UI.Views.Clients;
+using Planova.UI.Views.Parties;
 using Planova.UI.Views.Contracts;
 using Planova.UI.Views.Dashboard;
 using Planova.UI.Views.Boq;
@@ -192,21 +192,21 @@ public partial class ShellViewModel : ObservableObject
                 if (highContrastFallback != null) merged.Remove(highContrastFallback);
                 if (!merged.Any(d => d.Source?.OriginalString?.Contains("LightTheme") == true))
                     merged.Insert(merged.Count, new System.Windows.ResourceDictionary
-                        { Source = new Uri("Styles/LightTheme.xaml", UriKind.Relative) });
+                    { Source = new Uri("Styles/LightTheme.xaml", UriKind.Relative) });
                 break;
             case AppTheme.Dark:
                 if (lightTheme != null) merged.Remove(lightTheme);
                 if (highContrastFallback != null) merged.Remove(highContrastFallback);
                 if (!merged.Any(d => d.Source?.OriginalString?.Contains("DarkTheme") == true))
                     merged.Insert(merged.Count, new System.Windows.ResourceDictionary
-                        { Source = new Uri("Styles/DarkTheme.xaml", UriKind.Relative) });
+                    { Source = new Uri("Styles/DarkTheme.xaml", UriKind.Relative) });
                 break;
             case AppTheme.HighContrast:
                 if (lightTheme != null) merged.Remove(lightTheme);
                 if (darkTheme != null) merged.Remove(darkTheme);
                 if (!merged.Any(d => d.Source?.OriginalString?.Contains("HighContrastFallback") == true))
                     merged.Insert(merged.Count, new System.Windows.ResourceDictionary
-                        { Source = new Uri("Styles/HighContrastFallback.xaml", UriKind.Relative) });
+                    { Source = new Uri("Styles/HighContrastFallback.xaml", UriKind.Relative) });
                 break;
         }
 
@@ -283,8 +283,13 @@ public partial class ShellViewModel : ObservableObject
 
         nav.RegisterTarget("dashboard", "Dashboard", "Home24", false, false,
             () => _serviceProvider.GetRequiredService<DashboardView>());
-        nav.RegisterTarget("projects", "Projects", "Folder24", false, false,
-            () => _serviceProvider.GetRequiredService<ProjectsWorkspaceView>());
+        nav.RegisterTarget("projects", "Projects", "Folder24", false, false, () =>
+        {
+            var view = _serviceProvider.GetRequiredService<ProjectsWorkspaceView>();
+            if (view.DataContext is ProjectsWorkspaceViewModel vm)
+                vm.StatusMessage += msg => StatusText = msg;
+            return view;
+        });
         nav.RegisterTarget("boq", "BOQ Studio", "DocumentBulletList24", true, false, () =>
         {
             var view = _serviceProvider.GetRequiredService<BoqStudioView>();
@@ -350,8 +355,8 @@ public partial class ShellViewModel : ObservableObject
             () => CreateEmptyState("DataHistogram24", "Analytics", "Analytics module is coming soon."));
         nav.RegisterTarget("integration-hub", "Integration Hub", "PlugConnected24", true, true,
             () => CreateEmptyState("PlugConnected24", "Integration Hub", "Integration hub module is coming soon."));
-        nav.RegisterTarget("clients", "Clients", "People24", false, false,
-            () => _serviceProvider.GetRequiredService<ClientsWorkspaceView>());
+        nav.RegisterTarget("parties", "Parties", "PeopleTeam24", false, false,
+            () => _serviceProvider.GetRequiredService<PartyListView>());
         nav.RegisterTarget("excel-studio", "Excel Studio", "Table24", true, false, () =>
         {
             var view = _serviceProvider.GetRequiredService<ExcelStudioView>();
