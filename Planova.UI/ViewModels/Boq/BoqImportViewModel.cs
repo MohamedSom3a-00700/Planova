@@ -4,12 +4,14 @@ using CommunityToolkit.Mvvm.Input;
 using Planova.Application.Dto;
 using Planova.Application.Services;
 using Planova.Boq.Application.Dto;
+using Planova.Boq.Domain.Enums;
 using Planova.Boq.Domain.Interfaces;
 using Planova.Shared.Abstractions;
 using System.IO;
 using Planova.Boq.Application.Services;
 using Planova.Boq.CsvReader;
 using Planova.Excel.Readers;
+using Planova.UI.Services;
 
 namespace Planova.UI.ViewModels.Boq;
 
@@ -19,22 +21,35 @@ public partial class BoqImportViewModel : ObservableObject
     private readonly IBoqCsvReader _csvReader;
     private readonly IExcelRowReader _excelReader;
     private readonly IWorkbookReader _workbookReader;
+    private readonly IMultiSheetBoqImportService _multiSheetImportService;
+    private readonly IBoqFileUploadService _fileUploadService;
+    private readonly IBoqDescriptionParser _descriptionParser;
     private readonly IBoqSession _session;
     private readonly IProjectDocumentService _projectDocumentService;
     private readonly ICurrentProjectService _currentProjectService;
+    private readonly IProjectService _projectService;
 
     public BoqImportViewModel(IBoqImportService importService, IBoqCsvReader csvReader,
-        IExcelRowReader excelReader, IWorkbookReader workbookReader, IBoqSession session,
+        IExcelRowReader excelReader, IWorkbookReader workbookReader,
+        IMultiSheetBoqImportService multiSheetImportService,
+        IBoqFileUploadService fileUploadService,
+        IBoqDescriptionParser descriptionParser,
+        IBoqSession session,
         IProjectDocumentService projectDocumentService,
-        ICurrentProjectService currentProjectService)
+        ICurrentProjectService currentProjectService,
+        IProjectService projectService)
     {
         _importService = importService;
         _csvReader = csvReader;
         _excelReader = excelReader;
         _workbookReader = workbookReader;
+        _multiSheetImportService = multiSheetImportService;
+        _fileUploadService = fileUploadService;
+        _descriptionParser = descriptionParser;
         _session = session;
         _projectDocumentService = projectDocumentService;
         _currentProjectService = currentProjectService;
+        _projectService = projectService;
         _currentProjectService.CurrentProjectChanged += OnCurrentProjectChanged;
         DetectedColumns.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasDetectedColumns));
 
@@ -133,10 +148,29 @@ public partial class BoqImportViewModel : ObservableObject
     [ObservableProperty]
     private bool _createNewBoq = true;
 
+    [ObservableProperty]
+    private ImportMode _selectedImportMode = ImportMode.Merge;
+
+    [ObservableProperty]
+    private bool _fileUploadedToProject;
+
+    [ObservableProperty]
+    private bool _isDuplicateFile;
+
+    [ObservableProperty]
+    private string _duplicateMessage = string.Empty;
+
+    [ObservableProperty]
+    private ProjectDocumentDto? _autoScanDocument;
+
+    [ObservableProperty]
+    private IReadOnlyList<WorksheetInfo>? _autoScanResults;
+
     public bool HasProjectDocuments => BoqDocuments.Count > 0;
     public bool HasFileSelected => !string.IsNullOrEmpty(SelectedFilePath) && CreateNewBoq;
     public bool HasDocumentSelected => !string.IsNullOrEmpty(SelectedFilePath) && !CreateNewBoq;
     public bool HasDetectedColumns => DetectedColumns.Count > 0;
+    public bool ShowDuplicateWarning => IsDuplicateFile && !string.IsNullOrEmpty(DuplicateMessage);
 
     public ObservableCollection<string> DetectedColumns { get; } = new();
     public ObservableCollection<string> AvailableWorksheets { get; } = new();
@@ -145,9 +179,39 @@ public partial class BoqImportViewModel : ObservableObject
     public ObservableCollection<ProjectDocumentDto> BoqDocuments { get; } = new();
 
     private static readonly string[] CsiDivisionKeywords =
-        ["division", "div", "csi", "masterformat", "master format", "section"];
+        ["division", "div", "csi", "masterformat", "master format", "section",
+         "div no", "div no.", "division no", "division no.", "csi code", "csicode",
+         "trade", "trade code", "tradecode", "category code", "categorycode",
+         "القسم", "التخصص", "الفرع", "رقم القسم"];
     private static readonly string[] ClassificationKeywords =
-        ["classification", "class", "category", "type", "group", "trade"];
+        ["classification", "class", "category", "type", "group", "trade",
+         "classification code", "classificationcode", "class code", "classcode",
+         "category code", "categorycode", "group code", "groupcode",
+         "trade classification", "tradeclassification", "trade category", "tradecategory",
+         "التصنيف", "نوع", "فئة", "مجموعة", "رمز التصنيف"];
+
+    private static readonly string[] CodeKeywords =
+        ["code", "id", "ref", "reference", "item code", "itemcode",
+         "item no", "itemno", "item #", "item#", "number", "no",
+         "line no", "lineno", "line#", "serial", "sr no", "srno", "sno",
+         "ref no", "refno", "ref#", "code no", "codeno", "part no", "partno",
+         "بند", "رقم البند", "رقم", "الرقم"];
+    private static readonly string[] DescriptionKeywords =
+        ["description", "desc", "item description", "itemdescription",
+         "name", "item name", "itemname", "title", "work item", "workitem",
+         "scope of work", "scopework", "scope", "specification", "spec",
+         "particulars", "particular", "details", "detail", "narrative",
+         "وصف", "تفاصيل", "بيان", "البند", "وصف الأعمال"];
+    private static readonly string[] UnitKeywords =
+        ["unit", "uom", "unit of measure", "unit of measurement",
+         "measurement", "measure", "وحدة", "وحدة القياس"];
+    private static readonly string[] QuantityKeywords =
+        ["quantity", "qty", "qty.", "quantities", "volume", "nos", "no of",
+         "number of", "count", "الكمية", "عدد"];
+    private static readonly string[] RateKeywords =
+        ["rate", "unit rate", "unitrate", "unit price", "unitprice", "price",
+         "unit cost", "unitcost", "cost per unit", "price per unit",
+         "السعر", "سعر الوحدة", "معدل"];
 
     partial void OnCreateNewBoqChanged(bool value)
     {
@@ -186,6 +250,16 @@ public partial class BoqImportViewModel : ObservableObject
             foreach (var doc in docs.OrderBy(d => d.FileName))
                 BoqDocuments.Add(doc);
             OnPropertyChanged(nameof(HasProjectDocuments));
+
+            if (docs.Count > 0 && CreateNewBoq)
+            {
+                var firstDoc = docs.OrderBy(d => d.FileName).First();
+                if (File.Exists(firstDoc.AbsolutePath))
+                {
+                    AutoScanDocument = firstDoc;
+                    StatusMessage = $"{docs.Count} BOQ document(s) found. Select one or import a new file.";
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -237,8 +311,34 @@ public partial class BoqImportViewModel : ObservableObject
                        || Path.GetExtension(SelectedFilePath).Equals(".xls", StringComparison.OrdinalIgnoreCase)
                        || Path.GetExtension(SelectedFilePath).Equals(".xlsm", StringComparison.OrdinalIgnoreCase);
 
-                StatusMessage = $"Selected: {Path.GetFileName(SelectedFilePath)}";
+                FileUploadedToProject = false;
                 OnPropertyChanged(nameof(HasFileSelected));
+
+                var projectId = _currentProjectService.CurrentProject?.Id;
+                if (projectId.HasValue)
+                {
+                    var duplicateCheck = await _fileUploadService.CheckDuplicateAsync(
+                        projectId.Value, Path.GetFileName(SelectedFilePath), SelectedFilePath, ct);
+                    IsDuplicateFile = duplicateCheck.IsDuplicate;
+                    DuplicateMessage = duplicateCheck.Message ?? string.Empty;
+                    OnPropertyChanged(nameof(ShowDuplicateWarning));
+
+                    if (duplicateCheck.IsDuplicate)
+                    {
+                        StatusMessage = duplicateCheck.Message;
+                    }
+                    else
+                    {
+                        StatusMessage = $"Selected: {Path.GetFileName(SelectedFilePath)}";
+                    }
+                }
+                else
+                {
+                    StatusMessage = $"Selected: {Path.GetFileName(SelectedFilePath)}";
+                    IsDuplicateFile = false;
+                    DuplicateMessage = string.Empty;
+                    OnPropertyChanged(nameof(ShowDuplicateWarning));
+                }
 
                 if (IsExcel)
                     await DetectExcelWorksheetsAsync(ct);
@@ -293,21 +393,65 @@ public partial class BoqImportViewModel : ObservableObject
         }
     }
 
+    private async Task ScanAndPreviewMultiSheetAsync(CancellationToken ct)
+    {
+        try
+        {
+            IsLoading = true;
+            var scanned = await _multiSheetImportService.ScanAsync(SelectedFilePath, ct);
+
+            var selections = scanned
+                .Where(s => s.IsBoqSheet)
+                .Select(s => new WorksheetSelection(
+                    s.Index,
+                    s.IsBoqSheet ? ImportAction.Import : ImportAction.Skip,
+                    null))
+                .ToList();
+
+            if (selections.Count == 0)
+            {
+                StatusMessage = "No BOQ sheets detected in the workbook.";
+                return;
+            }
+
+            var preview = await _multiSheetImportService.PreviewAsync(
+                SelectedFilePath,
+                CurrentProjectId,
+                MergeAllSheets ? ImportMode.Merge : ImportMode.Single,
+                selections,
+                ct);
+
+            StatusMessage = preview.WorksheetsDetected > 0
+                ? $"Preview: {preview.EstimatedRows} rows across {preview.WorksheetsToImport} worksheets"
+                : "No data to preview.";
+
+            CanProceed = preview.WorksheetsToImport > 0;
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Scan preview failed: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
     private async Task DetectExcelWorksheetsAsync(CancellationToken ct)
     {
         IsLoading = true;
         try
         {
-            var sheets = await _excelReader.GetWorksheetsAsync(SelectedFilePath, ct);
+            var scanned = await _multiSheetImportService.ScanAsync(SelectedFilePath, ct);
             AvailableWorksheets.Clear();
-            foreach (var sheet in sheets)
-                AvailableWorksheets.Add(sheet);
+            foreach (var sheet in scanned)
+                AvailableWorksheets.Add(sheet.Name);
 
-            HasMultipleSheets = sheets.Count > 1;
-            if (sheets.Count > 0)
+            HasMultipleSheets = scanned.Count > 1;
+            if (scanned.Count > 0)
             {
-                SelectedWorksheet = sheets[0];
-                MergeAllSheets = sheets.Count > 1;
+                SelectedWorksheet = scanned[0].Name;
+                MergeAllSheets = scanned.Count > 1;
             }
             else
             {
@@ -315,13 +459,13 @@ public partial class BoqImportViewModel : ObservableObject
                 MergeAllSheets = false;
             }
 
-            StatusMessage = sheets.Count > 1
-                ? $"{sheets.Count} sheets detected"
-                : sheets.Count == 1
+            StatusMessage = scanned.Count > 1
+                ? $"{scanned.Count} sheets detected ({scanned.Count(s => s.IsBoqSheet)} likely BOQ)"
+                : scanned.Count == 1
                     ? $"Sheet: {SelectedWorksheet}"
                     : "No worksheets found. The file may be corrupt or in an unsupported format.";
 
-            if (sheets.Count > 0)
+            if (scanned.Count > 0)
                 await DetectExcelHeadersAsync(ct);
         }
         catch (Exception ex)
@@ -382,38 +526,31 @@ public partial class BoqImportViewModel : ObservableObject
 
             if (string.IsNullOrEmpty(CodeColumn) || CodeColumn == "Code")
             {
-                if (MatchesAny(lower, ["code", "id", "ref", "reference", "item code", "itemcode",
-                    "item no", "itemno", "item #", "item#", "number", "no"]))
-                {
+                if (MatchesAny(lower, CodeKeywords))
                     CodeColumn = header;
-                }
             }
 
             if (string.IsNullOrEmpty(DescriptionColumn) || DescriptionColumn == "Description")
             {
-                if (MatchesAny(lower, ["description", "desc", "item description", "itemdescription",
-                    "name", "item name", "itemname", "title", "work item", "workitem",
-                    "scope of work", "scopework", "scope"]))
-                {
+                if (MatchesAny(lower, DescriptionKeywords))
                     DescriptionColumn = header;
-                }
             }
 
             if (string.IsNullOrEmpty(UnitColumn) || UnitColumn == "Unit")
             {
-                if (MatchesAny(lower, ["unit", "uom", "unit of measure"]))
+                if (MatchesAny(lower, UnitKeywords))
                     UnitColumn = header;
             }
 
             if (string.IsNullOrEmpty(QuantityColumn) || QuantityColumn == "Quantity")
             {
-                if (MatchesAny(lower, ["quantity", "qty", "qty."]))
+                if (MatchesAny(lower, QuantityKeywords))
                     QuantityColumn = header;
             }
 
             if (string.IsNullOrEmpty(RateColumn) || RateColumn == "Rate")
             {
-                if (MatchesAny(lower, ["rate", "unit rate", "unitrate", "unit price", "unitprice", "price"]))
+                if (MatchesAny(lower, RateKeywords))
                     RateColumn = header;
             }
 
@@ -513,15 +650,32 @@ public partial class BoqImportViewModel : ObservableObject
             StatusMessage = "Importing...";
 
             var projectId = CurrentProjectId;
-            var progress = new Progress<int>(value =>
-            {
-                ProgressValue = value;
-            });
+            var projectIntId = _currentProjectService.CurrentProject?.Id;
+            var progress = new Progress<int>(value => ProgressValue = value);
 
             var isCsv = Path.GetExtension(SelectedFilePath).Equals(".csv", StringComparison.OrdinalIgnoreCase);
-            var sheetName = MergeAllSheets ? null : SelectedWorksheet;
 
-            BoqImportResult? result;
+            if (!CreateNewBoq && projectIntId.HasValue && !FileUploadedToProject && !IsDuplicateFile)
+            {
+                StatusMessage = "Uploading file to project BOQ folder...";
+                var project = await _projectService.GetByIdAsync(projectIntId.Value, ct);
+                var uploadResult = await _fileUploadService.UploadToProjectAsync(
+                    projectIntId.Value, SelectedFilePath, project?.DocumentsFolder, ct);
+                if (uploadResult.Success)
+                {
+                    FileUploadedToProject = true;
+                    if (uploadResult.WasDuplicate)
+                        StatusMessage = "File already exists in project documents — using existing file";
+                    else
+                        StatusMessage = "File uploaded to project BOQ folder";
+                    await LoadBoqDocumentsAsync(ct);
+                }
+                else if (!string.IsNullOrEmpty(uploadResult.ErrorMessage))
+                {
+                    StatusMessage = $"Upload warning: {uploadResult.ErrorMessage}";
+                }
+            }
+
             if (isCsv)
             {
                 var options = new CsvImportOptions(
@@ -538,15 +692,35 @@ public partial class BoqImportViewModel : ObservableObject
                     Delimiter: Delimiter
                 );
 
-                result = await _importService.ImportFromCsvAsync(projectId, SelectedFilePath, options, progress, ct);
+                var result = await _importService.ImportFromCsvAsync(projectId, SelectedFilePath, options, progress, ct);
+                StatusMessage = $"Import complete: {result.ItemsImported} imported, {result.ItemsSkipped} skipped";
+                _session.SelectBoq(result.BoqId, projectId);
+            }
+            else if (IsExcel && (HasMultipleSheets || MergeAllSheets))
+            {
+                var scanned = await _multiSheetImportService.ScanAsync(SelectedFilePath, ct);
+                var selections = scanned
+                    .Where(s => s.IsBoqSheet)
+                    .Select(s => new WorksheetSelection(s.Index, ImportAction.Import, null))
+                    .ToList();
+
+                var mode = SelectedImportMode;
+                if (mode == ImportMode.Single && HasMultipleSheets)
+                    mode = MergeAllSheets ? ImportMode.Merge : ImportMode.Single;
+
+                var userId = 0;
+                var summary = await _multiSheetImportService.ImportAsync(
+                    SelectedFilePath, projectId, mode, selections, userId, ct);
+
+                StatusMessage = $"Import complete: {summary.SheetsImported} sheets, {summary.ItemsImported} items, total {summary.TotalAmount:N2}";
             }
             else
             {
-                result = await _importService.ImportFromExcelAsync(projectId, SelectedFilePath, sheetName, null, progress, ct);
+                var sheetName = MergeAllSheets ? null : SelectedWorksheet;
+                var result = await _importService.ImportFromExcelAsync(projectId, SelectedFilePath, sheetName, null, progress, ct);
+                StatusMessage = $"Import complete: {result.ItemsImported} imported, {result.ItemsSkipped} skipped";
+                _session.SelectBoq(result.BoqId, projectId);
             }
-
-            StatusMessage = $"Import complete: {result.ItemsImported} imported, {result.ItemsSkipped} skipped";
-            _session.SelectBoq(result.BoqId, projectId);
         }
         catch (Exception ex)
         {

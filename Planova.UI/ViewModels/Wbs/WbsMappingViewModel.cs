@@ -4,7 +4,6 @@ using CommunityToolkit.Mvvm.Input;
 using Planova.Boq.Application.Dto;
 using Planova.Boq.Application.Services;
 using Planova.Boq.Domain.Interfaces;
-using Planova.Wbs.Application.Dto;
 using Planova.Wbs.Domain.Interfaces;
 
 namespace Planova.UI.ViewModels.Wbs;
@@ -12,13 +11,13 @@ namespace Planova.UI.ViewModels.Wbs;
 public sealed partial class WbsMappingViewModel : ObservableObject
 {
     private readonly IBoqService _boqService;
-    private readonly IWbsBoqMappingService _mappingService;
+    private readonly IWbsMappingService _mappingService;
     private readonly IBoqImportService _importService;
     private readonly IBoqSession _session;
 
     public WbsMappingViewModel(
         IBoqService boqService,
-        IWbsBoqMappingService mappingService,
+        IWbsMappingService mappingService,
         IBoqImportService importService,
         IBoqSession session)
     {
@@ -26,7 +25,6 @@ public sealed partial class WbsMappingViewModel : ObservableObject
         _mappingService = mappingService;
         _importService = importService;
         _session = session;
-        WbsProjectId = session.CurrentProjectId?.GetHashCode() ?? 0;
     }
 
     [ObservableProperty]
@@ -41,9 +39,6 @@ public sealed partial class WbsMappingViewModel : ObservableObject
     [ObservableProperty]
     private int _currentStep = 1;
 
-    [ObservableProperty]
-    private int _wbsProjectId;
-
     public bool IsStep1Visible => CurrentStep == 1;
     public bool IsStep2Visible => CurrentStep == 2;
     public bool IsStep3Visible => CurrentStep == 3;
@@ -52,8 +47,8 @@ public sealed partial class WbsMappingViewModel : ObservableObject
     public bool CanGoNext => CurrentStep switch
     {
         1 => SelectedBoq is not null,
-        2 => !string.IsNullOrWhiteSpace(SelectedStrategy),
-        3 => MappedItems.Count > 0,
+        2 => SelectedStrategy is not null,
+        3 => PreviewNodes.Count > 0,
         _ => false
     };
 
@@ -72,21 +67,25 @@ public sealed partial class WbsMappingViewModel : ObservableObject
     [ObservableProperty]
     private BoqSummaryDto? _selectedBoq;
 
-    public List<string> Strategies { get; } = new()
+    public List<MappingStrategy> Strategies { get; } = new()
     {
-        "OneToOne", "Grouped"
+        new("By Section", "Maps BOQ sections to WBS root nodes"),
+        new("By CSI", "Groups BOQ items by CSI code into WBS hierarchy"),
+        new("By Cost Code", "Groups BOQ items by cost code into WBS hierarchy"),
+        new("By Trade", "Groups BOQ items by trade code into WBS hierarchy"),
+        new("By Discipline", "Groups BOQ items by discipline into WBS hierarchy"),
     };
 
     [ObservableProperty]
-    private string _selectedStrategy = string.Empty;
+    private MappingStrategy? _selectedStrategy;
 
     [ObservableProperty]
     private string _wbsName = string.Empty;
 
     [ObservableProperty]
-    private WbsMappingResult? _mappingResult;
+    private WbsMappingPreview? _mappingPreview;
 
-    public ObservableCollection<MappedItemViewModel> MappedItems { get; } = new();
+    public ObservableCollection<PreviewNodeItem> PreviewNodes { get; } = new();
 
     public List<string> StepTitles { get; } = new()
     {
@@ -99,7 +98,7 @@ public sealed partial class WbsMappingViewModel : ObservableObject
         OnPropertyChanged(nameof(CanGoNext));
     }
 
-    partial void OnSelectedStrategyChanged(string value)
+    partial void OnSelectedStrategyChanged(MappingStrategy? value)
     {
         OnPropertyChanged(nameof(CanGoNext));
     }
@@ -164,27 +163,31 @@ public sealed partial class WbsMappingViewModel : ObservableObject
         }
     }
 
+    private static WbsMappingMethod ToMappingMethod(string name) => name switch
+    {
+        "By Section" => WbsMappingMethod.BySection,
+        "By CSI" => WbsMappingMethod.ByCsi,
+        "By Cost Code" => WbsMappingMethod.ByCostCode,
+        "By Trade" => WbsMappingMethod.ByTrade,
+        "By Discipline" => WbsMappingMethod.ByDiscipline,
+        _ => WbsMappingMethod.BySection
+    };
+
     [RelayCommand]
     private async Task GeneratePreviewAsync(CancellationToken ct)
     {
-        if (SelectedBoq is null || string.IsNullOrWhiteSpace(SelectedStrategy)) return;
+        if (SelectedBoq is null || SelectedStrategy is null) return;
 
         IsLoading = true;
         HasError = false;
 
         try
         {
-            WbsMappingResult result = SelectedStrategy switch
-            {
-                "OneToOne" => await _mappingService.MapOneToOneAsync(SelectedBoq.Id, ct),
-                "Grouped" => await _mappingService.MapGroupedAsync(SelectedBoq.Id, ct),
-                _ => throw new InvalidOperationException($"Unknown strategy: {SelectedStrategy}")
-            };
+            var method = ToMappingMethod(SelectedStrategy.Name);
+            MappingPreview = await _mappingService.PreviewMappingAsync(SelectedBoq.Id, method, ct);
 
-            MappingResult = result;
-            MappedItems.Clear();
-            foreach (var item in result.Items.OrderBy(i => i.Level).ThenBy(i => i.SortOrder))
-                MappedItems.Add(new MappedItemViewModel(item));
+            PreviewNodes.Clear();
+            FlattenNodes(MappingPreview.Nodes, 0);
 
             CurrentStep = 3;
         }
@@ -199,22 +202,29 @@ public sealed partial class WbsMappingViewModel : ObservableObject
         }
     }
 
+    private void FlattenNodes(IReadOnlyList<WbsMappingNode> nodes, int level)
+    {
+        foreach (var node in nodes)
+        {
+            PreviewNodes.Add(new PreviewNodeItem(node.Code, node.Name, level, node.Weight));
+            if (node.Children.Count > 0)
+                FlattenNodes(node.Children, level + 1);
+        }
+    }
+
     [RelayCommand]
     private async Task CommitMappingAsync(CancellationToken ct)
     {
-        if (MappingResult is null || MappedItems.Count == 0) return;
+        if (SelectedBoq is null || SelectedStrategy is null) return;
 
         IsLoading = true;
         HasError = false;
 
         try
         {
-            var finalResult = new WbsMappingResult(
-                MappedItems.Select(m => m.ToMappedItem()).ToList(),
-                MappingResult.Strategy);
-
-            var name = string.IsNullOrWhiteSpace(WbsName) ? $"WBS from {SelectedStrategy}" : WbsName;
-            await _mappingService.CommitMappingAsync(finalResult, name, WbsProjectId, ct);
+            var method = ToMappingMethod(SelectedStrategy.Name);
+            var name = string.IsNullOrWhiteSpace(WbsName) ? $"WBS from {SelectedStrategy.Name}" : WbsName;
+            await _mappingService.CreateWbsFromMappingAsync(SelectedBoq.Id, method, name, 0, ct);
 
             CurrentStep = 4;
         }
@@ -247,40 +257,29 @@ public sealed partial class WbsMappingViewModel : ObservableObject
     {
         CurrentStep = 1;
         SelectedBoq = null;
-        SelectedStrategy = string.Empty;
+        SelectedStrategy = null;
         WbsName = string.Empty;
-        MappingResult = null;
-        MappedItems.Clear();
+        MappingPreview = null;
+        PreviewNodes.Clear();
         ErrorMessage = string.Empty;
         HasError = false;
     }
 }
 
-public sealed partial class MappedItemViewModel : ObservableObject
+public sealed record MappingStrategy(string Name, string Description);
+
+public sealed partial class PreviewNodeItem : ObservableObject
 {
-    public MappedItemViewModel(MappedItem item)
+    public PreviewNodeItem(string code, string name, int level, decimal? weight)
     {
-        TargetId = item.TargetId;
-        SourceBoqItemId = item.SourceBoqItemId;
-        ParentTargetId = item.ParentTargetId;
-        Name = item.Name;
-        Level = item.Level;
-        SortOrder = item.SortOrder;
-        WbsLevel = item.WbsLevel;
+        Code = code;
+        Name = name;
+        Level = level;
+        Weight = weight;
     }
 
-    public Guid? TargetId { get; }
-    public Guid SourceBoqItemId { get; }
-    public Guid? ParentTargetId { get; }
+    public string Code { get; }
+    public string Name { get; }
     public int Level { get; }
-    public int SortOrder { get; }
-
-    [ObservableProperty]
-    private string _name = string.Empty;
-
-    [ObservableProperty]
-    private string _wbsLevel = string.Empty;
-
-    public MappedItem ToMappedItem() => new(
-        TargetId, SourceBoqItemId, ParentTargetId, Name, Level, SortOrder, WbsLevel);
+    public decimal? Weight { get; }
 }

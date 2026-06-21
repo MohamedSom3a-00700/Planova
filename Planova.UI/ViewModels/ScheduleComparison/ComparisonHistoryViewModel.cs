@@ -54,7 +54,7 @@ public partial class ComparisonHistoryViewModel : ObservableObject
         if (SelectedSession == null)
             return;
 
-        await _comparisonService.ReOpenSessionAsync(SelectedSession.Id, ct);
+        await _comparisonService.ValidateCanReOpenAsync(SelectedSession.Id, ct);
         StatusMessage = $"Session '{SelectedSession.SourceLabel ?? SelectedSession.Id.ToString()}' re-opened.";
     }
 

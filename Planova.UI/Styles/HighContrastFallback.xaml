@@ -33,6 +33,18 @@
     <SolidColorBrush x:Key="BrandWarning" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
     <SolidColorBrush x:Key="BrandDanger" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
 
+    <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+    <SolidColorBrush x:Key="ComboBoxDropDownBorderBrush" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+    <SolidColorBrush x:Key="ComboBoxToggleHoverBackground" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="ComboBoxTogglePressedBackground" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="ComboBoxArrowFill" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+    <SolidColorBrush x:Key="ComboBoxArrowHoverFill" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="ComboBoxItemHoverBackground" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="ComboBoxItemSelectedBackground" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="ComboBoxItemSelectedForeground" Color="{DynamicResource {x:Static SystemColors.HighlightTextColorKey}}" />
+    <SolidColorBrush x:Key="ComboBoxItemDisabledForeground" Color="{DynamicResource {x:Static SystemColors.GrayTextColorKey}}" />
+    <SolidColorBrush x:Key="ComboBoxEmptyStateForeground" Color="{DynamicResource {x:Static SystemColors.GrayTextColorKey}}" />
+
     <FontFamily x:Key="BrandFontFamily">Segoe UI Variable, Inter, Tahoma, sans-serif</FontFamily>
 
 </ResourceDictionary>

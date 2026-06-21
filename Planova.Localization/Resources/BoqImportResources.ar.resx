@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter</value>
+  </resheader>
+  <data name="BoqImport" xml:space="preserve"><value>استيراد BOQ</value></data>
+  <data name="SelectFile" xml:space="preserve"><value>اختيار ملف Excel</value></data>
+  <data name="Scanning" xml:space="preserve"><value>جاري فحص أوراق العمل...</value></data>
+  <data name="ImportMode" xml:space="preserve"><value>وضع الاستيراد</value></data>
+  <data name="Single" xml:space="preserve"><value>ورقة واحدة</value></data>
+  <data name="Multiple" xml:space="preserve"><value>عدة أوراق</value></data>
+  <data name="Merge" xml:space="preserve"><value>دمج الكل</value></data>
+  <data name="Preview" xml:space="preserve"><value>معاينة</value></data>
+  <data name="Import" xml:space="preserve"><value>استيراد</value></data>
+  <data name="Cancel" xml:space="preserve"><value>إلغاء</value></data>
+  <data name="SheetsDetected" xml:space="preserve"><value>أوراق العمل المكتشفة</value></data>
+  <data name="ColumnsMatched" xml:space="preserve"><value>الأعمدة المتطابقة</value></data>
+  <data name="RowsImported" xml:space="preserve"><value>الصفوف المستوردة</value></data>
+  <data name="TotalAmount" xml:space="preserve"><value>المبلغ الإجمالي</value></data>
+  <data name="ImportSuccessful" xml:space="preserve"><value>تم الاستيراد بنجاح</value></data>
+  <data name="ImportPartial" xml:space="preserve"><value>تم الاستيراد مع تحذيرات</value></data>
+  <data name="ImportFailed" xml:space="preserve"><value>فشل الاستيراد</value></data>
+  <data name="NoBoqData" xml:space="preserve"><value>لا توجد بيانات BOQ — قم باستيراد ملف Excel للبدء</value></data>
+  <data name="LoadingImport" xml:space="preserve"><value>جاري استيراد بيانات BOQ...</value></data>
+  <data name="Export" xml:space="preserve"><value>تصدير</value></data>
+  <data name="ExportTender" xml:space="preserve"><value>تصدير BOQ العطاء</value></data>
+  <data name="ExportClient" xml:space="preserve"><value>تصدير BOQ العميل</value></data>
+  <data name="ExportExcel" xml:space="preserve"><value>تصدير إلى Excel</value></data>
+  <data name="ExportPdf" xml:space="preserve"><value>تصدير إلى PDF</value></data>
+  <data name="BoqImport_Loading" xml:space="preserve"><value>جاري تحميل بيانات BOQ...</value></data>
+  <data name="BoqImport_EmptyTitle" xml:space="preserve"><value>لا توجد بيانات BOQ</value></data>
+  <data name="BoqImport_EmptyDescription" xml:space="preserve"><value>قم باستيراد ملف Excel للبدء</value></data>
+  <data name="BoqImport_ColumnMapping" xml:space="preserve"><value>تعيين الأعمدة</value></data>
+  <data name="BoqImport_Preview" xml:space="preserve"><value>معاينة</value></data>
+  <data name="BoqImport_Export" xml:space="preserve"><value>تصدير</value></data>
+  <data name="BoqExport_Title" xml:space="preserve"><value>تصدير BOQ</value></data>
+  <data name="BoqExport_Excel" xml:space="preserve"><value>تصدير إلى Excel</value></data>
+  <data name="BoqExport_CSV" xml:space="preserve"><value>تصدير إلى CSV</value></data>
+  <data name="BoqExport_PDF" xml:space="preserve"><value>تصدير إلى PDF</value></data>
+  <data name="BoqExport_Tender" xml:space="preserve"><value>BOQ العطاء</value></data>
+  <data name="BoqExport_Client" xml:space="preserve"><value>BOQ العميل</value></data>
+</root>

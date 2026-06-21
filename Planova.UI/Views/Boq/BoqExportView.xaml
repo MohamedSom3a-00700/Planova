@@ -1,0 +1,51 @@
+<UserControl x:Class="Planova.UI.Views.Boq.BoqExportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Boq"
+             xmlns:conv="clr-namespace:Planova.UI.Converters"
+             d:DataContext="{d:DesignInstance vm:BoqExportViewModel}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Export BOQ" FontSize="20" FontWeight="Bold" Margin="0,0,0,16"/>
+
+        <TextBlock Grid.Row="1" Text="Select BOQ:" Margin="0,0,0,4"/>
+        <ComboBox Grid.Row="2" ItemsSource="{Binding Boqs}" SelectedItem="{Binding SelectedBoq}"
+                  DisplayMemberPath="Name" MinWidth="250" Margin="0,0,0,12"/>
+
+        <TextBlock Grid.Row="3" Text="Export Format:" Margin="0,0,0,4"/>
+        <ComboBox Grid.Row="4" SelectedIndex="{Binding SelectedExportTypeIndex}" MinWidth="200" Margin="0,0,0,12">
+            <ComboBoxItem Content="Excel"/>
+            <ComboBoxItem Content="CSV"/>
+            <ComboBoxItem Content="PDF"/>
+            <ComboBoxItem Content="Tender BOQ"/>
+            <ComboBoxItem Content="Client BOQ"/>
+        </ComboBox>
+
+        <StackPanel Grid.Row="5" VerticalAlignment="Top">
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource BrandDanger}"
+                       Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"
+                       Margin="0,0,0,8"/>
+            <Button Content="Export" Command="{Binding ExportCommand}" MinWidth="120" Height="32"/>
+            <TextBlock Text="{Binding OutputPath, StringFormat='Output: {0}'}" Margin="0,8,0,0" FontSize="12"/>
+        </StackPanel>
+
+        <Border Style="{StaticResource DashboardLoadingOverlayStyle}"
+                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="Exporting..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Border>
+    </Grid>
+</UserControl>

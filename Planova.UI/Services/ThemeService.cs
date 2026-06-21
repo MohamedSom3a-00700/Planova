@@ -80,13 +80,13 @@ public class ThemeService : IThemeService
                 if (lightTheme != null) merged.Remove(lightTheme);
                 if (brandColors == null)
                     merged.Add(new ResourceDictionary
-                        { Source = new Uri("Styles/BrandColors.xaml", UriKind.Relative) });
+                    { Source = new Uri("Styles/BrandColors.xaml", UriKind.Relative) });
                 if (gradients == null)
                     merged.Add(new ResourceDictionary
-                        { Source = new Uri("Styles/Gradients.xaml", UriKind.Relative) });
+                    { Source = new Uri("Styles/Gradients.xaml", UriKind.Relative) });
                 if (darkTheme == null)
                     merged.Insert(merged.Count, new ResourceDictionary
-                        { Source = new Uri("Styles/DarkTheme.xaml", UriKind.Relative) });
+                    { Source = new Uri("Styles/DarkTheme.xaml", UriKind.Relative) });
                 break;
 
             case AppTheme.Light:
@@ -94,13 +94,13 @@ public class ThemeService : IThemeService
                 if (darkTheme != null) merged.Remove(darkTheme);
                 if (brandColors == null)
                     merged.Add(new ResourceDictionary
-                        { Source = new Uri("Styles/BrandColors.xaml", UriKind.Relative) });
+                    { Source = new Uri("Styles/BrandColors.xaml", UriKind.Relative) });
                 if (gradients == null)
                     merged.Add(new ResourceDictionary
-                        { Source = new Uri("Styles/Gradients.xaml", UriKind.Relative) });
+                    { Source = new Uri("Styles/Gradients.xaml", UriKind.Relative) });
                 if (lightTheme == null)
                     merged.Insert(merged.Count, new ResourceDictionary
-                        { Source = new Uri("Styles/LightTheme.xaml", UriKind.Relative) });
+                    { Source = new Uri("Styles/LightTheme.xaml", UriKind.Relative) });
                 break;
 
             case AppTheme.HighContrast:
@@ -110,7 +110,7 @@ public class ThemeService : IThemeService
                 if (lightTheme != null) merged.Remove(lightTheme);
                 if (highContrastFallback == null)
                     merged.Insert(merged.Count, new ResourceDictionary
-                        { Source = new Uri("Styles/HighContrastFallback.xaml", UriKind.Relative) });
+                    { Source = new Uri("Styles/HighContrastFallback.xaml", UriKind.Relative) });
                 break;
         }
 

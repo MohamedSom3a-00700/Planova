@@ -16,7 +16,7 @@
         MinHeight="640"
         ResizeMode="CanResize"
         ExtendsContentIntoTitleBar="True"
-        WindowBackdropType="Tabbed"
+         WindowBackdropType="Mica"
         WindowCornerPreference="Round"
         Background="{DynamicResource ShellBackgroundGradient}"
         Foreground="{DynamicResource BrandHeaderForeground}">

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter</value>
+  </resheader>
+  <data name="Parties" xml:space="preserve"><value>الأطراف</value></data>
+  <data name="PartyName" xml:space="preserve"><value>الاسم</value></data>
+  <data name="PartyType" xml:space="preserve"><value>النوع</value></data>
+  <data name="Client" xml:space="preserve"><value>عميل</value></data>
+  <data name="MainContractor" xml:space="preserve"><value>مقاول رئيسي</value></data>
+  <data name="Subcontractor" xml:space="preserve"><value>مقاول من الباطن</value></data>
+  <data name="Consultant" xml:space="preserve"><value>استشاري</value></data>
+  <data name="ContactName" xml:space="preserve"><value>جهة الاتصال</value></data>
+  <data name="ContactEmail" xml:space="preserve"><value>البريد الإلكتروني</value></data>
+  <data name="ContactPhone" xml:space="preserve"><value>الهاتف</value></data>
+  <data name="Address" xml:space="preserve"><value>العنوان</value></data>
+  <data name="Notes" xml:space="preserve"><value>ملاحظات</value></data>
+  <data name="AddParty" xml:space="preserve"><value>إضافة طرف</value></data>
+  <data name="EditParty" xml:space="preserve"><value>تعديل الطرف</value></data>
+  <data name="DeleteParty" xml:space="preserve"><value>حذف الطرف</value></data>
+  <data name="NoPartiesYet" xml:space="preserve"><value>لا توجد أطراف بعد — أضف طرفاً للبدء</value></data>
+  <data name="LoadingParties" xml:space="preserve"><value>جاري تحميل الأطراف...</value></data>
+  <data name="Parties_Loading" xml:space="preserve"><value>جاري تحميل الأطراف...</value></data>
+  <data name="Parties_EmptyTitle" xml:space="preserve"><value>لا توجد أطراف بعد</value></data>
+  <data name="Parties_EmptyDescription" xml:space="preserve"><value>أضف طرفاً للبدء</value></data>
+</root>

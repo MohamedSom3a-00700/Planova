@@ -482,7 +482,7 @@ public class PrimaveraStudioXamlSmokeTests
     private static PrimaveraStudioViewModel CreateStudioViewModel(ICurrentProjectService? projectService = null)
     {
         projectService ??= new SpyCurrentProjectService();
-        var importVm = new PrimaveraImportViewModel(Mock.Of<IPrimaveraImportService>(), Mock.Of<ICurrentProjectService>());
+        var importVm = new PrimaveraImportViewModel(Mock.Of<IPrimaveraImportService>(), projectService);
         var workspaceVm = CreateWorkspaceViewModel();
         var validationVm = new PrimaveraValidationViewModel(Mock.Of<IPrimaveraValidationService>(), Mock.Of<IPrimaveraImportService>());
         var repairVm = new PrimaveraRepairViewModel(Mock.Of<IPrimaveraRepairService>());

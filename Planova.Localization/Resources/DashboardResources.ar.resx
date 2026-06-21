@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter</value>
+  </resheader>
+  <data name="Dashboard" xml:space="preserve"><value>لوحة المعلومات</value></data>
+  <data name="ScheduleHealth" xml:space="preserve"><value>صحة الجدول</value></data>
+  <data name="CostHealth" xml:space="preserve"><value>صحة التكلفة</value></data>
+  <data name="RiskLevel" xml:space="preserve"><value>مستوى المخاطرة</value></data>
+  <data name="CriticalActivities" xml:space="preserve"><value>الأنشطة الحرجة</value></data>
+  <data name="OriginalBudget" xml:space="preserve"><value>الميزانية الأصلية</value></data>
+  <data name="CurrentBudget" xml:space="preserve"><value>الميزانية الحالية</value></data>
+  <data name="ActualCost" xml:space="preserve"><value>التكلفة الفعلية</value></data>
+  <data name="EarnedValue" xml:space="preserve"><value>القيمة المكتسبة</value></data>
+  <data name="CPI" xml:space="preserve"><value>مؤشر أداء التكلفة</value></data>
+  <data name="SPI" xml:space="preserve"><value>مؤشر أداء الجدول</value></data>
+  <data name="Low" xml:space="preserve"><value>منخفض</value></data>
+  <data name="Medium" xml:space="preserve"><value>متوسط</value></data>
+  <data name="High" xml:space="preserve"><value>مرتفع</value></data>
+  <data name="Green" xml:space="preserve"><value>أخضر</value></data>
+  <data name="Yellow" xml:space="preserve"><value>أصفر</value></data>
+  <data name="Red" xml:space="preserve"><value>أحمر</value></data>
+  <data name="NoProjectsYet" xml:space="preserve"><value>لا توجد مشاريع بعد — قم بإنشاء مشروعك الأول</value></data>
+  <data name="LoadingDashboard" xml:space="preserve"><value>جاري تحميل بيانات لوحة المعلومات...</value></data>
+  <data name="Dashboard_Loading" xml:space="preserve"><value>جاري التحميل...</value></data>
+  <data name="Dashboard_EmptyTitle" xml:space="preserve"><value>لا توجد مشاريع بعد</value></data>
+  <data name="Dashboard_EmptyDescription" xml:space="preserve"><value>قم بإنشاء مشروعك الأول للبدء</value></data>
+  <data name="Dashboard_CreateFirstProject" xml:space="preserve"><value>إنشاء أول مشروع</value></data>
+</root>

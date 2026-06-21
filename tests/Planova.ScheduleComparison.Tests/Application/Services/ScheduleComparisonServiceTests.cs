@@ -55,40 +55,40 @@ public class ScheduleComparisonServiceTests
     }
 
     [Fact]
-    public async Task ReOpenSessionAsync_WhenCompleted_Succeeds()
+    public async Task ValidateCanReOpenAsync_WhenCompleted_Succeeds()
     {
         var sessionId = Guid.NewGuid();
         var session = new ComparisonSession { Id = sessionId, State = SessionState.Completed };
 
         _repository.GetSessionByIdAsync(sessionId, Arg.Any<CancellationToken>()).Returns(session);
 
-        Func<Task> act = () => _service.ReOpenSessionAsync(sessionId);
+        Func<Task> act = () => _service.ValidateCanReOpenAsync(sessionId);
 
         await act.Should().NotThrowAsync();
     }
 
     [Fact]
-    public async Task ReOpenSessionAsync_WhenNotCompleted_ThrowsInvalidOperationException()
+    public async Task ValidateCanReOpenAsync_WhenNotCompleted_ThrowsInvalidOperationException()
     {
         var sessionId = Guid.NewGuid();
         var session = new ComparisonSession { Id = sessionId, State = SessionState.Draft };
 
         _repository.GetSessionByIdAsync(sessionId, Arg.Any<CancellationToken>()).Returns(session);
 
-        Func<Task> act = () => _service.ReOpenSessionAsync(sessionId);
+        Func<Task> act = () => _service.ValidateCanReOpenAsync(sessionId);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage($"*{sessionId}*");
     }
 
     [Fact]
-    public async Task ReOpenSessionAsync_WhenSessionNotFound_ThrowsInvalidOperationException()
+    public async Task ValidateCanReOpenAsync_WhenSessionNotFound_ThrowsInvalidOperationException()
     {
         var sessionId = Guid.NewGuid();
 
         _repository.GetSessionByIdAsync(sessionId, Arg.Any<CancellationToken>()).Returns((ComparisonSession?)null);
 
-        Func<Task> act = () => _service.ReOpenSessionAsync(sessionId);
+        Func<Task> act = () => _service.ValidateCanReOpenAsync(sessionId);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage($"*{sessionId}*");

@@ -15,14 +15,11 @@ public partial class BoqStudioView : UserControl
     public void InitializeTabs(IServiceProvider serviceProvider)
     {
         var vm = (BoqStudioViewModel)DataContext;
-        vm.Tabs.Add(new BoqStudioTab("Tree", serviceProvider.GetRequiredService<BoqTreeView>()));
-        vm.Tabs.Add(new BoqStudioTab("Import", serviceProvider.GetRequiredService<BoqImportWizardView>()));
-        vm.Tabs.Add(new BoqStudioTab("Editor", serviceProvider.GetRequiredService<BoqEditorView>()));
-        vm.Tabs.Add(new BoqStudioTab("Validate", serviceProvider.GetRequiredService<BoqValidationView>()));
-        vm.Tabs.Add(new BoqStudioTab("Classification", serviceProvider.GetRequiredService<BoqClassificationView>()));
-        vm.Tabs.Add(new BoqStudioTab("Libraries", serviceProvider.GetRequiredService<BoqLibraryView>()));
-        vm.Tabs.Add(new BoqStudioTab("Reports", serviceProvider.GetRequiredService<BoqReportView>()));
-        vm.Tabs.Add(new BoqStudioTab("Settings", serviceProvider.GetRequiredService<BoqSettingsView>()));
+        vm.Tabs.Add(new BoqStudioTab("Outline", "DocumentBulletList24", serviceProvider.GetRequiredService<BoqTreeView>()));
+        vm.Tabs.Add(new BoqStudioTab("Import", "ArrowUpload24", serviceProvider.GetRequiredService<BoqImportWizardView>()));
+        vm.Tabs.Add(new BoqStudioTab("Classification", "Classification24", serviceProvider.GetRequiredService<BoqClassificationView>()));
+        vm.Tabs.Add(new BoqStudioTab("Reports", "DocumentText24", serviceProvider.GetRequiredService<BoqReportView>()));
+        vm.Tabs.Add(new BoqStudioTab("Settings", "Settings24", serviceProvider.GetRequiredService<BoqSettingsView>()));
         vm.SelectedTab = vm.Tabs[0];
     }
 }

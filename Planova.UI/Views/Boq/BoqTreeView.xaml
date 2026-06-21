@@ -3,80 +3,371 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Boq"
              xmlns:enums="clr-namespace:Planova.Boq.Domain.Enums;assembly=Planova.Boq"
+             xmlns:conv="clr-namespace:Planova.UI.Converters"
+             d:DataContext="{d:DesignInstance vm:BoqTreeViewModel}"
              mc:Ignorable="d"
-             d:DesignHeight="600" d:DesignWidth="800">
+             d:DesignHeight="700" d:DesignWidth="900"
+             Background="{DynamicResource WorkspaceBackgroundGradient}"
+             FontFamily="{DynamicResource BrandFontFamily}">
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:BoolToVisibilityConverter x:Key="InvertedBoolToVis" Invert="True"/>
+        <conv:InverseBoolConverter x:Key="InvBool"/>
+
+        <Style x:Key="OutlineItemBorder" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource ThemeSurface}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="6,5"/>
+            <Setter Property="Margin" Value="0,1,0,1"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsSection}" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource ThemeSurface}"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource ThemeAccent}"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <DataTemplate x:Key="OutlineItemTemplate" DataType="{x:Type vm:BoqOutlineItem}">
+            <Border Style="{StaticResource OutlineItemBorder}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="70"/>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ToggleButton Grid.Column="0" IsChecked="{Binding IsExpanded, Mode=TwoWay}"
+                                  Width="20" Height="20" Margin="{Binding IndentedMargin}"
+                                  Visibility="{Binding Children.Count, Converter={StaticResource BoolToVis}}"
+                                  Cursor="Hand">
+                        <ToggleButton.Template>
+                            <ControlTemplate TargetType="ToggleButton">
+                                <Border x:Name="ToggleBorder" Background="Transparent" Padding="2" CornerRadius="3">
+                                    <Path x:Name="Arrow" Data="M0,0 L4,4 L8,0 Z"
+                                          Fill="{DynamicResource BrandTextSecondary}" HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsChecked" Value="True">
+                                        <Setter TargetName="Arrow" Property="Fill" Value="{DynamicResource ThemeAccent}"/>
+                                        <Setter TargetName="Arrow" Property="RenderTransform">
+                                            <Setter.Value>
+                                                <RotateTransform Angle="180" CenterX="4" CenterY="2"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Arrow" Property="Fill" Value="{DynamicResource ThemeAccent}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </ToggleButton.Template>
+                    </ToggleButton>
+
+                    <ui:SymbolIcon Grid.Column="1" Symbol="{Binding ItemTypeIcon}" FontSize="14"
+                                    Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center" Margin="4,0,4,0"/>
+
+                    <TextBlock Grid.Column="2" Text="{Binding Code}" FontSize="12"
+                               FontWeight="SemiBold" Foreground="{DynamicResource ThemeForeground}"
+                               VerticalAlignment="Center" MinWidth="60"/>
+
+                    <TextBlock Grid.Column="3" Text="{Binding Description}" FontSize="12"
+                               Foreground="{DynamicResource ThemeForeground}" VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis"/>
+
+                    <TextBlock Grid.Column="4" Text="{Binding Unit}" FontSize="11"
+                               Foreground="{DynamicResource BrandTextSecondary}" VerticalAlignment="Center"/>
+
+                    <TextBlock Grid.Column="5" Text="{Binding Quantity, StringFormat='N2'}" FontSize="11"
+                               Foreground="{DynamicResource ThemeForeground}" VerticalAlignment="Center"/>
+
+                    <TextBlock Grid.Column="6" Text="{Binding Rate, StringFormat='N2'}" FontSize="11"
+                               Foreground="{DynamicResource ThemeForeground}" VerticalAlignment="Center"/>
+
+                    <TextBlock Grid.Column="7" Text="{Binding DisplayAmount}" FontSize="12"
+                               FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center"/>
+
+                    <Button Grid.Column="8" Content="✕" FontSize="10" Width="18" Height="18"
+                            Cursor="Hand" Foreground="{DynamicResource BrandDanger}"
+                            Background="Transparent" BorderThickness="0"
+                            Command="{Binding DataContext.DeleteItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            CommandParameter="{Binding}"
+                            Visibility="{Binding DataContext.SelectedOutlineItem, Converter={StaticResource BoolToVis}, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="BtnBorder" Background="Transparent" CornerRadius="3" Padding="2">
+                                    <TextBlock Text="✕" FontSize="10" Foreground="{DynamicResource BrandDanger}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="BtnBorder" Property="Background" Value="{DynamicResource BrandDanger}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <HierarchicalDataTemplate x:Key="OutlineHierarchicalTemplate"
+                                  DataType="{x:Type vm:BoqOutlineItem}"
+                                  ItemsSource="{Binding Children}"
+                                  ItemTemplate="{StaticResource OutlineItemTemplate}">
+            <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource OutlineItemTemplate}"/>
+        </HierarchicalDataTemplate>
+    </UserControl.Resources>
+
     <Grid Margin="16">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
-            <ComboBox ItemsSource="{Binding AvailableBoqs}"
-                      SelectedItem="{Binding SelectedBoq, Mode=TwoWay}"
-                      MinWidth="300"
-                      Margin="0,0,8,0">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Vertical" Margin="2">
-                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14"/>
-                            <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                                <TextBlock Text="{Binding Currency}" FontSize="11" Foreground="Gray" Margin="0,0,12,0"/>
-                                <TextBlock Text="{Binding Status, StringFormat='Status: {0}'}" FontSize="11" Foreground="Gray" Margin="0,0,12,0"/>
-                                <TextBlock Text="{Binding ItemCount, StringFormat='Items: {0}'}" FontSize="11" Foreground="Gray"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
-            <TextBlock Text="{Binding StatusMessage}" FontSize="14" VerticalAlignment="Center"
-                       Foreground="Gray" Visibility="{Binding HasNoBoqs, Converter={StaticResource BoolToVis}}"
-                       TextWrapping="Wrap" MaxWidth="400"/>
-        </StackPanel>
+        <!-- Header with BOQ selector + actions -->
+        <Border Grid.Row="0" Background="{DynamicResource ThemeCard}" CornerRadius="8"
+                Padding="12,10" Margin="0,0,0,12"
+                BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="1" Text="{Binding BoqName}" FontSize="20" FontWeight="Bold" Margin="0,0,0,8"/>
-
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,8">
-            <Button Content="Refresh" Command="{Binding RefreshCommand}" Margin="0,0,8,0"/>
-            <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center" Margin="0,0,16,0"/>
-            <TextBlock Text="{Binding SelectedItem.Code, StringFormat='Selected: {0}'}" VerticalAlignment="Center" Foreground="Gray"/>
-        </StackPanel>
-
-        <ListView Grid.Row="3" ItemsSource="{Binding FlatItems}"
-                  SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
-                  VirtualizingPanel.ScrollUnit="Item"
-                  VirtualizingPanel.VirtualizationMode="Recycling">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="No." Width="50" DisplayMemberBinding="{Binding SortOrder}"/>
-                    <GridViewColumn Header="Code" Width="100" DisplayMemberBinding="{Binding Code}"/>
-                    <GridViewColumn Header="Description" Width="200" DisplayMemberBinding="{Binding Description}"/>
-                    <GridViewColumn Header="Unit" Width="60" DisplayMemberBinding="{Binding Unit}"/>
-                    <GridViewColumn Header="Qty" Width="80" DisplayMemberBinding="{Binding Quantity, StringFormat='N2'}"/>
-                    <GridViewColumn Header="Rate" Width="80" DisplayMemberBinding="{Binding Rate, StringFormat='N2'}"/>
-                    <GridViewColumn Header="Amount" Width="100" DisplayMemberBinding="{Binding Amount, StringFormat='N2'}"/>
-                    <GridViewColumn Header="Type" Width="70" DisplayMemberBinding="{Binding ItemType}"/>
-                    <GridViewColumn Header="Level" Width="50" DisplayMemberBinding="{Binding Level}"/>
-                    <GridViewColumn Header="CostCode" Width="100" DisplayMemberBinding="{Binding CostCode}"/>
-                    <GridViewColumn Header="Active" Width="60">
-                        <GridViewColumn.CellTemplate>
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <ui:SymbolIcon Symbol="DocumentBulletList24" FontSize="20" Foreground="{DynamicResource ThemeAccent}"
+                                   VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <ComboBox ItemsSource="{Binding AvailableBoqs}"
+                              SelectedItem="{Binding SelectedBoq, Mode=TwoWay}"
+                              MinWidth="300" VerticalAlignment="Center">
+                        <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <CheckBox IsChecked="{Binding IsActive}" IsHitTestVisible="False"/>
+                                <StackPanel Orientation="Vertical" Margin="2">
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource ThemeForeground}"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                        <TextBlock Text="{Binding Currency}" FontSize="11" Foreground="{DynamicResource BrandTextSecondary}" Margin="0,0,12,0"/>
+                                        <TextBlock Text="{Binding Status, StringFormat='Status: {0}'}" FontSize="11" Foreground="{DynamicResource BrandTextSecondary}" Margin="0,0,12,0"/>
+                                        <TextBlock Text="{Binding ItemCount, StringFormat='Items: {0}'}" FontSize="11" Foreground="{DynamicResource BrandTextSecondary}"/>
+                                    </StackPanel>
+                                </StackPanel>
                             </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBlock Text="{Binding StatusMessage}" FontSize="13" VerticalAlignment="Center"
+                               Foreground="{DynamicResource BrandTextSecondary}" Margin="12,0,0,0"/>
+                </StackPanel>
 
-        <Border Grid.Row="4" Background="{DynamicResource ThemeCard}">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="8">
-                <TextBlock Text="Grand Total: " FontWeight="Bold"/>
-                <TextBlock Text="{Binding GrandTotal, StringFormat='N2'}" FontWeight="Bold"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Command="{Binding RefreshCommand}" ToolTip="Refresh"
+                            MinWidth="28" MinHeight="28" Margin="0,0,4,0" Cursor="Hand">
+                        <ui:SymbolIcon Symbol="ArrowSync24" FontSize="14"/>
+                    </Button>
+                    <Button Command="{Binding ExpandAllCommand}" ToolTip="Expand All"
+                            MinWidth="28" MinHeight="28" Margin="0,0,4,0" Cursor="Hand">
+                        <ui:SymbolIcon Symbol="ChevronDown24" FontSize="14"/>
+                    </Button>
+                    <Button Command="{Binding CollapseAllCommand}" ToolTip="Collapse All"
+                            MinWidth="28" MinHeight="28" Margin="0,0,4,0" Cursor="Hand">
+                        <ui:SymbolIcon Symbol="ChevronUp24" FontSize="14"/>
+                    </Button>
+                    <Button Command="{Binding ShowDeleteConfirmCommand}" ToolTip="Delete BOQ"
+                            Foreground="{DynamicResource BrandDanger}" Background="Transparent"
+                            MinWidth="28" MinHeight="28" Margin="0,0,0,0" Cursor="Hand"
+                            Visibility="{Binding HasBoqSelected, Converter={StaticResource BoolToVis}}">
+                        <ui:SymbolIcon Symbol="Delete24" FontSize="14"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Delete confirmation banner -->
+        <Border Grid.Row="1" CornerRadius="6" Padding="12,8" Margin="0,0,0,8"
+                Background="{DynamicResource BrandDangerSurface}" BorderBrush="{DynamicResource BrandDanger}" BorderThickness="1"
+                Visibility="{Binding IsDeleteConfirmVisible, Converter={StaticResource BoolToVis}}">
+            <StackPanel Orientation="Horizontal">
+                <ui:SymbolIcon Symbol="Warning24" FontSize="18" Foreground="{DynamicResource BrandDanger}"
+                               VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBlock Text="{Binding SelectedBoq.Name, StringFormat='Delete BOQ: \{0\}? This will permanently remove all items from Planova and the database.'}"
+                           FontSize="12" Foreground="{DynamicResource BrandDangerForeground}" TextWrapping="Wrap" VerticalAlignment="Center" MaxWidth="500"/>
+                <Button Content="Delete Permanently" Command="{Binding DeleteBoqCommand}"
+                        Foreground="{DynamicResource OnAccentForeground}" Background="{DynamicResource BrandDanger}" BorderThickness="0"
+                        MinWidth="120" Height="26" Margin="12,0,0,0" Cursor="Hand"/>
+                <Button Content="Cancel" Command="{Binding HideDeleteConfirmCommand}"
+                        MinWidth="60" Height="26" Margin="8,0,0,0" Cursor="Hand"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Outline Grid + Detail Panel -->
+        <Grid Grid.Row="2" Visibility="{Binding SelectedBoq, Converter={StaticResource BoolToVis}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Outline Grid header -->
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Column headers -->
+                <Border Grid.Row="0" Background="{DynamicResource ThemeCard}" CornerRadius="4"
+                        Padding="8,6" Margin="0,0,0,4" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="80"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="2" Text="Code" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource BrandTextSecondary}" MinWidth="60"/>
+                        <TextBlock Grid.Column="3" Text="Description" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource BrandTextSecondary}"/>
+                        <TextBlock Grid.Column="4" Text="Unit" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource BrandTextSecondary}"/>
+                        <TextBlock Grid.Column="5" Text="Qty" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource BrandTextSecondary}"/>
+                        <TextBlock Grid.Column="6" Text="Rate" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource BrandTextSecondary}"/>
+                        <TextBlock Grid.Column="7" Text="Amount" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource BrandTextSecondary}"/>
+                    </Grid>
+                </Border>
+
+                <!-- Hierarchical outline tree -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <TreeView x:Name="OutlineTree" ItemsSource="{Binding OutlineItems}"
+                              ItemTemplate="{StaticResource OutlineHierarchicalTemplate}"
+                              Background="Transparent" BorderThickness="0"
+                              VirtualizingPanel.IsVirtualizing="True"
+                              VirtualizingPanel.VirtualizationMode="Recycling"
+                              SelectedItemChanged="OutlineTree_SelectedItemChanged">
+                        <TreeView.ItemContainerStyle>
+                            <Style TargetType="TreeViewItem">
+                                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Margin" Value="0"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Foreground" Value="{DynamicResource ThemeForeground}"/>
+                            </Style>
+                        </TreeView.ItemContainerStyle>
+                    </TreeView>
+                </ScrollViewer>
+            </Grid>
+
+            <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Stretch"
+                          Background="{DynamicResource ThemeBorder}" ResizeBehavior="PreviousAndNext"/>
+
+            <!-- Detail panel -->
+            <Border Grid.Column="2" Background="{DynamicResource ThemeCard}" Padding="16"
+                    CornerRadius="8" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Visibility="{Binding SelectedOutlineItem, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="Item Detail" FontSize="18" FontWeight="Bold" Margin="0,0,0,16"
+                                   Foreground="{DynamicResource ThemeForeground}"/>
+
+                        <TextBlock Text="Code" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource BrandTextSecondary}" Margin="0,0,0,2"/>
+                        <TextBlock Text="{Binding SelectedOutlineItem.Code}" Margin="0,0,0,12" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeForeground}"/>
+
+                        <TextBlock Text="Description" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource BrandTextSecondary}" Margin="0,0,0,2"/>
+                        <TextBlock Text="{Binding SelectedOutlineItem.Description}" Margin="0,0,0,12" FontSize="14" TextWrapping="Wrap" Foreground="{DynamicResource ThemeForeground}"/>
+
+                        <TextBlock Text="Unit" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource BrandTextSecondary}" Margin="0,0,0,2"/>
+                        <TextBlock Text="{Binding SelectedOutlineItem.Unit}" Margin="0,0,0,12" FontSize="14" Foreground="{DynamicResource ThemeForeground}"/>
+
+                        <TextBlock Text="Quantity" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource BrandTextSecondary}" Margin="0,0,0,2"/>
+                        <TextBlock Text="{Binding SelectedOutlineItem.Quantity, StringFormat='N2'}" Margin="0,0,0,12" FontSize="14" Foreground="{DynamicResource ThemeForeground}"/>
+
+                        <TextBlock Text="Rate" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource BrandTextSecondary}" Margin="0,0,0,2"/>
+                        <TextBlock Text="{Binding SelectedOutlineItem.Rate, StringFormat='N2'}" Margin="0,0,0,12" FontSize="14" Foreground="{DynamicResource ThemeForeground}"/>
+
+                        <TextBlock Text="Amount" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource BrandTextSecondary}" Margin="0,0,0,2"/>
+                        <TextBlock Text="{Binding SelectedOutlineItem.DisplayAmount}" Margin="0,0,0,12" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}"/>
+
+                        <TextBlock Text="Type" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource BrandTextSecondary}" Margin="0,0,0,2"/>
+                        <Border CornerRadius="4" Padding="6,2" Margin="0,0,0,12"
+                                Background="{DynamicResource ThemeAccent}" HorizontalAlignment="Left">
+                            <TextBlock Text="{Binding SelectedOutlineItem.ItemType}" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource OnAccentForeground}"/>
+                        </Border>
+
+                        <TextBlock Text="Level" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource BrandTextSecondary}" Margin="0,0,0,2"/>
+                        <TextBlock Text="{Binding SelectedOutlineItem.Level}" Margin="0,0,0,12" FontSize="14" Foreground="{DynamicResource ThemeForeground}"/>
+
+                        <TextBlock Text="Cost Code" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource BrandTextSecondary}" Margin="0,0,0,2"
+                                   Visibility="{Binding SelectedOutlineItem.CostCode, Converter={StaticResource BoolToVis}}"/>
+                        <TextBlock Text="{Binding SelectedOutlineItem.CostCode}" Margin="0,0,0,12" FontSize="14"
+                                   Foreground="{DynamicResource ThemeForeground}"
+                                   Visibility="{Binding SelectedOutlineItem.CostCode, Converter={StaticResource BoolToVis}}"/>
+
+                        <TextBlock Text="Active" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource BrandTextSecondary}" Margin="0,0,0,2"/>
+                        <CheckBox IsChecked="{Binding SelectedOutlineItem.IsActive}" IsEnabled="False" Margin="0,0,0,12"/>
+
+                        <Separator Margin="0,0,0,12" Background="{DynamicResource ThemeBorder}"/>
+
+                        <Button Content="Delete Item" Command="{Binding DeleteItemCommand}"
+                                Foreground="{DynamicResource BrandDanger}" Background="Transparent"
+                                BorderBrush="{DynamicResource BrandDanger}" BorderThickness="1"
+                                MinWidth="100" Height="28" Cursor="Hand"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <!-- Empty state -->
+        <Border Grid.Row="2" Background="{DynamicResource ThemeSurface}" CornerRadius="8"
+                Padding="24" Margin="0,16,0,0"
+                Visibility="{Binding SelectedBoq, Converter={StaticResource InvertedBoolToVis}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <ui:SymbolIcon Symbol="DocumentBulletList24" FontSize="48" Foreground="{DynamicResource BrandTextSecondary}"
+                               HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                <TextBlock Text="Select a BOQ to view" FontSize="18" FontWeight="SemiBold"
+                           Foreground="{DynamicResource BrandTextSecondary}" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                <TextBlock Text="Choose a BOQ from the dropdown above to view its items in an outline grid, or import a new one from the Import tab."
+                           FontSize="13" Foreground="{DynamicResource BrandTextSecondary}" HorizontalAlignment="Center"
+                           TextWrapping="Wrap" MaxWidth="400"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Footer stats -->
+        <Border Grid.Row="3" Background="{DynamicResource ThemeCard}" CornerRadius="6" Padding="12,8" Margin="0,8,0,0"
+                BorderBrush="{DynamicResource ThemeAccent}" BorderThickness="1"
+                Visibility="{Binding SelectedBoq, Converter={StaticResource BoolToVis}}">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="Sections: " FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource ThemeForeground}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                <TextBlock Text="{Binding TotalSections}" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                <TextBlock Text="Items: " FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource ThemeForeground}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                <TextBlock Text="{Binding TotalItems}" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                <TextBlock Text="Grand Total: " FontWeight="SemiBold" FontSize="14" Foreground="{DynamicResource ThemeForeground}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                <TextBlock Text="{Binding GrandTotal, StringFormat='N2'}" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Loading overlay -->
+        <Border Grid.Row="2" Background="{DynamicResource ThemeSurface}" Opacity="0.85"
+                CornerRadius="8" Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <ui:SymbolIcon Symbol="ArrowSync24" FontSize="32" Foreground="{DynamicResource ThemeAccent}"
+                               HorizontalAlignment="Center"/>
+                <TextBlock Text="Loading BOQ outline..." FontSize="14"
+                           Foreground="{DynamicResource BrandTextSecondary}" HorizontalAlignment="Center" Margin="0,8,0,0"/>
             </StackPanel>
         </Border>
     </Grid>

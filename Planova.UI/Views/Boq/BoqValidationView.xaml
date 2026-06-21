@@ -23,9 +23,9 @@
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,8"
                     Visibility="{Binding HasBoq, Converter={StaticResource BoolToVis}}">
-            <TextBlock Text="{Binding ErrorCount, StringFormat='Errors: {0}'}" Foreground="Red" Margin="0,0,16,0" FontWeight="Bold"/>
-            <TextBlock Text="{Binding WarningCount, StringFormat='Warnings: {0}'}" Foreground="Orange" FontWeight="Bold"/>
-            <TextBlock Text="{Binding IsValid, StringFormat='Valid: {0}'}" Margin="16,0,0,0" Foreground="Green" FontWeight="Bold"/>
+            <TextBlock Text="{Binding ErrorCount, StringFormat='Errors: {0}'}" Foreground="{DynamicResource BrandDanger}" Margin="0,0,16,0" FontWeight="Bold"/>
+            <TextBlock Text="{Binding WarningCount, StringFormat='Warnings: {0}'}" Foreground="{DynamicResource BrandWarning}" FontWeight="Bold"/>
+            <TextBlock Text="{Binding IsValid, StringFormat='Valid: {0}'}" Margin="16,0,0,0" Foreground="{DynamicResource BrandSuccess}" FontWeight="Bold"/>
         </StackPanel>
 
         <GroupBox Grid.Row="3" Header="Item Validation Results" Margin="0,0,0,8"

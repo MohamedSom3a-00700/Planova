@@ -8,7 +8,7 @@ public class PrimaveraProject
     public string SourceFileName { get; set; } = string.Empty;
     public DateTime ImportedAt { get; set; }
     public bool IsActive { get; set; }
-    public int ImportSessionId { get; set; }
+    public Guid ImportSessionId { get; set; }
     public DateTime? LastRecalcDate { get; set; }
     public DateTime? PlanStartDate { get; set; }
     public DateTime? PlanEndDate { get; set; }

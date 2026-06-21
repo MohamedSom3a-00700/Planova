@@ -56,6 +56,7 @@
                         <CheckBox Content="Enable bulk editing" IsChecked="{Binding EnableBulkEdit}" Margin="0,0,0,8"/>
                         <CheckBox Content="Use Primavera colors by default" IsChecked="{Binding UsePrimaveraColorsByDefault}" Margin="0,0,0,8"/>
                         <CheckBox Content="Enable AI-assisted editing" IsChecked="{Binding EnableAiAssistedEditing}" Margin="0,0,0,8"/>
+                        <CheckBox Content="Enable Drag &amp; Drop" IsChecked="{Binding EnableDragDrop}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 

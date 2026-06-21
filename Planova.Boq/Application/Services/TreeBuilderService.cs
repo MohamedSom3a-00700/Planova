@@ -115,6 +115,23 @@ public class TreeBuilderService : ITreeBuilder
 
     private static BoqItem MapToItem(ImportRow row, int level)
     {
+        var classification = row.Classification;
+        var division = row.Division;
+        var costCode = division;
+
+        if (string.IsNullOrWhiteSpace(classification) && string.IsNullOrWhiteSpace(division))
+        {
+            if (!string.IsNullOrWhiteSpace(row.Code))
+            {
+                var segments = row.Code.Split(['.', '-', '_'], StringSplitOptions.RemoveEmptyEntries);
+                if (segments.Length > 0 && segments[0].Length <= 2)
+                    costCode = segments[0];
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(classification))
+            classification = row.Classification;
+
         return new BoqItem
         {
             Id = Guid.NewGuid(),
@@ -127,6 +144,8 @@ public class TreeBuilderService : ITreeBuilder
             Level = level,
             SortOrder = 0,
             IsActive = true,
+            CostCode = costCode,
+            ClassificationId = null,
         };
     }
 

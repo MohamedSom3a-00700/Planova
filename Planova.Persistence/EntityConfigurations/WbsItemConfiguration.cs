@@ -38,6 +38,12 @@ public class WbsItemConfiguration : IEntityTypeConfiguration<WbsItemEntity>
         builder.Property(e => e.AssignedTo)
             .HasMaxLength(100);
 
+        builder.Property(e => e.Owner)
+            .HasMaxLength(100);
+
+        builder.Property(e => e.Discipline)
+            .HasMaxLength(100);
+
         builder.Property(e => e.Deliverable)
             .HasMaxLength(500);
 

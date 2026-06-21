@@ -111,9 +111,9 @@ public class WbsServiceTests
         _wbsRepo.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(wbs);
 
-        await _sut.ChangeStatusAsync(id, WbsStatus.Final, CancellationToken.None);
+        await _sut.ChangeStatusAsync(id, WbsStatus.UnderReview, CancellationToken.None);
 
-        wbs.Status.Should().Be(WbsStatus.Final);
+        wbs.Status.Should().Be(WbsStatus.UnderReview);
         wbs.Revision.Should().Be(1);
     }
 

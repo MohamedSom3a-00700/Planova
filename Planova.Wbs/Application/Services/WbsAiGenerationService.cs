@@ -219,6 +219,16 @@ Generate 3-5 levels deep with 3-7 items at each level.
 
         return defaultValue;
     }
+
+    public Task<WbsAiPreview> GeneratePreviewAsync(WbsAiRequest request, CancellationToken ct)
+    {
+        return Task.FromResult(new WbsAiPreview(Guid.NewGuid(), new List<WbsMappingNode>(), 0));
+    }
+
+    public Task<WbsAiResult> AcceptGenerationAsync(WbsAiRequest request, Guid previewId, string wbsName, int userId, CancellationToken ct)
+    {
+        return Task.FromResult(new WbsAiResult(Guid.NewGuid(), 0));
+    }
 }
 
 internal class SuggestedItemJson

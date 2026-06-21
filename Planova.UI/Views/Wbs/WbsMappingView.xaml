@@ -1,0 +1,97 @@
+<UserControl x:Class="Planova.UI.Views.Wbs.WbsMappingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Wbs"
+             xmlns:conv="clr-namespace:Planova.UI.Converters"
+             d:DataContext="{d:DesignInstance vm:WbsMappingViewModel}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:InverseBoolConverter x:Key="InvBool"/>
+    </UserControl.Resources>
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="WBS Mapping" FontSize="20" FontWeight="Bold" Margin="0,0,0,16"/>
+
+        <!-- Step indicator -->
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding StepTitles}" Margin="0,0,0,12">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1"
+                            CornerRadius="4" Padding="8,4" Margin="0,0,8,0">
+                        <TextBlock Text="{Binding}"/>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Step 1: Select BOQ -->
+        <StackPanel Grid.Row="2" Visibility="{Binding IsStep1Visible, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="Select BOQ to map from:" Margin="0,0,0,8"/>
+            <ComboBox ItemsSource="{Binding AvailableBoqs}" SelectedItem="{Binding SelectedBoq}"
+                      DisplayMemberPath="Name" MinWidth="300" Margin="0,0,0,8"/>
+            <Button Content="Load BOQs" Command="{Binding LoadBoqsCommand}" MinWidth="100"/>
+        </StackPanel>
+
+        <!-- Step 2: Choose Strategy -->
+        <StackPanel Grid.Row="2" Visibility="{Binding IsStep2Visible, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="Choose mapping method:" Margin="0,0,0,8"/>
+            <ComboBox ItemsSource="{Binding Strategies}" SelectedItem="{Binding SelectedStrategy}"
+                      MinWidth="200" Margin="0,0,0,12"/>
+            <Button Content="Generate Preview" Command="{Binding GeneratePreviewCommand}" MinWidth="120"/>
+        </StackPanel>
+
+        <!-- Step 3: Preview -->
+        <Grid Grid.Row="2" Visibility="{Binding IsStep3Visible, Converter={StaticResource BoolToVis}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Preview mapped WBS structure:" Margin="0,0,0,8"/>
+            <ListView Grid.Row="1" ItemsSource="{Binding MappedItems}"
+                      Background="{DynamicResource ThemeSurface}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Name" Width="250" DisplayMemberBinding="{Binding Name}"/>
+                        <GridViewColumn Header="Level" Width="60" DisplayMemberBinding="{Binding Level}"/>
+                        <GridViewColumn Header="Type" Width="120" DisplayMemberBinding="{Binding WbsLevel}"/>
+                        <GridViewColumn Header="Sort" Width="50" DisplayMemberBinding="{Binding SortOrder}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+
+        <!-- Step 4: Commit -->
+        <StackPanel Grid.Row="2" Visibility="{Binding IsStep4Visible, Converter={StaticResource BoolToVis}}"
+                    VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="Mapping complete!" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+            <Button Content="Start Over" Command="{Binding ResetCommand}" MinWidth="120" Margin="0,16,0,0"/>
+        </StackPanel>
+
+        <!-- Navigation -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Content="Back" Command="{Binding PreviousStepCommand}" MinWidth="80" Margin="0,0,8,0"
+                    IsEnabled="{Binding CanGoBack}"/>
+            <Button Content="Next" Command="{Binding NextStepCommand}" MinWidth="80" Margin="0,0,8,0"
+                    IsEnabled="{Binding CanGoNext}"/>
+            <Button Content="Commit" Command="{Binding CommitMappingCommand}" MinWidth="80"
+                    Visibility="{Binding IsStep3Visible, Converter={StaticResource BoolToVis}}"/>
+        </StackPanel>
+
+        <TextBlock Text="{Binding ErrorMessage}" Foreground="Red"
+                   Grid.Row="4" Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"/>
+    </Grid>
+</UserControl>

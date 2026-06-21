@@ -3,13 +3,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:conv="clr-namespace:Planova.UI.Converters"
-             mc:Ignorable="d"
-             d:DesignHeight="700" d:DesignWidth="900">
+             d:DesignHeight="700" d:DesignWidth="900"
+             Background="{DynamicResource WorkspaceBackgroundGradient}"
+             FontFamily="{DynamicResource BrandFontFamily}"
+             mc:Ignorable="d">
     <UserControl.Resources>
         <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
         <conv:InverseBoolConverter x:Key="InvBool"/>
+        <conv:BoolToVisibilityConverter x:Key="InvertedBoolToVis" Invert="True"/>
     </UserControl.Resources>
+
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -17,139 +22,281 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Import BOQ" FontSize="20" FontWeight="Bold" Margin="0,0,0,12"/>
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <StackPanel Orientation="Horizontal">
+                <ui:SymbolIcon Symbol="ArrowUpload24" FontSize="22" Foreground="{DynamicResource ThemeAccent}"
+                               VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBlock Text="Import BOQ" FontSize="22" FontWeight="Bold"
+                           Foreground="{DynamicResource ThemeForeground}" VerticalAlignment="Center"/>
+            </StackPanel>
+            <TextBlock Text="Select a source file, configure import mode, and preview before committing"
+                       FontSize="13" Foreground="{DynamicResource BrandTextSecondary}" Margin="0,4,0,0"/>
+        </StackPanel>
 
+        <!-- Duplicate Warning Banner -->
+        <Border Grid.Row="0" CornerRadius="6" Padding="12,8" Margin="0,48,0,0"
+                Background="{DynamicResource BrandDangerSurface}" BorderBrush="{DynamicResource BrandDanger}" BorderThickness="1"
+                Visibility="{Binding ShowDuplicateWarning, Converter={StaticResource BoolToVis}}">
+            <StackPanel Orientation="Horizontal">
+                <ui:SymbolIcon Symbol="Warning24" FontSize="18" Foreground="{DynamicResource BrandDanger}"
+                               VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBlock Text="{Binding DuplicateMessage}" FontSize="12" Foreground="{DynamicResource BrandDangerForeground}"
+                           TextWrapping="Wrap" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Step Cards -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel>
 
-                <!-- Section 1: Import Target -->
-                <GroupBox Header="1. Import Target" Margin="0,0,0,8">
+                <!-- Step 1: Source -->
+                <Border CornerRadius="8" Padding="16,14" Margin="0,0,0,12"
+                        Background="{DynamicResource ThemeCard}" BorderBrush="{DynamicResource ThemeAccent}" BorderThickness="1,1,1,1">
                     <StackPanel>
-                        <RadioButton Content="Create new BOQ" IsChecked="{Binding CreateNewBoq}"
-                                     GroupName="BoqTarget" Margin="0,0,0,6"/>
-                        <StackPanel Margin="20,0,0,8" IsEnabled="{Binding CreateNewBoq}">
-                            <Button Content="Select File..." Command="{Binding SelectFileCommand}"
-                                    HorizontalAlignment="Left" MinWidth="120" Height="28"/>
-                            <TextBlock Text="{Binding StatusMessage}" Margin="0,4,0,0" FontSize="12"
-                                       Visibility="{Binding HasFileSelected, Converter={StaticResource BoolToVis}}"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <Border CornerRadius="4" Padding="6,2" Margin="0,0,8,0"
+                                    Background="{DynamicResource ThemeAccent}" VerticalAlignment="Center">
+                                <TextBlock Text="1" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource OnAccentForeground}" HorizontalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="Select Source" FontSize="16" FontWeight="Bold"
+                                       Foreground="{DynamicResource ThemeForeground}" VerticalAlignment="Center"/>
                         </StackPanel>
 
-                        <RadioButton Content="Import from project document"
-                                     IsChecked="{Binding CreateNewBoq, Converter={StaticResource InvBool}}"
-                                     GroupName="BoqTarget" Margin="0,0,0,6"/>
-                        <StackPanel Margin="20,0,0,0" IsEnabled="{Binding CreateNewBoq, Converter={StaticResource InvBool}}">
-                            <ComboBox ItemsSource="{Binding BoqDocuments}"
-                                      SelectedItem="{Binding SelectedBoqDocument}"
-                                      DisplayMemberPath="FileName"
-                                      MinWidth="250" Margin="0,0,0,4"/>
-                            <Button Content="Use Selected" Command="{Binding SelectBoqDocumentCommand}"
-                                    HorizontalAlignment="Left" MinWidth="100" Height="26"/>
-                            <TextBlock Text="No BOQ documents found" FontSize="12" Foreground="Gray"
-                                       Visibility="{Binding HasProjectDocuments, Converter={StaticResource InverseBoolToVis}}"/>
-                            <TextBlock Text="{Binding StatusMessage}" Margin="0,4,0,0" FontSize="12"
-                                       Visibility="{Binding HasDocumentSelected, Converter={StaticResource BoolToVis}}"/>
+                        <!-- Source mode selector -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <RadioButton Content="Import new file" IsChecked="{Binding CreateNewBoq}"
+                                         GroupName="BoqTarget" Margin="0,0,16,0" Cursor="Hand"/>
+                            <RadioButton Content="Use project document"
+                                         IsChecked="{Binding CreateNewBoq, Converter={StaticResource InvBool}}"
+                                         GroupName="BoqTarget" Cursor="Hand"/>
                         </StackPanel>
+
+                        <!-- New file section -->
+                        <Border CornerRadius="6" Padding="12" Margin="0,0,0,8"
+                                Background="{DynamicResource ThemeSurface}" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1"
+                                Visibility="{Binding CreateNewBoq, Converter={StaticResource BoolToVis}}">
+                            <StackPanel>
+                                <Button Content="Browse File..." Command="{Binding SelectFileCommand}"
+                                        HorizontalAlignment="Left" MinWidth="140" Height="32" Margin="0,0,0,8" Cursor="Hand"/>
+                                <TextBlock Text="{Binding StatusMessage}" FontSize="12"
+                                           Foreground="{DynamicResource ThemeAccent}"
+                                           Visibility="{Binding HasFileSelected, Converter={StaticResource BoolToVis}}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Project document section -->
+                        <Border CornerRadius="6" Padding="12" Margin="0,0,0,0"
+                                Background="{DynamicResource ThemeSurface}" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1"
+                                Visibility="{Binding CreateNewBoq, Converter={StaticResource InvertedBoolToVis}}">
+                            <StackPanel>
+                                <ComboBox ItemsSource="{Binding BoqDocuments}"
+                                          SelectedItem="{Binding SelectedBoqDocument}"
+                                          DisplayMemberPath="FileName"
+                                          MinWidth="250" Margin="0,0,0,8"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Use Selected" Command="{Binding SelectBoqDocumentCommand}"
+                                            HorizontalAlignment="Left" MinWidth="120" Height="30" Margin="0,0,8,0" Cursor="Hand"/>
+                                    <TextBlock Text="{Binding StatusMessage}" FontSize="12"
+                                               Foreground="{DynamicResource ThemeAccent}" VerticalAlignment="Center"
+                                               Visibility="{Binding HasDocumentSelected, Converter={StaticResource BoolToVis}}"/>
+                                </StackPanel>
+                                <TextBlock Text="No BOQ documents found" FontSize="12" Foreground="{DynamicResource BrandTextSecondary}"
+                                           Visibility="{Binding HasProjectDocuments, Converter={StaticResource InvertedBoolToVis}}"/>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
-                </GroupBox>
+                </Border>
 
-                <!-- Section 2: Sheet Options -->
-                <GroupBox Header="2. Sheet Options" Margin="0,0,0,8">
-                    <GroupBox.Style>
-                        <Style TargetType="GroupBox">
-                            <Setter Property="Opacity" Value="0.4"/>
+                <!-- Step 2: Import Mode -->
+                <Border CornerRadius="8" Padding="16,14" Margin="0,0,0,12"
+                        Background="{DynamicResource ThemeCard}" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Opacity" Value="0.5"/>
                             <Setter Property="IsEnabled" Value="False"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsExcel}" Value="True">
                                     <Setter Property="Opacity" Value="1"/>
                                     <Setter Property="IsEnabled" Value="True"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource ThemeAccent}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </GroupBox.Style>
+                    </Border.Style>
                     <StackPanel>
-                        <CheckBox Content="Merge all sheets" IsChecked="{Binding MergeAllSheets}"
-                                  Margin="0,0,0,4"/>
-                        <Grid IsEnabled="{Binding MergeAllSheets, Converter={StaticResource InvBool}}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="80"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="Worksheet:" VerticalAlignment="Center"/>
-                            <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableWorksheets}"
-                                      SelectedItem="{Binding SelectedWorksheet}" MinWidth="200"/>
-                        </Grid>
-                    </StackPanel>
-                </GroupBox>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <Border CornerRadius="4" Padding="6,2" Margin="0,0,8,0"
+                                    Background="{DynamicResource ThemeAccent}" VerticalAlignment="Center">
+                                <TextBlock Text="2" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource OnAccentForeground}" HorizontalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="Import Mode" FontSize="16" FontWeight="Bold"
+                                       Foreground="{DynamicResource ThemeForeground}" VerticalAlignment="Center"/>
+                        </StackPanel>
 
-                <!-- Section 3: Column Mapping -->
-                <GroupBox Header="3. Column Mapping" Margin="0,0,0,8">
-                    <GroupBox.Style>
-                        <Style TargetType="GroupBox">
-                            <Setter Property="Opacity" Value="0.4"/>
+                        <!-- Mode cards -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <Border CornerRadius="6" Padding="10,8" Margin="0,0,8,0"
+                                    Background="{DynamicResource ThemeSurface}" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1"
+                                    Cursor="Hand">
+                                <RadioButton Content="Single sheet" IsChecked="{Binding SelectedImportMode, Converter={StaticResource InvBool}, ConverterParameter=0}"
+                                             GroupName="ImportMode" Cursor="Hand"/>
+                            </Border>
+                            <Border CornerRadius="6" Padding="10,8" Margin="0,0,8,0"
+                                    Background="{DynamicResource ThemeSurface}" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1"
+                                    Cursor="Hand">
+                                <RadioButton Content="Separate per sheet" IsChecked="{Binding SelectedImportMode, Converter={StaticResource InvBool}, ConverterParameter=1}"
+                                             GroupName="ImportMode" Cursor="Hand"/>
+                            </Border>
+                            <Border CornerRadius="6" Padding="10,8" Margin="0,0,0,0"
+                                    Background="{DynamicResource ThemeSurface}" BorderBrush="{DynamicResource ThemeAccent}" BorderThickness="1"
+                                    Cursor="Hand">
+                                <RadioButton Content="Merge all sheets" IsChecked="{Binding SelectedImportMode, Converter={StaticResource InvBool}, ConverterParameter=2}"
+                                             GroupName="ImportMode" Cursor="Hand"/>
+                            </Border>
+                        </StackPanel>
+
+                        <CheckBox Content="Merge all sheets" IsChecked="{Binding MergeAllSheets}"
+                                  Margin="0,0,0,8" Cursor="Hand"/>
+
+                        <Border CornerRadius="6" Padding="10" Margin="0,0,0,0"
+                                Background="{DynamicResource ThemeSurface}" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1"
+                                IsEnabled="{Binding MergeAllSheets, Converter={StaticResource InvBool}}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Worksheet:" VerticalAlignment="Center" FontSize="13"/>
+                                <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableWorksheets}"
+                                          SelectedItem="{Binding SelectedWorksheet}" MinWidth="200"/>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- Step 3: Column Mapping -->
+                <Border CornerRadius="8" Padding="16,14" Margin="0,0,0,12"
+                        Background="{DynamicResource ThemeCard}" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Opacity" Value="0.5"/>
                             <Setter Property="IsEnabled" Value="False"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding HasDetectedColumns}" Value="True">
                                     <Setter Property="Opacity" Value="1"/>
                                     <Setter Property="IsEnabled" Value="True"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource ThemeAccent}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </GroupBox.Style>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="110"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                    </Border.Style>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <Border CornerRadius="4" Padding="6,2" Margin="0,0,8,0"
+                                    Background="{DynamicResource ThemeAccent}" VerticalAlignment="Center">
+                                <TextBlock Text="3" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource OnAccentForeground}" HorizontalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="Column Mapping" FontSize="16" FontWeight="Bold"
+                                       Foreground="{DynamicResource ThemeForeground}" VerticalAlignment="Center"/>
+                        </StackPanel>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Code:" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
-                                  Text="{Binding CodeColumn}" IsEditable="True" Margin="0,0,0,2"/>
+                        <Border CornerRadius="6" Padding="12" Margin="0,0,0,0"
+                                Background="{DynamicResource ThemeSurface}" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Description:" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
-                                  Text="{Binding DescriptionColumn}" IsEditable="True" Margin="0,0,0,2"/>
+                                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:SymbolIcon Symbol="DataHistogram24" FontSize="14" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,6,0"/>
+                                    <TextBlock Text="Code" VerticalAlignment="Center" FontSize="13"/>
+                                </StackPanel>
+                                <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
+                                          Text="{Binding CodeColumn}" IsEditable="True" Margin="0,0,0,4"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Unit:" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
-                                  Text="{Binding UnitColumn}" IsEditable="True" Margin="0,0,0,2"/>
+                                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:SymbolIcon Symbol="Document24" FontSize="14" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,6,0"/>
+                                    <TextBlock Text="Description" VerticalAlignment="Center" FontSize="13"/>
+                                </StackPanel>
+                                <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
+                                          Text="{Binding DescriptionColumn}" IsEditable="True" Margin="0,0,0,4"/>
 
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Quantity:" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
-                                  Text="{Binding QuantityColumn}" IsEditable="True" Margin="0,0,0,2"/>
+                                <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:SymbolIcon Symbol="Ruler24" FontSize="14" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,6,0"/>
+                                    <TextBlock Text="Unit" VerticalAlignment="Center" FontSize="13"/>
+                                </StackPanel>
+                                <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
+                                          Text="{Binding UnitColumn}" IsEditable="True" Margin="0,0,0,4"/>
 
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Rate:" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Row="4" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
-                                  Text="{Binding RateColumn}" IsEditable="True" Margin="0,0,0,2"/>
+                                <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:SymbolIcon Symbol="Calculator24" FontSize="14" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,6,0"/>
+                                    <TextBlock Text="Quantity" VerticalAlignment="Center" FontSize="13"/>
+                                </StackPanel>
+                                <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
+                                          Text="{Binding QuantityColumn}" IsEditable="True" Margin="0,0,0,4"/>
 
-                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Classification:" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Row="5" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
-                                  Text="{Binding ClassificationColumn}" IsEditable="True" Margin="0,0,0,2"/>
+                                <StackPanel Grid.Row="4" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:SymbolIcon Symbol="Money24" FontSize="14" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,6,0"/>
+                                    <TextBlock Text="Rate" VerticalAlignment="Center" FontSize="13"/>
+                                </StackPanel>
+                                <ComboBox Grid.Row="4" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
+                                          Text="{Binding RateColumn}" IsEditable="True" Margin="0,0,0,4"/>
 
-                        <TextBlock Grid.Row="6" Grid.Column="0" Text="CSI Division:" VerticalAlignment="Center"/>
-                        <ComboBox Grid.Row="6" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
-                                  Text="{Binding DivisionColumn}" IsEditable="True" Margin="0,0,0,2"/>
-                    </Grid>
-                </GroupBox>
+                                <StackPanel Grid.Row="5" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:SymbolIcon Symbol="Classification24" FontSize="14" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,6,0"/>
+                                    <TextBlock Text="Classification" VerticalAlignment="Center" FontSize="13"/>
+                                </StackPanel>
+                                <ComboBox Grid.Row="5" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
+                                          Text="{Binding ClassificationColumn}" IsEditable="True" Margin="0,0,0,4"/>
 
-                <!-- Section 4: Actions -->
-                <StackPanel Orientation="Horizontal" Margin="0,4,0,12">
-                    <Button Content="Preview Import" Command="{Binding PreviewImportCommand}"
-                            Margin="0,0,8,0" MinWidth="100" Height="30"/>
-                    <Button Content="Commit Import" Command="{Binding CommitImportCommand}"
-                            MinWidth="100" Height="30"/>
-                </StackPanel>
+                                <StackPanel Grid.Row="6" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:SymbolIcon Symbol="Folder24" FontSize="14" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,6,0"/>
+                                    <TextBlock Text="CSI Division" VerticalAlignment="Center" FontSize="13"/>
+                                </StackPanel>
+                                <ComboBox Grid.Row="6" Grid.Column="1" ItemsSource="{Binding DetectedColumns}"
+                                          Text="{Binding DivisionColumn}" IsEditable="True" Margin="0,0,0,4"/>
+                            </Grid>
+                        </Border>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <ui:SymbolIcon Symbol="Info24" FontSize="14" Foreground="{DynamicResource BrandTextSecondary}"
+                                           VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="Classification &amp; Division can be extracted from the Code or Description column if no separate column exists."
+                                       FontSize="11" Foreground="{DynamicResource BrandTextSecondary}" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Actions -->
+                <Border CornerRadius="8" Padding="12,10" Margin="0,4,0,12"
+                        Background="{DynamicResource ThemeSurface}" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <ui:SymbolIcon Symbol="Eye24" FontSize="16" Foreground="{DynamicResource ThemeAccent}"
+                                       VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <Button Content="Preview Import" Command="{Binding PreviewImportCommand}"
+                                Margin="0,0,12,0" MinWidth="120" Height="32" Cursor="Hand"/>
+                        <ui:SymbolIcon Symbol="ArrowImport24" FontSize="16" Foreground="{DynamicResource ThemeAccent}"
+                                       VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <Button Content="Commit Import" Command="{Binding CommitImportCommand}"
+                                MinWidth="120" Height="32" Cursor="Hand"/>
+                    </StackPanel>
+                </Border>
             </StackPanel>
         </ScrollViewer>
 
-        <ProgressBar Grid.Row="2" Height="4" Value="{Binding ProgressValue}" Margin="0,4,0,0"/>
+        <!-- Progress bar -->
+        <ProgressBar Grid.Row="2" Height="4" Value="{Binding ProgressValue}" Margin="0,4,0,0"
+                     Foreground="{DynamicResource ThemeAccent}"/>
     </Grid>
 </UserControl>

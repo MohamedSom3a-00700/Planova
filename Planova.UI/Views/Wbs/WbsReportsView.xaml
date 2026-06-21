@@ -1,0 +1,155 @@
+<UserControl x:Class="Planova.UI.Views.Wbs.WbsReportsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Planova.UI.ViewModels.Wbs"
+             xmlns:conv="clr-namespace:Planova.UI.Converters"
+             d:DataContext="{d:DesignInstance vm:WbsReportsViewModel}"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="WBS Reports" FontSize="20" FontWeight="Bold" Margin="0,0,0,16"/>
+
+        <TabControl Grid.Row="1" SelectedIndex="{Binding SelectedReportTab}" Margin="0,0,0,8">
+            <TabItem Header="Summary"/>
+            <TabItem Header="Dictionary"/>
+            <TabItem Header="Weight"/>
+            <TabItem Header="Responsibility Matrix"/>
+            <TabItem Header="Hierarchy"/>
+        </TabControl>
+
+        <!-- Report content area -->
+        <Border Grid.Row="2" BorderThickness="1" BorderBrush="{DynamicResource ThemeBorder}" CornerRadius="4" Padding="8">
+            <Grid>
+                <!-- Summary -->
+                <Grid Visibility="{Binding IsSummaryTab, Converter={StaticResource BoolToVis}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="{Binding SummaryReport.WbsName, StringFormat='WBS: {0}'}" FontSize="16" FontWeight="SemiBold"/>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,8">
+                        <TextBlock Text="{Binding SummaryReport.TotalItems, StringFormat='Items: {0}'}" Margin="0,0,16,0"/>
+                        <TextBlock Text="{Binding SummaryReport.TotalLevels, StringFormat='Levels: {0}'}"/>
+                    </StackPanel>
+                    <ListView Grid.Row="2" ItemsSource="{Binding SummarySections}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Section" Width="200" DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn Header="Items" Width="80" DisplayMemberBinding="{Binding ItemCount}"/>
+                                <GridViewColumn Header="Weight %" Width="100" DisplayMemberBinding="{Binding WeightPercentage}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+
+                <!-- Dictionary -->
+                <Grid Visibility="{Binding IsDictionaryTab, Converter={StaticResource BoolToVis}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="{Binding DictionaryReport.WbsName, StringFormat='WBS: {0}'}" FontSize="16" FontWeight="SemiBold"/>
+                    <ListView Grid.Row="1" ItemsSource="{Binding DictionaryEntries}" Margin="0,8,0,0">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Code" Width="80" DisplayMemberBinding="{Binding Code}"/>
+                                <GridViewColumn Header="Name" Width="200" DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn Header="Level" Width="100" DisplayMemberBinding="{Binding WbsLevel}"/>
+                                <GridViewColumn Header="Assigned To" Width="120" DisplayMemberBinding="{Binding AssignedTo}"/>
+                                <GridViewColumn Header="Deliverable" Width="150" DisplayMemberBinding="{Binding Deliverable}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+
+                <!-- Weight Report -->
+                <Grid Visibility="{Binding IsWeightTab, Converter={StaticResource BoolToVis}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="WBS Weight Report — items sorted by weight descending" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                    <ListView Grid.Row="1" ItemsSource="{Binding WeightReportItems}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Code" Width="100" DisplayMemberBinding="{Binding Code}"/>
+                                <GridViewColumn Header="Name" Width="250" DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn Header="Weight %" Width="100" DisplayMemberBinding="{Binding WeightPercentage}"/>
+                                <GridViewColumn Header="Parent" Width="150" DisplayMemberBinding="{Binding Parent}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+
+                <!-- Responsibility Matrix -->
+                <Grid Visibility="{Binding IsResponsibilityTab, Converter={StaticResource BoolToVis}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="WBS Responsibility Matrix — WBS nodes with assigned owners" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                    <ListView Grid.Row="1" ItemsSource="{Binding ResponsibilityMatrixItems}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Code" Width="100" DisplayMemberBinding="{Binding Code}"/>
+                                <GridViewColumn Header="Name" Width="250" DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn Header="Assigned To" Width="150" DisplayMemberBinding="{Binding AssignedTo}"/>
+                                <GridViewColumn Header="Discipline" Width="120" DisplayMemberBinding="{Binding Discipline}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+
+                <!-- Hierarchy Report -->
+                <Grid Visibility="{Binding IsHierarchyTab, Converter={StaticResource BoolToVis}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="WBS Hierarchy Report — indented tree view of the WBS" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                    <ListView Grid.Row="1" ItemsSource="{Binding HierarchyReportItems}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Code" Width="100" DisplayMemberBinding="{Binding Code}"/>
+                                <GridViewColumn Header="Name" Width="350" DisplayMemberBinding="{Binding IndentedName}"/>
+                                <GridViewColumn Header="Weight %" Width="80" DisplayMemberBinding="{Binding WeightPercentage}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+            <Button Content="Load" Command="{Binding LoadSummaryCommand}" MinWidth="80" Margin="0,0,8,0"
+                    Visibility="{Binding IsSummaryTab, Converter={StaticResource BoolToVis}}"/>
+            <Button Content="Load" Command="{Binding LoadDictionaryCommand}" MinWidth="80" Margin="0,0,8,0"
+                    Visibility="{Binding IsDictionaryTab, Converter={StaticResource BoolToVis}}"/>
+            <Button Content="Load" Command="{Binding LoadWeightReportCommand}" MinWidth="80" Margin="0,0,8,0"
+                    Visibility="{Binding IsWeightTab, Converter={StaticResource BoolToVis}}"/>
+            <Button Content="Load" Command="{Binding LoadResponsibilityMatrixCommand}" MinWidth="80" Margin="0,0,8,0"
+                    Visibility="{Binding IsResponsibilityTab, Converter={StaticResource BoolToVis}}"/>
+            <Button Content="Load" Command="{Binding LoadHierarchyReportCommand}" MinWidth="80" Margin="0,0,8,0"
+                    Visibility="{Binding IsHierarchyTab, Converter={StaticResource BoolToVis}}"/>
+            <Button Content="Export CSV" Command="{Binding ExportCsvCommand}" MinWidth="80" Margin="0,0,8,0"/>
+            <Button Content="Export Excel" Command="{Binding ExportExcelCommand}" MinWidth="80" Margin="0,0,8,0"/>
+            <Button Content="Export PDF" Command="{Binding ExportPdfCommand}" MinWidth="80" Margin="0,0,8,0"/>
+            <Button Content="Export JSON" Command="{Binding ExportJsonCommand}" MinWidth="80"/>
+        </StackPanel>
+
+        <TextBlock Grid.Row="4" Text="{Binding ErrorMessage}" Foreground="Red"
+                   Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}"/>
+    </Grid>
+</UserControl>

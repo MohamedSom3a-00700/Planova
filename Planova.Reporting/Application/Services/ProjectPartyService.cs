@@ -21,6 +21,17 @@ public class ProjectPartyService : IProjectPartyService
         return parties.Select(p => p.ToDto()).ToList();
     }
 
+    public async Task<List<ProjectPartyDto>> GetAllPartiesAsync(CancellationToken ct = default)
+    {
+        var parties = await _repository.GetAllAsync(ct);
+        var projectNames = await _repository.GetProjectNamesAsync(ct);
+        return parties
+            .OrderBy(p => projectNames.GetValueOrDefault(p.ProjectId, string.Empty))
+            .ThenBy(p => p.DisplayOrder)
+            .Select(p => p.ToDto() with { ProjectName = projectNames.GetValueOrDefault(p.ProjectId, "Unknown") })
+            .ToList();
+    }
+
     public async Task<ProjectPartyDto> GetClientAsync(int projectId, CancellationToken ct = default)
     {
         var client = await _repository.GetClientAsync(projectId, ct);
@@ -43,12 +54,24 @@ public class ProjectPartyService : IProjectPartyService
     {
         ProjectParty? party;
 
+        var role = Enum.Parse<PartyRole>(request.Role);
+
         if (request.Id.HasValue)
         {
             party = await _repository.GetByIdAsync(request.Id.Value, ct);
             if (party is null)
                 throw new InvalidOperationException($"Party {request.Id} not found.");
+
+            if (role == PartyRole.Client || role == PartyRole.MainContractor)
+            {
+                var existing = await _repository.GetByProjectAsync(projectId, ct);
+                var duplicate = existing.FirstOrDefault(p => p.Role == role && p.Id != request.Id.Value);
+                if (duplicate is not null)
+                    throw new InvalidOperationException($"This project already has a {request.Role}. Only one {request.Role} is allowed per project.");
+            }
+
             party.Name = request.Name;
+            party.Role = role;
             party.Address = request.Address;
             party.ContactPerson = request.ContactPerson;
             party.ContactEmail = request.ContactEmail;
@@ -59,11 +82,18 @@ public class ProjectPartyService : IProjectPartyService
         }
         else
         {
+            if (role == PartyRole.Client || role == PartyRole.MainContractor)
+            {
+                var existing = await _repository.GetByProjectAsync(projectId, ct);
+                if (existing.Any(p => p.Role == role))
+                    throw new InvalidOperationException($"This project already has a {request.Role}. Only one {request.Role} is allowed per project.");
+            }
+
             party = new ProjectParty
             {
                 Id = Guid.NewGuid(),
                 ProjectId = projectId,
-                Role = Enum.Parse<PartyRole>(request.Role),
+                Role = role,
                 Name = request.Name,
                 Address = request.Address,
                 ContactPerson = request.ContactPerson,

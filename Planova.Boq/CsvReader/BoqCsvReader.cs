@@ -47,6 +47,9 @@ public class BoqCsvReader : IBoqCsvReader
                 Level: options.LevelColumn != null ? csv.GetField<int?>(options.LevelColumn) : null,
                 ParentId: options.ParentIdColumn != null ? csv.GetField(options.ParentIdColumn) : null,
                 ParentCode: null,
+                Classification: options.ClassificationColumn != null ? csv.GetField(options.ClassificationColumn) : null,
+                Division: options.DivisionColumn != null ? csv.GetField(options.DivisionColumn) : null,
+                SourceSheet: null,
                 RawValues: raw
             );
 

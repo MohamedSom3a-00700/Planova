@@ -14,9 +14,10 @@ public class Mouse {
 $ScopeDescendants = [System.Windows.Automation.TreeScope]::Subtree
 $NameProp = [System.Windows.Automation.AutomationElement]::NameProperty
 
+$global:AnyFailed = $false
 function E($text)  { Write-Host "`n>>> $text" -ForegroundColor Cyan }
 function OK($text) { Write-Host "  [PASS] $text" -ForegroundColor Green }
-function NO($text) { Write-Host "  [FAIL] $text" -ForegroundColor Red }
+function NO($text) { $global:AnyFailed = $true; Write-Host "  [FAIL] $text" -ForegroundColor Red }
 
 function Wait-Window($title, $timeout) {
     for ($i = 0; $i -lt $timeout; $i++) {
@@ -90,9 +91,9 @@ if (-not $SkipBuild) {
 
 # Import both XER files before launching (so the combo loads them fresh)
 Write-Host "    Cleaning old sessions & importing source..."
-dotnet run --project $xerProj -- --xer "$sourceXerPath" --commit --project 2 --clean 2>&1 | Out-Null
+dotnet run --project $xerProj -- --xer "$sourceXerPath" --commit --project $ProjectName --clean 2>&1 | Out-Null
 Write-Host "    Importing target..."
-dotnet run --project $xerProj -- --xer "$targetXerPath" --commit --project 2 2>&1 | Out-Null
+dotnet run --project $xerProj -- --xer "$targetXerPath" --commit --project $ProjectName 2>&1 | Out-Null
 OK 'XER files pre-imported'
 
 $exe = "$PSScriptRoot\..\Planova.UI\bin\Debug\net8.0-windows\Planova.UI.exe"
@@ -246,7 +247,11 @@ if ($expTab) {
 } else { NO 'Export tab not found' }
 
 Write-Host "`n========================================" -ForegroundColor Cyan
-Write-Host '  SCHEDULE COMPARISON: ALL CHECKS PASSED' -ForegroundColor Green
+if ($global:AnyFailed) {
+    Write-Host '  SCHEDULE COMPARISON: SOME CHECKS FAILED' -ForegroundColor Red
+} else {
+    Write-Host '  SCHEDULE COMPARISON: ALL CHECKS PASSED' -ForegroundColor Green
+}
 Write-Host '========================================' -ForegroundColor Cyan
 
 Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue

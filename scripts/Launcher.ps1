@@ -19,15 +19,16 @@ if (-not $SkipBuild) {
 $exe = "$PSScriptRoot\..\Planova.UI\bin\Debug\net8.0-windows\Planova.UI.exe"
 $proc = Start-Process $exe -PassThru
 
-$main = $null
-for ($i = 0; $i -lt 60; $i++) {
-    $main = [System.Windows.Automation.AutomationElement]::RootElement.FindFirst(
-        [System.Windows.Automation.TreeScope]::Children,
-        [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::NameProperty, 'Planova'))
-    if ($main) { break }
-    Start-Sleep -Seconds 1
-}
-if (-not $main) { "Window not found"; exit 1 }
+try {
+    $main = $null
+    for ($i = 0; $i -lt 60; $i++) {
+        $main = [System.Windows.Automation.AutomationElement]::RootElement.FindFirst(
+            [System.Windows.Automation.TreeScope]::Children,
+            [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::NameProperty, 'Planova'))
+        if ($main) { break }
+        Start-Sleep -Seconds 1
+    }
+    if (-not $main) { "Window not found"; exit 1 }
 
 # Wait for app to initialize
 Start-Sleep -Seconds 5
@@ -138,6 +139,8 @@ else {
 Start-Sleep -Seconds 3
 $hdr2 = $main.FindFirst($ScopeDescendants, [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::NameProperty, 'Schedule Comparison'))
 if ($hdr2) { Write-Host "`nNAVIGATION SUCCESSFUL after InvokePattern!" -ForegroundColor Green }
-else { Write-Host "`nStill on Dashboard after all attempts" -ForegroundColor Red }
-
-Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+else { Write-Host "`nStill on Dashboard after all attempts" -ForegroundColor Red; exit 1 }
+}
+finally {
+    if ($proc -and $proc.Id) { Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue }
+}

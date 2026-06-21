@@ -55,7 +55,7 @@
             <GroupBox Header="Report Preview">
                 <StackPanel>
                     <TextBlock Text="{Binding LastGeneratedSize, StringFormat='Generated size: {0:N0} bytes'}"/>
-                    <TextBlock Text="Generate a report to see details here" Foreground="Gray"
+                    <TextBlock Text="Generate a report to see details here" Foreground="{DynamicResource BrandTextSecondary}"
                                Visibility="{Binding LastGeneratedData, Converter={StaticResource InverseBoolToVis}}"/>
                 </StackPanel>
             </GroupBox>
@@ -63,7 +63,7 @@
 
         <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
                     Visibility="{Binding HasBoq, Converter={StaticResource InverseBoolToVis}}">
-            <TextBlock Text="Load a BOQ first to generate reports" Foreground="Gray" FontSize="16"/>
+            <TextBlock Text="Load a BOQ first to generate reports" Foreground="{DynamicResource BrandTextSecondary}" FontSize="16"/>
         </StackPanel>
     </Grid>
 </UserControl>

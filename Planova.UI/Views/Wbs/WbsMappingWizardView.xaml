@@ -64,10 +64,15 @@
                 <StackPanel Visibility="{Binding IsStep2Visible, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="Step 2: Choose Mapping Strategy" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
                     <ListView ItemsSource="{Binding Strategies}" SelectedItem="{Binding SelectedStrategy}"
-                              MinHeight="80" Margin="0,0,0,8">
+                              MinHeight="150" Margin="0,0,0,8">
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding}" Margin="4"/>
+                                <Border BorderThickness="0,0,0,1" BorderBrush="LightGray" Padding="8,6">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14"/>
+                                        <TextBlock Text="{Binding Description}" FontSize="11" Foreground="Gray" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Border>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
@@ -76,35 +81,17 @@
 
                 <!-- Step 3: Preview -->
                 <StackPanel Visibility="{Binding IsStep3Visible, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="Step 3: Preview and Edit" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                    <TextBlock Text="Edit item names and WBS levels before committing" Margin="0,0,0,8"/>
+                    <TextBlock Text="Step 3: Preview Mapping Result" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                    <TextBlock Text="{Binding MappingPreview.TotalItems, StringFormat='Total items: {0}'}" FontSize="13" Margin="0,0,0,4"/>
                     <TextBox Text="{Binding WbsName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"
                              ToolTip="WBS name"/>
-                    <ListView ItemsSource="{Binding MappedItems}" MinHeight="250">
+                    <ListView ItemsSource="{Binding PreviewNodes}" MinHeight="250">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Level" Width="60" DisplayMemberBinding="{Binding Level}"/>
-                                <GridViewColumn Header="Name" Width="250">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
-                                                     BorderThickness="0" Background="Transparent"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="WBS Level" Width="130">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <ComboBox Text="{Binding WbsLevel, UpdateSourceTrigger=PropertyChanged}"
-                                                      SelectedItem="{Binding WbsLevel}">
-                                                <ComboBoxItem Content="Summary"/>
-                                                <ComboBoxItem Content="ControlAccount"/>
-                                                <ComboBoxItem Content="WorkPackage"/>
-                                                <ComboBoxItem Content="PlanningPackage"/>
-                                            </ComboBox>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
+                                <GridViewColumn Header="Code" Width="100" DisplayMemberBinding="{Binding Code}"/>
+                                <GridViewColumn Header="Name" Width="300" DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn Header="Weight" Width="80" DisplayMemberBinding="{Binding Weight}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>

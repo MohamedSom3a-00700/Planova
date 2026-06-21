@@ -1,5 +1,6 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:System="clr-namespace:System;assembly=mscorlib">
 
     <SolidColorBrush x:Key="ThemeBackground" Color="#0D1117" />
     <SolidColorBrush x:Key="ThemeForeground" Color="#E0E0E0" />
@@ -24,6 +25,11 @@
     <SolidColorBrush x:Key="BrandBorderSubtle" Color="#1F2937" />
     <SolidColorBrush x:Key="BrandBorderLight" Color="#D6DCE5" />
     <SolidColorBrush x:Key="BrandTextSecondary" Color="#9E9E9E" />
+    <SolidColorBrush x:Key="OnAccentForeground" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="BrandDangerSurface" Color="#2A1A1A" />
+    <SolidColorBrush x:Key="BrandDangerForeground" Color="#FF6B6B" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#1F2937" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.WindowTextBrushKey}" Color="#E0E0E0" />
     <SolidColorBrush x:Key="BrandTextSecondaryLight" Color="#5C5C5C" />
 
     <LinearGradientBrush x:Key="ShellBackgroundGradient" StartPoint="0,0" EndPoint="0,1">
@@ -41,5 +47,18 @@
         <GradientStop Offset="0" Color="#161B22" />
         <GradientStop Offset="1" Color="#1F2937" />
     </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="#1F2937" />
+    <SolidColorBrush x:Key="ComboBoxDropDownBorderBrush" Color="#2A3441" />
+    <SolidColorBrush x:Key="ComboBoxToggleHoverBackground" Color="#2A3441" />
+    <SolidColorBrush x:Key="ComboBoxTogglePressedBackground" Color="#32324A" />
+    <SolidColorBrush x:Key="ComboBoxArrowFill" Color="#E0E0E0" />
+    <SolidColorBrush x:Key="ComboBoxArrowHoverFill" Color="#00BFFF" />
+
+    <SolidColorBrush x:Key="ComboBoxItemHoverBackground" Color="#1F2937" />
+    <SolidColorBrush x:Key="ComboBoxItemSelectedBackground" Color="#0078D4" />
+    <SolidColorBrush x:Key="ComboBoxItemSelectedForeground" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="ComboBoxItemDisabledForeground" Color="#9E9E9E" />
+    <SolidColorBrush x:Key="ComboBoxEmptyStateForeground" Color="#9E9E9E" />
 
 </ResourceDictionary>

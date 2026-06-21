@@ -10,10 +10,13 @@
                 <ui:ControlsDictionary />
                 <ResourceDictionary Source="Styles/ThemeTokens.xaml" />
                 <ResourceDictionary Source="Styles/BrandStyles.xaml" />
+                <ResourceDictionary Source="Styles/ComboBoxStyles.xaml" />
                 <ResourceDictionary Source="Styles/BrandSpacing.xaml" />
                 <ResourceDictionary Source="Styles/Gradients.xaml" />
                 <ResourceDictionary Source="Styles/BrandColors.xaml" />
                 <ResourceDictionary Source="Styles/DarkTheme.xaml" />
+                <ResourceDictionary Source="Styles/FluentCardStyles.xaml" />
+                <ResourceDictionary Source="Styles/DashboardStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <conv:ThemeAwareLogoConverter x:Key="ThemeLogo" xmlns:conv="clr-namespace:Planova.UI.Converters" />
             <conv:BoolToVisibilityConverter x:Key="BoolToVis" xmlns:conv="clr-namespace:Planova.UI.Converters" />

@@ -44,7 +44,7 @@ public class ProjectServiceTests
         _projectRepo.Setup(r => r.CodeExistsAsync("P1", null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var dto = new CreateProjectDto("P1", "Test", null, null, null, null, null, null, null, null, null);
+        var dto = new CreateProjectDto("P1", "Test", null, null, null, null, null, null, null, null, null, null);
 
         Func<Task> act = () => _service.CreateAsync(dto);
         await act.Should().ThrowAsync<DuplicateEntityException>();

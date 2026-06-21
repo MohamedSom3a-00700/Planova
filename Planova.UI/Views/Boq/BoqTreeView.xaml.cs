@@ -1,3 +1,4 @@
+using System.Windows;
 using System.Windows.Controls;
 using Planova.UI.ViewModels.Boq;
 
@@ -9,5 +10,13 @@ public partial class BoqTreeView : UserControl
     {
         InitializeComponent();
         DataContext = viewModel;
+    }
+
+    private void OutlineTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+    {
+        if (DataContext is BoqTreeViewModel vm && e.NewValue is BoqOutlineItem item)
+        {
+            vm.SelectedOutlineItem = item;
+        }
     }
 }

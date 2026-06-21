@@ -20,5 +20,8 @@
     <SolidColorBrush x:Key="BrandSuccess" Color="#2ECC71" />
     <SolidColorBrush x:Key="BrandWarning" Color="#F39C12" />
     <SolidColorBrush x:Key="BrandDanger" Color="#E74C3C" />
+    <SolidColorBrush x:Key="BrandDangerSurface" Color="#2A1A1A" />
+    <SolidColorBrush x:Key="BrandDangerForeground" Color="#FF6B6B" />
+    <SolidColorBrush x:Key="OnAccentForeground" Color="#FFFFFF" />
 
 </ResourceDictionary>

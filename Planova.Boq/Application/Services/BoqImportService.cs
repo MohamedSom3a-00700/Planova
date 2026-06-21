@@ -4,29 +4,33 @@ using Planova.Boq.CsvReader;
 using Planova.Boq.Domain.Entities;
 using Planova.Boq.Domain.Enums;
 using Planova.Boq.Domain.Interfaces;
+using ImportServiceInterface = Planova.Boq.Application.Services.IBoqImportService;
 
 namespace Planova.Boq.Application.Services;
 
-public class BoqImportService : IBoqImportService
+public class BoqImportService : ImportServiceInterface
 {
     private readonly IBoqRepository _boqRepository;
     private readonly IBoqItemRepository _itemRepository;
     private readonly ITreeBuilder _treeBuilder;
     private readonly IBoqCsvReader _csvReader;
     private readonly IExcelRowReader _excelReader;
+    private readonly IBoqDescriptionParser _descriptionParser;
 
     public BoqImportService(
         IBoqRepository boqRepository,
         IBoqItemRepository itemRepository,
         ITreeBuilder treeBuilder,
         IBoqCsvReader csvReader,
-        IExcelRowReader excelReader)
+        IExcelRowReader excelReader,
+        IBoqDescriptionParser descriptionParser)
     {
         _boqRepository = boqRepository;
         _itemRepository = itemRepository;
         _treeBuilder = treeBuilder;
         _csvReader = csvReader;
         _excelReader = excelReader;
+        _descriptionParser = descriptionParser;
     }
 
     public async Task<BoqImportResult> ImportFromExcelAsync(
@@ -68,6 +72,8 @@ public class BoqImportService : IBoqImportService
             errors.Add(new ValidationIssue(null, "NO_DATA", "Data", IssueType.Error, "No data rows found in the workbook.", null));
             return new BoqImportResult(Guid.Empty, 0, 0, 0, errors, TimeSpan.Zero);
         }
+
+        importRows = EnrichRows(importRows);
 
         progress?.Report(30);
         var strategy = _treeBuilder.DetectStrategy(importRows);
@@ -111,6 +117,7 @@ public class BoqImportService : IBoqImportService
         progress?.Report(0);
 
         var rows = await _csvReader.ReadAsync(filePath, options, ct);
+        rows = EnrichRows(rows);
         progress?.Report(30);
 
         var strategy = _treeBuilder.DetectStrategy(rows);
@@ -165,22 +172,44 @@ public class BoqImportService : IBoqImportService
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var result = new List<BoqItem>();
         var skipped = 0;
+        var unnamedIndex = 0;
 
         foreach (var item in items)
         {
-            var key = string.IsNullOrWhiteSpace(item.Code)
-                ? Guid.NewGuid().ToString()
-                : item.Code.Trim();
-            if (seen.Add(key))
+            if (string.IsNullOrWhiteSpace(item.Code))
             {
+                item.Code = $"_ROW_{unnamedIndex++}";
                 result.Add(item);
             }
             else
             {
-                skipped++;
+                var key = item.Code.Trim();
+                if (seen.Add(key))
+                {
+                    result.Add(item);
+                }
+                else
+                {
+                    skipped++;
+                }
             }
         }
 
         return (result, skipped);
+    }
+
+    private IReadOnlyList<ImportRow> EnrichRows(IReadOnlyList<ImportRow> rows)
+    {
+        var enriched = new List<ImportRow>(rows.Count);
+        foreach (var row in rows)
+        {
+            var enrichedRow = _descriptionParser.EnrichImportRow(
+                row,
+                string.IsNullOrEmpty(row.Classification) ? null : "Classification",
+                string.IsNullOrEmpty(row.Division) ? null : "Division",
+                row.RawValues);
+            enriched.Add(enrichedRow);
+        }
+        return enriched;
     }
 }

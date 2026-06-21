@@ -24,6 +24,20 @@
             <Button Content="Create WBS" Command="{Binding CreateWbsCommand}" Margin="0,0,8,0"/>
             <Button Content="Delete WBS" Command="{Binding DeleteWbsCommand}" Margin="0,0,8,0"/>
             <Button Content="Rename" Command="{Binding RenameWbsCommand}" Margin="0,0,8,0"/>
+            <Separator Width="1" Background="Gray" Margin="0,0,8,0"/>
+            <Button Content="Duplicate" Command="{Binding DuplicateWbsCommand}" Margin="0,0,8,0"/>
+            <Button Content="Archive" Command="{Binding ArchiveWbsCommand}" Margin="0,0,8,0"/>
+            <Separator Width="1" Background="Gray" Margin="0,0,8,0"/>
+            <Button Content="Export" Margin="0,0,8,0">
+                <Button.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Excel" Command="{Binding ExportWbsCommand}" CommandParameter="Excel"/>
+                        <MenuItem Header="PDF" Command="{Binding ExportWbsCommand}" CommandParameter="PDF"/>
+                        <MenuItem Header="CSV" Command="{Binding ExportWbsCommand}" CommandParameter="CSV"/>
+                        <MenuItem Header="JSON" Command="{Binding ExportWbsCommand}" CommandParameter="JSON"/>
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
         </StackPanel>
 
         <ListView Grid.Row="2" ItemsSource="{Binding WbsItems}"
@@ -33,11 +47,13 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Name" Width="160" DisplayMemberBinding="{Binding Name}"/>
+                    <GridViewColumn Header="Description" Width="200" DisplayMemberBinding="{Binding Description}"/>
                     <GridViewColumn Header="Status" Width="80" DisplayMemberBinding="{Binding Status}"/>
                     <GridViewColumn Header="Source" Width="90" DisplayMemberBinding="{Binding Source}"/>
                     <GridViewColumn Header="Revision" Width="65" DisplayMemberBinding="{Binding Revision}"/>
                     <GridViewColumn Header="Items" Width="50" DisplayMemberBinding="{Binding ItemCount}"/>
                     <GridViewColumn Header="Weight" Width="70" DisplayMemberBinding="{Binding TotalWeight}"/>
+                    <GridViewColumn Header="Created By" Width="120" DisplayMemberBinding="{Binding CreatedBy}"/>
                     <GridViewColumn Header="Created" Width="110" DisplayMemberBinding="{Binding CreatedAt}"/>
                     <GridViewColumn Header="Modified" Width="110" DisplayMemberBinding="{Binding UpdatedAt}"/>
                 </GridView>

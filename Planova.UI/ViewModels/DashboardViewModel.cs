@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Planova.Application.Dto;
 using Planova.Application.Services;
 using Planova.Shared.Abstractions;
+using Planova.UI.ViewModels.Dashboard;
 
 namespace Planova.UI.ViewModels;
 
@@ -41,6 +42,19 @@ public partial class DashboardViewModel : ObservableObject
     private bool _isLoading;
 
     [ObservableProperty]
+    private bool _hasError;
+
+    [ObservableProperty]
+    private string _errorMessage = string.Empty;
+
+    [ObservableProperty]
+    private bool _isEmpty = true;
+
+    public ObservableCollection<HealthCardViewModel> HealthCards { get; } = new();
+
+    public ObservableCollection<CostCardViewModel> CostCards { get; } = new();
+
+    [ObservableProperty]
     private int _totalProjects;
 
     [ObservableProperty]
@@ -61,28 +75,13 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty]
     private int _totalResources;
 
-    [ObservableProperty]
-    private string _statusDistributionSummary = string.Empty;
-
-    [ObservableProperty]
-    private string _boqDistributionSummary = string.Empty;
-
-    [ObservableProperty]
-    private string _wbsDistributionSummary = string.Empty;
-
-    [ObservableProperty]
-    private string _activityDistributionSummary = string.Empty;
-
-    [ObservableProperty]
-    private string _resourceTypeSummary = string.Empty;
+    public ObservableCollection<DistributionSummaryItem> StatusDistributionItems { get; } = new();
+    public ObservableCollection<DistributionSummaryItem> BoqDistributionItems { get; } = new();
+    public ObservableCollection<DistributionSummaryItem> WbsDistributionItems { get; } = new();
+    public ObservableCollection<DistributionSummaryItem> ActivityDistributionItems { get; } = new();
+    public ObservableCollection<DistributionSummaryItem> ResourceTypeDistributionItems { get; } = new();
 
     public ObservableCollection<RecentActivityItem> RecentActivity { get; } = new();
-
-    [ObservableProperty]
-    private string _errorMessage = string.Empty;
-
-    [ObservableProperty]
-    private bool _hasError;
 
     [RelayCommand]
     private async Task LoadAsync()
@@ -101,29 +100,17 @@ public partial class DashboardViewModel : ObservableObject
             TotalActivities = summary.TotalActivities;
             TotalResources = summary.TotalResources;
 
-            StatusDistributionSummary = summary.ProjectsByStatus.Count > 0
-                ? string.Join(", ", summary.ProjectsByStatus.Select(kv => $"{kv.Key}: {kv.Value}"))
-                : "No projects yet";
-
-            BoqDistributionSummary = summary.BoqStatusDistribution.Count > 0
-                ? string.Join(", ", summary.BoqStatusDistribution.Select(kv => $"{kv.Key}: {kv.Value}"))
-                : "No BOQs yet";
-
-            WbsDistributionSummary = summary.WbsStatusDistribution.Count > 0
-                ? string.Join(", ", summary.WbsStatusDistribution.Select(kv => $"{kv.Key}: {kv.Value}"))
-                : "No WBS entries yet";
-
-            ActivityDistributionSummary = summary.ActivitiesByStatus.Count > 0
-                ? string.Join(", ", summary.ActivitiesByStatus.Select(kv => $"{kv.Key}: {kv.Value}"))
-                : "No activities yet";
-
-            ResourceTypeSummary = summary.ResourceTypeDistribution.Count > 0
-                ? string.Join(", ", summary.ResourceTypeDistribution.Select(kv => $"{kv.Key}: {kv.Value}"))
-                : "No resources yet";
+            PopulateDistributionItems(summary.ProjectsByStatus, StatusDistributionItems, GetStatusColor);
+            PopulateDistributionItems(summary.BoqStatusDistribution, BoqDistributionItems, GetStatusColor);
+            PopulateDistributionItems(summary.WbsStatusDistribution, WbsDistributionItems, GetStatusColor);
+            PopulateDistributionItems(summary.ActivitiesByStatus, ActivityDistributionItems, GetStatusColor);
+            PopulateDistributionItems(summary.ResourceTypeDistribution, ResourceTypeDistributionItems, GetResourceTypeColor);
 
             RecentActivity.Clear();
             foreach (var item in summary.RecentActivity)
                 RecentActivity.Add(item);
+
+            IsEmpty = TotalProjects == 0;
         }
         catch (Exception ex)
         {
@@ -177,4 +164,37 @@ public partial class DashboardViewModel : ObservableObject
     {
         _navigationService.NavigateTo("resource");
     }
+
+    private static void PopulateDistributionItems(
+        Dictionary<string, int> source,
+        ObservableCollection<DistributionSummaryItem> target,
+        Func<string, string> colorSelector)
+    {
+        target.Clear();
+        foreach (var kvp in source)
+            target.Add(new DistributionSummaryItem
+            {
+                Label = kvp.Key,
+                Count = kvp.Value,
+                Color = colorSelector(kvp.Key)
+            });
+    }
+
+    private static string GetStatusColor(string status) => status switch
+    {
+        "Active" or "In Progress" or "Approved" or "Submitted" => "#4CAF50",
+        "Completed" or "Finished" => "#2196F3",
+        "On Hold" or "Draft" or "Pending" or "Not Started" => "#FF9800",
+        "Cancelled" or "Rejected" or "Delayed" or "Overdue" => "#F44336",
+        _ => "#9E9E9E"
+    };
+
+    private static string GetResourceTypeColor(string type) => type switch
+    {
+        "Labor" => "#2196F3",
+        "Equipment" => "#FF9800",
+        "Material" => "#4CAF50",
+        "Subcontractor" => "#9C27B0",
+        _ => "#9E9E9E"
+    };
 }

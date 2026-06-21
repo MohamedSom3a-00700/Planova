@@ -17,7 +17,6 @@ public sealed partial class WbsAiGenerationViewModel : ObservableObject
     private readonly IWbsAiGenerationService _aiService;
     private readonly IWbsService _wbsService;
     private readonly IBoqService _boqService;
-    private readonly IBoqImportService _importService;
     private readonly IWbsItemRepository _itemRepository;
     private readonly IBoqSession _session;
 
@@ -25,16 +24,15 @@ public sealed partial class WbsAiGenerationViewModel : ObservableObject
         IWbsAiGenerationService aiService,
         IWbsService wbsService,
         IBoqService boqService,
-        IBoqImportService importService,
         IWbsItemRepository itemRepository,
         IBoqSession session)
     {
         _aiService = aiService;
         _wbsService = wbsService;
         _boqService = boqService;
-        _importService = importService;
         _itemRepository = itemRepository;
         _session = session;
+        SelectedAiSource = WbsAiSource.BoqAndDocuments;
     }
 
     [ObservableProperty] private bool _isLoading;
@@ -47,48 +45,74 @@ public sealed partial class WbsAiGenerationViewModel : ObservableObject
     [ObservableProperty] private string _boqContext = string.Empty;
     [ObservableProperty] private bool _hasBoqContext;
 
+    [ObservableProperty]
+    private WbsAiSource _selectedAiSource;
+
+    public bool IsBoqSource
+    {
+        get => SelectedAiSource == WbsAiSource.BoqOnly;
+        set { if (value) SelectedAiSource = WbsAiSource.BoqOnly; }
+    }
+    public bool IsDocumentsSource
+    {
+        get => SelectedAiSource == WbsAiSource.DocumentsOnly;
+        set { if (value) SelectedAiSource = WbsAiSource.DocumentsOnly; }
+    }
+    public bool IsBoqAndDocumentsSource
+    {
+        get => SelectedAiSource == WbsAiSource.BoqAndDocuments;
+        set { if (value) SelectedAiSource = WbsAiSource.BoqAndDocuments; }
+    }
+    public bool IsDocumentSectionVisible => SelectedAiSource is WbsAiSource.DocumentsOnly or WbsAiSource.BoqAndDocuments;
+
+    partial void OnSelectedAiSourceChanged(WbsAiSource value)
+    {
+        OnPropertyChanged(nameof(IsBoqSource));
+        OnPropertyChanged(nameof(IsDocumentsSource));
+        OnPropertyChanged(nameof(IsBoqAndDocumentsSource));
+        OnPropertyChanged(nameof(IsDocumentSectionVisible));
+    }
+
     public ObservableCollection<BoqSummaryDto> AvailableBoqs { get; } = new();
     [ObservableProperty] private BoqSummaryDto? _selectedBoq;
 
     public ObservableCollection<SuggestedItemNode> SuggestedTree { get; } = new();
 
-    [RelayCommand]
-    private async Task CheckAvailabilityAsync(CancellationToken ct)
-    {
-        IsAiAvailable = await _aiService.IsAiAvailableAsync(ct);
-    }
+    public ObservableCollection<string> SelectedDocuments { get; } = new();
+
+    public bool HasDocuments => SelectedDocuments.Count > 0;
 
     [RelayCommand]
-    private async Task ImportBoqFromExcelAsync(CancellationToken ct)
+    private void AddDocuments()
     {
-        var projectId = _session.CurrentProjectId;
-        if (projectId is null) return;
-
         var dialog = new Microsoft.Win32.OpenFileDialog
         {
-            Filter = "Excel Files|*.xlsx;*.xls;*.xlsm|All Files|*.*",
-            Title = "Import BOQ from Excel"
+            Filter = "Documents|*.pdf;*.docx;*.txt|PDF Files|*.pdf|Word Files|*.docx|Text Files|*.txt|All Files|*.*",
+            Title = "Add Project Documents",
+            Multiselect = true
         };
 
         if (dialog.ShowDialog() != true) return;
 
-        IsLoading = true;
-        HasError = false;
+        foreach (var fileName in dialog.FileNames)
+        {
+            if (!SelectedDocuments.Contains(fileName))
+                SelectedDocuments.Add(fileName);
+        }
+        OnPropertyChanged(nameof(HasDocuments));
+    }
 
-        try
-        {
-            await _importService.ImportFromExcelAsync(projectId.Value, dialog.FileName, null, new Progress<int>(), ct);
-            await LoadBoqsAsync(ct);
-        }
-        catch (Exception ex)
-        {
-            ErrorMessage = $"Failed to import BOQ from Excel: {ex.Message}";
-            HasError = true;
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+    [RelayCommand]
+    private void RemoveDocument(string filePath)
+    {
+        SelectedDocuments.Remove(filePath);
+        OnPropertyChanged(nameof(HasDocuments));
+    }
+
+    [RelayCommand]
+    private async Task CheckAvailabilityAsync(CancellationToken ct)
+    {
+        IsAiAvailable = await _aiService.IsAiAvailableAsync(ct);
     }
 
     [RelayCommand]
@@ -144,6 +168,13 @@ public sealed partial class WbsAiGenerationViewModel : ObservableObject
             var scope = HasBoqContext
                 ? $"{BoqContext}\n\nProject Scope:\n{ProjectScope}"
                 : ProjectScope;
+
+            if (SelectedAiSource == WbsAiSource.DocumentsOnly && !HasDocuments)
+            {
+                ErrorMessage = "Please add at least one document before generating with document source.";
+                HasError = true;
+                return;
+            }
 
             var result = await _aiService.GenerateAsync(scope, SelectedBoq?.Id, ct);
             if (!result.IsAvailable)

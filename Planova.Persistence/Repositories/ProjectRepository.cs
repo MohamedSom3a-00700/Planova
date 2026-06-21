@@ -20,6 +20,7 @@ public class ProjectRepository : IProjectRepository
             .Include(p => p.Client)
             .Include(p => p.Contractor)
             .Include(p => p.Subcontractor)
+            .Include(p => p.Consultant)
             .OrderByDescending(p => p.UpdatedAt)
             .ToListAsync(ct);
     }
@@ -30,6 +31,7 @@ public class ProjectRepository : IProjectRepository
             .Include(p => p.Client)
             .Include(p => p.Contractor)
             .Include(p => p.Subcontractor)
+            .Include(p => p.Consultant)
             .Include(p => p.Documents)
             .FirstOrDefaultAsync(p => p.Id == id, ct);
 
@@ -70,6 +72,7 @@ public class ProjectRepository : IProjectRepository
             .Include(p => p.Client)
             .Include(p => p.Contractor)
             .Include(p => p.Subcontractor)
+            .Include(p => p.Consultant)
             .Where(p => p.Name.ToLower().Contains(q) || p.Code.ToLower().Contains(q))
             .OrderByDescending(p => p.UpdatedAt)
             .ToListAsync(ct);
@@ -81,6 +84,7 @@ public class ProjectRepository : IProjectRepository
             .Include(p => p.Client)
             .Include(p => p.Contractor)
             .Include(p => p.Subcontractor)
+            .Include(p => p.Consultant)
             .Where(p => p.Status == status)
             .OrderByDescending(p => p.UpdatedAt)
             .ToListAsync(ct);

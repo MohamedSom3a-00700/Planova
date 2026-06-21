@@ -3,7 +3,10 @@ namespace Planova.Boq.Domain.Enums;
 public enum ReportType
 {
     Summary,
-    Itemized
+    Itemized,
+    CostSummary,
+    TradeSummary,
+    CsiSummary
 }
 
 public enum ReportFormat

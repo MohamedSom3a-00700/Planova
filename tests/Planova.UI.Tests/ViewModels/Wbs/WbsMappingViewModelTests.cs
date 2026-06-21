@@ -11,7 +11,7 @@ namespace Planova.UI.Tests.ViewModels.Wbs;
 public class WbsMappingViewModelTests
 {
     private readonly Mock<IBoqService> _boqService = new();
-    private readonly Mock<IWbsBoqMappingService> _mappingService = new();
+    private readonly Mock<IWbsMappingService> _mappingService = new();
     private readonly Mock<IBoqImportService> _importService = new();
     private readonly Mock<IBoqSession> _session = new();
     private readonly WbsMappingViewModel _sut;

@@ -5,6 +5,7 @@ namespace Planova.Reporting.Domain.Interfaces;
 public interface IProjectPartyService
 {
     Task<List<ProjectPartyDto>> GetPartiesAsync(int projectId, CancellationToken ct = default);
+    Task<List<ProjectPartyDto>> GetAllPartiesAsync(CancellationToken ct = default);
     Task<ProjectPartyDto> GetClientAsync(int projectId, CancellationToken ct = default);
     Task<ProjectPartyDto> GetMainContractorAsync(int projectId, CancellationToken ct = default);
     Task<List<ProjectPartyDto>> GetSubContractorsAsync(int projectId, CancellationToken ct = default);

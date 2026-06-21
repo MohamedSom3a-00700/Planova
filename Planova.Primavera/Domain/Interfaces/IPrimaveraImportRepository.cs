@@ -10,7 +10,7 @@ public interface IPrimaveraImportRepository
     Task UpdateSessionAsync(XerImportSession session, CancellationToken ct = default);
     Task SaveRawTablesAsync(IEnumerable<XerRawTable> tables, CancellationToken ct = default);
     Task<PrimaveraProject?> GetProjectByXerIdAsync(string projectId, CancellationToken ct = default);
-    Task<bool> HasDuplicateFileAsync(string fileHash, CancellationToken ct = default);
+    Task<bool> HasExistingProjectByXerIdAsync(string xerProjectId, CancellationToken ct = default);
     Task DeleteAllXerDataAsync(CancellationToken ct = default);
     Task<List<XerImportSession>> GetSessionsByProjectAsync(int projectId, CancellationToken ct = default);
     Task PersistImportDataAsync(int projectId, Guid sessionId, List<PrimaveraActivity> activities, List<PrimaveraRelationship> relationships, List<PrimaveraResourceAssignment> resourceAssignments, List<PrimaveraCalendar> calendars, List<PrimaveraCode> codes, List<PrimaveraBaseline> baselines, List<PrimaveraUdf> udfs, CancellationToken ct = default);

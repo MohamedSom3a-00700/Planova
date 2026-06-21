@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -46,6 +47,8 @@ public partial class PrimaveraImportViewModel : ObservableObject
         _currentProjectService = currentProjectService;
         _ = LoadImportedSessionsAsync();
     }
+
+    public event Action? ImportCommitted;
 
     [ObservableProperty]
     private string _selectedFilePath = string.Empty;
@@ -130,6 +133,28 @@ public partial class PrimaveraImportViewModel : ObservableObject
 
             ImportLog.Add(new ImportLogEntry($"Parsed {Preview.FileName} ({Preview.FileSize:N0} bytes)"));
 
+            if (Preview.HasExistingProject)
+            {
+                var result = MessageBox.Show(
+                    $"Project ID '{Preview.ExistingProjectId}' already exists in the database.\n\nDo you want to replace the existing data with this file?",
+                    "Project Already Exists",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.No)
+                {
+                    await _importService.CancelImportAsync(Preview.SessionId);
+                    StatusMessage = "Import cancelled.";
+                    ImportLog.Add(new ImportLogEntry("Import cancelled by user - project already exists.", ImportLogEntrySeverity.Warning));
+                    SelectedFilePath = string.Empty;
+                    IsPreviewVisible = false;
+                    Preview = null;
+                    return;
+                }
+
+                ImportLog.Add(new ImportLogEntry("User confirmed replacement of existing project data.", ImportLogEntrySeverity.Warning));
+            }
+
             if (Preview.RowCounts?.Count > 0)
             {
                 ImportLog.Add(new ImportLogEntry($"Tables found: {Preview.RowCounts.Count}"));
@@ -193,6 +218,7 @@ public partial class PrimaveraImportViewModel : ObservableObject
                 StatusMessage = "Import completed successfully.";
                 ImportLog.Add(new ImportLogEntry("Import completed successfully."));
                 await LoadImportedSessionsAsync();
+                ImportCommitted?.Invoke();
             }
             else
             {
@@ -217,10 +243,12 @@ public partial class PrimaveraImportViewModel : ObservableObject
         if (Preview == null) return;
 
         IsImporting = true;
+        var success = false;
         try
         {
             var result = await _importService.CancelImportAsync(Preview.SessionId);
-            if (result.Success)
+            success = result.Success;
+            if (success)
             {
                 ImportLog.Add(new ImportLogEntry("Import cancelled and rolled back."));
             }
@@ -236,10 +264,13 @@ public partial class PrimaveraImportViewModel : ObservableObject
         finally
         {
             IsImporting = false;
-            SelectedFilePath = string.Empty;
-            IsPreviewVisible = false;
-            Preview = null;
-            ValidationIssues.Clear();
+            if (success)
+            {
+                SelectedFilePath = string.Empty;
+                IsPreviewVisible = false;
+                Preview = null;
+                ValidationIssues.Clear();
+            }
             StatusMessage = string.Empty;
         }
     }

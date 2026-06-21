@@ -7,5 +7,8 @@ public interface IBoqReportService
 {
     Task<byte[]> GenerateSummaryReportAsync(Guid boqId, ReportFormat format, CancellationToken ct);
     Task<byte[]> GenerateItemizedReportAsync(Guid boqId, ReportFormat format, CancellationToken ct);
+    Task<byte[]> GenerateCostSummaryReportAsync(Guid boqId, ReportFormat format, CancellationToken ct);
+    Task<byte[]> GenerateTradeSummaryReportAsync(Guid boqId, ReportFormat format, CancellationToken ct);
+    Task<byte[]> GenerateCsiSummaryReportAsync(Guid boqId, ReportFormat format, CancellationToken ct);
     Task SaveReportAsync(Guid boqId, ReportType type, ReportFormat format, string outputPath, CancellationToken ct);
 }

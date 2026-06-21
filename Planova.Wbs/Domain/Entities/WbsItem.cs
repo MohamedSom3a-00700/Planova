@@ -20,6 +20,8 @@ public class WbsItem
     public DateTime? PlannedFinish { get; set; }
     public int? DurationDays { get; set; }
     public string? AssignedTo { get; set; }
+    public string? Owner { get; set; }
+    public string? Discipline { get; set; }
     public string? Deliverable { get; set; }
     public string? Notes { get; set; }
     public bool IsActive { get; set; } = true;

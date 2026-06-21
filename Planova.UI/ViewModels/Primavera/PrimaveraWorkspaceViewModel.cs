@@ -5,6 +5,7 @@ using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Planova.Primavera.Application.Dto;
+using Planova.Primavera.Application.Models;
 using Planova.Primavera.Domain.Interfaces;
 using ClosedXML.Excel;
 using Planova.Primavera.Domain.Entities;
@@ -83,6 +84,111 @@ public partial class PrimaveraWorkspaceViewModel : ObservableObject
             StatusMessage = $"Loaded: {value.SourceFileName} ({value.ImportedAt:g})";
             UpdateEntitySummaries(value);
             UpdateTableSections(value);
+            LoadTabsFromSessionData(value);
+        }
+    }
+
+    private void LoadTabsFromSessionData(XerImportSessionDto session)
+    {
+        if (string.IsNullOrEmpty(session.ParsedDataJson))
+        {
+            ActivitiesViewModel.Activities.Clear();
+            RelationshipsViewModel.Relationships.Clear();
+            ResourcesViewModel.ResourceAssignments.Clear();
+            CalendarsViewModel.Calendars.Clear();
+            CodesViewModel.Codes.Clear();
+            BaselinesViewModel.Baselines.Clear();
+            UdfsViewModel.Udfs.Clear();
+            return;
+        }
+
+        try
+        {
+            var data = JsonSerializer.Deserialize<XerStoredData>(session.ParsedDataJson,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            if (data == null) return;
+
+            ActivitiesViewModel.Activities.Clear();
+            foreach (var a in data.Activities)
+                ActivitiesViewModel.Activities.Add(new PrimaveraActivityDto
+                {
+                    TaskId = a.TaskId,
+                    WbsId = a.WbsId,
+                    Name = a.Name,
+                    Status = a.Status,
+                    StartDate = a.StartDate,
+                    EndDate = a.EndDate,
+                    Duration = a.Duration,
+                    RemainingDuration = a.RemainingDuration,
+                    PercentComplete = a.PercentComplete,
+                    CalendarId = a.CalendarId,
+                    SourceType = PrimaveraSourceType.Imported.ToString()
+                });
+
+            RelationshipsViewModel.Relationships.Clear();
+            foreach (var r in data.Relationships)
+                RelationshipsViewModel.Relationships.Add(new PrimaveraRelationshipDto
+                {
+                    PredTaskId = r.PredTaskId,
+                    SuccTaskId = r.SuccTaskId,
+                    Type = r.Type,
+                    LagDuration = r.LagDuration
+                });
+
+            ResourcesViewModel.ResourceAssignments.Clear();
+            foreach (var ra in data.ResourceAssignments)
+                ResourcesViewModel.ResourceAssignments.Add(new PrimaveraResourceAssignmentDto
+                {
+                    TaskId = ra.TaskId,
+                    ResourceId = ra.ResourceId,
+                    Units = ra.Units,
+                    CostPerUnit = ra.CostPerUnit
+                });
+
+            CalendarsViewModel.Calendars.Clear();
+            foreach (var c in data.Calendars)
+                CalendarsViewModel.Calendars.Add(new PrimaveraCalendarDto
+                {
+                    CalendarId = c.CalendarId,
+                    Name = c.Name,
+                    IsBaseCalendar = c.IsBaseCalendar,
+                    BaseCalendarId = c.BaseCalendarId
+                });
+
+            CodesViewModel.Codes.Clear();
+            foreach (var c in data.Codes)
+                CodesViewModel.Codes.Add(new PrimaveraCodeDto
+                {
+                    CodeTypeId = c.CodeTypeId,
+                    CodeType = c.CodeType,
+                    CodeValue = c.CodeValue,
+                    CodeName = c.CodeName
+                });
+
+            BaselinesViewModel.Baselines.Clear();
+            foreach (var b in data.Baselines)
+                BaselinesViewModel.Baselines.Add(new PrimaveraBaselineDto
+                {
+                    BaselineId = b.BaselineId,
+                    Name = b.Name,
+                    VersionNumber = b.VersionNumber,
+                    IsActive = b.IsActive
+                });
+
+            UdfsViewModel.Udfs.Clear();
+            foreach (var u in data.Udfs)
+                UdfsViewModel.Udfs.Add(new PrimaveraUdfDto
+                {
+                    UdfTypeId = u.UdfTypeId,
+                    TableName = u.TableName,
+                    FieldName = u.FieldName,
+                    FieldType = u.FieldType
+                });
+
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Error loading session data: {ex.Message}";
         }
     }
 
@@ -129,6 +235,8 @@ public partial class PrimaveraWorkspaceViewModel : ObservableObject
             return;
         }
 
+        var xerContent = GetRawXerContent();
+
         try
         {
             var tempPath = Path.Combine(Path.GetTempPath(), $"Planova_XERTables_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx");
@@ -139,45 +247,31 @@ public partial class PrimaveraWorkspaceViewModel : ObservableObject
                 var tableName = section.TableName;
                 var ws = workbook.Worksheets.Add(tableName.Length > 31 ? tableName[..31] : tableName);
 
-                int currentRow = 1;
-
-                switch (tableName.ToUpperInvariant())
+                if (!string.IsNullOrEmpty(xerContent))
                 {
-                    case "TASK":
-                    case "ACTIVITY":
-                        ExportTypedTable(ws, ActivitiesViewModel.Activities, ref currentRow);
-                        break;
-                    case "TASKPRED":
-                    case "RELATIONSHIP":
-                        ExportTypedTable(ws, RelationshipsViewModel.Relationships, ref currentRow);
-                        break;
-                    case "TASKRSRC":
-                    case "RESOURCE":
-                        ExportTypedTable(ws, ResourcesViewModel.ResourceAssignments, ref currentRow);
-                        break;
-                    case "CALENDAR":
-                        ExportTypedTable(ws, CalendarsViewModel.Calendars, ref currentRow);
-                        break;
-                    case "PROJECTCODE":
-                    case "PROJCODECAT":
-                    case "PROJCODEVAL":
-                    case "CODE":
-                        ExportTypedTable(ws, CodesViewModel.Codes, ref currentRow);
-                        break;
-                    case "UDFTYPE":
-                    case "UDF":
-                        ExportTypedTable(ws, UdfsViewModel.Udfs, ref currentRow);
-                        break;
-                    case "PROJECTBASELINE":
-                    case "BASELINE":
-                        ExportTypedTable(ws, BaselinesViewModel.Baselines, ref currentRow);
-                        break;
-                    default:
-                        ws.Cell(currentRow, 1).Value = $"Table '{tableName}' is not available for export in this session.";
-                        break;
+                    var tableContent = ExtractXerTable(xerContent, tableName);
+                    if (tableContent.Count == 0)
+                    {
+                        ws.Cell(1, 1).Value = $"(no data for table '{tableName}')";
+                    }
+                    else
+                    {
+                        int currentRow = 1;
+                        foreach (var line in tableContent)
+                        {
+                            var parts = line.Split('\t');
+                            for (int c = 0; c < parts.Length; c++)
+                                ws.Cell(currentRow, c + 1).Value = parts[c];
+                            currentRow++;
+                        }
+                        ws.Row(1).Style.Font.Bold = true;
+                        ws.Columns().AdjustToContents();
+                    }
                 }
-
-                ws.Columns().AdjustToContents();
+                else
+                {
+                    ExportFromViewModel(ws, tableName);
+                }
             }
 
             workbook.SaveAs(tempPath);
@@ -195,6 +289,94 @@ public partial class PrimaveraWorkspaceViewModel : ObservableObject
         {
             StatusMessage = $"Table export failed: {ex.Message}";
         }
+    }
+
+    private void ExportFromViewModel(IXLWorksheet ws, string tableName)
+    {
+        int currentRow = 1;
+
+        switch (tableName.ToUpperInvariant())
+        {
+            case "TASK":
+            case "ACTIVITY":
+                ExportTypedTable(ws, ActivitiesViewModel.Activities, ref currentRow);
+                break;
+            case "TASKPRED":
+            case "RELATIONSHIP":
+                ExportTypedTable(ws, RelationshipsViewModel.Relationships, ref currentRow);
+                break;
+            case "TASKRSRC":
+            case "RESOURCE":
+                ExportTypedTable(ws, ResourcesViewModel.ResourceAssignments, ref currentRow);
+                break;
+            case "CALENDAR":
+                ExportTypedTable(ws, CalendarsViewModel.Calendars, ref currentRow);
+                break;
+            case "PROJECTCODE":
+            case "PROJCODECAT":
+            case "PROJCODEVAL":
+            case "CODE":
+                ExportTypedTable(ws, CodesViewModel.Codes, ref currentRow);
+                break;
+            case "UDFTYPE":
+            case "UDF":
+                ExportTypedTable(ws, UdfsViewModel.Udfs, ref currentRow);
+                break;
+            case "PROJECTBASELINE":
+            case "BASELINE":
+                ExportTypedTable(ws, BaselinesViewModel.Baselines, ref currentRow);
+                break;
+            default:
+                ws.Cell(1, 1).Value = $"(table '{tableName}' not available from current session data)";
+                break;
+        }
+
+        ws.Columns().AdjustToContents();
+    }
+
+    private string? GetRawXerContent()
+    {
+        if (SelectedSession == null || string.IsNullOrEmpty(SelectedSession.ParsedDataJson))
+            return null;
+
+        var data = JsonSerializer.Deserialize<XerStoredData>(SelectedSession.ParsedDataJson,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return data?.RawXerContent;
+    }
+
+    private static List<string> ExtractXerTable(string xerContent, string tableName)
+    {
+        var result = new List<string>();
+        using var reader = new StringReader(xerContent);
+        string? line;
+        bool inTargetTable = false;
+
+        while ((line = reader.ReadLine()) != null)
+        {
+            if (line.StartsWith("%T\t", StringComparison.OrdinalIgnoreCase) ||
+                line.StartsWith("%T ", StringComparison.OrdinalIgnoreCase))
+            {
+                var parts = line.Split(new[] { '\t', ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                var currentTable = parts.Length > 1 ? parts[1].Trim() : "";
+
+                if (currentTable.Equals(tableName, StringComparison.OrdinalIgnoreCase))
+                {
+                    inTargetTable = true;
+                    continue;
+                }
+
+                if (inTargetTable)
+                    break;
+            }
+
+            if (inTargetTable)
+            {
+                if (line.StartsWith('%'))
+                    result.Add(line[3..]);
+            }
+        }
+
+        return result;
     }
 
     private static void ExportTypedTable<T>(IXLWorksheet ws, IList<T> items, ref int currentRow)

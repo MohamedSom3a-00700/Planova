@@ -17,14 +17,18 @@ public record ProjectDetailDto(
     string? ContractorName,
     int? SubcontractorId,
     string? SubcontractorName,
+    int? ConsultantId,
+    string? ConsultantName,
     List<ContractSummaryDto> Contracts,
     DateTime CreatedAt,
     DateTime UpdatedAt,
     string[] AllowedNextStatuses,
     string? LogoPath = null,
+    string? CoverImagePath = null,
     string? DocumentsFolder = null,
     double? Latitude = null,
     double? Longitude = null,
     string? QrCodePath = null,
+    string? GoogleMapsLink = null,
     List<ProjectDocumentDto>? Documents = null
 );

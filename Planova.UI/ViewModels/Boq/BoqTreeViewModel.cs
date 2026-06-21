@@ -1,12 +1,65 @@
 using System.Collections.ObjectModel;
+using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Planova.Application.Services;
 using Planova.Boq.Application.Dto;
+using Planova.Boq.Domain.Enums;
 using Planova.Boq.Domain.Interfaces;
 using Planova.Shared.Abstractions;
 
 namespace Planova.UI.ViewModels.Boq;
+
+public partial class BoqOutlineItem : ObservableObject
+{
+    public int SortOrder { get; }
+    public string Code { get; }
+    public string Description { get; }
+    public string Unit { get; }
+    public decimal Quantity { get; }
+    public decimal Rate { get; }
+    public decimal Amount { get; }
+    public ItemType ItemType { get; }
+    public int Level { get; }
+    public string? CostCode { get; }
+    public bool IsActive { get; }
+    public Guid Id { get; }
+    public Guid BoqId { get; }
+    public Guid? ParentId { get; }
+    public decimal? Subtotal { get; }
+
+    [ObservableProperty]
+    private bool _isExpanded = true;
+
+    public ObservableCollection<BoqOutlineItem> Children { get; } = new();
+
+    public BoqOutlineItem(BoqItemDto dto)
+    {
+        Id = dto.Id;
+        BoqId = dto.BoqId;
+        ParentId = dto.ParentId;
+        SortOrder = dto.SortOrder;
+        Code = dto.Code;
+        Description = dto.Description;
+        Unit = dto.Unit;
+        Quantity = dto.Quantity;
+        Rate = dto.Rate;
+        Amount = dto.Amount;
+        ItemType = dto.ItemType;
+        Level = dto.Level;
+        CostCode = dto.CostCode;
+        IsActive = dto.IsActive;
+        Subtotal = dto.Subtotal;
+    }
+
+    public bool IsSection => ItemType == ItemType.Section;
+    public string ItemTypeIcon => IsSection ? "Folder24" : "Document24";
+    public string IndentedMargin => $"{Level * 20},0,0,0";
+    public string DisplayCode => IsSection ? Code : $"  {Code}";
+    public string DisplayAmount => Subtotal.HasValue && IsSection
+        ? $"{Subtotal.Value:N2}"
+        : $"{Amount:N2}";
+}
 
 public partial class BoqTreeViewModel : ObservableObject
 {
@@ -48,21 +101,48 @@ public partial class BoqTreeViewModel : ObservableObject
     private Guid _currentBoqId;
 
     [ObservableProperty]
-    private BoqItemDto? _selectedItem;
+    private BoqOutlineItem? _selectedOutlineItem;
 
     [ObservableProperty]
     private BoqSummaryDto? _selectedBoq;
 
+    [ObservableProperty]
+    private bool _isDeleteConfirmVisible;
+
+    [ObservableProperty]
+    private int _totalSections;
+
+    [ObservableProperty]
+    private int _totalItems;
+
     public ObservableCollection<BoqSummaryDto> AvailableBoqs { get; } = new();
+    public ObservableCollection<BoqOutlineItem> OutlineItems { get; } = new();
     public ObservableCollection<BoqItemDto> FlatItems { get; } = new();
 
     public bool HasNoBoqs => AvailableBoqs.Count == 0;
+    public bool HasBoqSelected => SelectedBoq is not null;
 
     partial void OnSelectedBoqChanged(BoqSummaryDto? value)
     {
+        OnPropertyChanged(nameof(HasBoqSelected));
         if (value is not null)
         {
-            _ = LoadTreeAsync(value.Id, CancellationToken.None);
+            _ = LoadOutlineAsync(value.Id, CancellationToken.None);
+        }
+        else
+        {
+            OutlineItems.Clear();
+            FlatItems.Clear();
+            BoqName = string.Empty;
+            GrandTotal = 0;
+        }
+    }
+
+    partial void OnSelectedOutlineItemChanged(BoqOutlineItem? value)
+    {
+        if (value is not null)
+        {
+            StatusMessage = $"Selected: {value.Code} — {value.Description}";
         }
     }
 
@@ -130,7 +210,11 @@ public partial class BoqTreeViewModel : ObservableObject
                     var boqDocs = await _projectDocumentService.GetByTypeAsync(projectIntId.Value, "Boq", ct);
                     if (boqDocs.Any())
                     {
-                        StatusMessage = "No BOQs have been imported yet. Go to the Import tab to import from project documents.";
+                        var firstDoc = boqDocs.OrderBy(d => d.FileName).First();
+                        var fileExists = !string.IsNullOrEmpty(firstDoc.AbsolutePath) && File.Exists(firstDoc.AbsolutePath);
+                        StatusMessage = fileExists
+                            ? $"No BOQs imported yet. Document '{firstDoc.FileName}' is available — go to Import tab."
+                            : "BOQ document found but file is missing — re-upload the document.";
                     }
                     else
                     {
@@ -153,9 +237,13 @@ public partial class BoqTreeViewModel : ObservableObject
     {
         SelectedBoq = null;
         CurrentBoqId = Guid.Empty;
+        OutlineItems.Clear();
         FlatItems.Clear();
         BoqName = string.Empty;
         GrandTotal = 0;
+        TotalSections = 0;
+        TotalItems = 0;
+        SelectedOutlineItem = null;
     }
 
     private static Guid GuidFromInt(int value)
@@ -166,7 +254,7 @@ public partial class BoqTreeViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task LoadTreeAsync(Guid boqId, CancellationToken ct)
+    private async Task LoadOutlineAsync(Guid boqId, CancellationToken ct)
     {
         try
         {
@@ -177,7 +265,13 @@ public partial class BoqTreeViewModel : ObservableObject
             BoqName = boq.Name;
 
             var tree = await _boqService.GetTreeAsync(boqId, ct);
+            OutlineItems.Clear();
             FlatItems.Clear();
+            TotalSections = 0;
+            TotalItems = 0;
+
+            BuildOutlineItems(tree, OutlineItems, null);
+
             var flatList = FlattenTree(tree).ToList();
             for (int i = 0; i < flatList.Count; i++)
             {
@@ -185,7 +279,98 @@ public partial class BoqTreeViewModel : ObservableObject
             }
 
             GrandTotal = await _boqService.ComputeSubtotalAsync(boqId, null, ct);
-            StatusMessage = $"Loaded {FlatItems.Count} items";
+            StatusMessage = $"Loaded {OutlineItems.Count} items";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void BuildOutlineItems(IReadOnlyList<BoqItemDto> items, ObservableCollection<BoqOutlineItem> target, BoqOutlineItem? parent)
+    {
+        foreach (var dto in items)
+        {
+            var outlineItem = new BoqOutlineItem(dto);
+            if (dto.Children != null && dto.Children.Count > 0)
+            {
+                BuildOutlineItems(dto.Children, outlineItem.Children, outlineItem);
+            }
+
+            if (dto.ItemType == ItemType.Section)
+                TotalSections++;
+            else
+                TotalItems++;
+
+            target.Add(outlineItem);
+        }
+    }
+
+    [RelayCommand]
+    private async Task RefreshAsync(CancellationToken ct)
+    {
+        if (CurrentBoqId != Guid.Empty)
+        {
+            await LoadOutlineAsync(CurrentBoqId, ct);
+        }
+    }
+
+    [RelayCommand]
+    private void ToggleExpand(BoqOutlineItem item)
+    {
+        item.IsExpanded = !item.IsExpanded;
+    }
+
+    [RelayCommand]
+    private void ExpandAll()
+    {
+        SetExpandAll(OutlineItems, true);
+    }
+
+    [RelayCommand]
+    private void CollapseAll()
+    {
+        SetExpandAll(OutlineItems, false);
+    }
+
+    private static void SetExpandAll(ObservableCollection<BoqOutlineItem> items, bool expanded)
+    {
+        foreach (var item in items)
+        {
+            item.IsExpanded = expanded;
+            SetExpandAll(item.Children, expanded);
+        }
+    }
+
+    [RelayCommand]
+    private void ShowDeleteConfirm()
+    {
+        IsDeleteConfirmVisible = true;
+    }
+
+    [RelayCommand]
+    private void HideDeleteConfirm()
+    {
+        IsDeleteConfirmVisible = false;
+    }
+
+    [RelayCommand]
+    private async Task DeleteBoqAsync(CancellationToken ct)
+    {
+        if (SelectedBoq is null) return;
+
+        try
+        {
+            IsLoading = true;
+            await _boqService.DeleteAsync(SelectedBoq.Id, ct);
+            IsDeleteConfirmVisible = false;
+            StatusMessage = $"BOQ '{SelectedBoq.Name}' deleted successfully";
+            SelectedBoq = null;
+            await LoadAvailableBoqsAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Delete failed: {ex.Message}";
         }
         finally
         {
@@ -194,16 +379,20 @@ public partial class BoqTreeViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ToggleExpand(BoqItemDto item)
+    private async Task DeleteItemAsync(CancellationToken ct)
     {
-    }
+        if (SelectedOutlineItem is null) return;
 
-    [RelayCommand]
-    private async Task RefreshAsync(CancellationToken ct)
-    {
-        if (CurrentBoqId != Guid.Empty)
+        try
         {
-            await LoadTreeAsync(CurrentBoqId, ct);
+            await _boqService.DeleteItemAsync(CurrentBoqId, SelectedOutlineItem.Id, ct);
+            StatusMessage = $"Item '{SelectedOutlineItem.Code}' deleted";
+            SelectedOutlineItem = null;
+            await LoadOutlineAsync(CurrentBoqId, ct);
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Delete item failed: {ex.Message}";
         }
     }
 
@@ -220,7 +409,7 @@ public partial class BoqTreeViewModel : ObservableObject
             }
             else
             {
-                await LoadTreeAsync(boqId, CancellationToken.None);
+                await LoadOutlineAsync(boqId, CancellationToken.None);
             }
         }
         catch (Exception ex)

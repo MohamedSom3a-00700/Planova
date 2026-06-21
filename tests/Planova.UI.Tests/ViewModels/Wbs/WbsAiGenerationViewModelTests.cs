@@ -15,7 +15,6 @@ public class WbsAiGenerationViewModelTests
     private readonly Mock<IWbsAiGenerationService> _aiService = new();
     private readonly Mock<IWbsService> _wbsService = new();
     private readonly Mock<IBoqService> _boqService = new();
-    private readonly Mock<IBoqImportService> _importService = new();
     private readonly Mock<IBoqSession> _session = new();
     private readonly Mock<IWbsItemRepository> _itemRepo = new();
     private readonly WbsAiGenerationViewModel _sut;
@@ -25,7 +24,7 @@ public class WbsAiGenerationViewModelTests
         _session.Setup(s => s.CurrentProjectId).Returns(Guid.NewGuid());
         _sut = new WbsAiGenerationViewModel(
             _aiService.Object, _wbsService.Object, _boqService.Object,
-            _importService.Object, _itemRepo.Object, _session.Object);
+            _itemRepo.Object, _session.Object);
     }
 
     [Fact]

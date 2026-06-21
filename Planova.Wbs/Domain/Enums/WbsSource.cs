@@ -5,5 +5,7 @@ public enum WbsSource
     Manual,
     FromBOQ,
     FromTemplate,
-    AIGenerated
+    AIGenerated,
+    Imported,
+    Primavera
 }
